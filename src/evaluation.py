@@ -19,9 +19,19 @@ def evaluate_metrics(
     extractor: YakeKeywordExtractor,
     gold_keywords: Iterable[str] | None = None,
     reference_summary: str | None = None,
+    source_text: str | None = None,                     # <-- novo
 ) -> dict:
     source_keywords_list = list(source_keywords)
     metrics = {"keyword_coverage": keyword_coverage(summary, source_keywords_list)}
+
+    # Compression ratio
+    if source_text:
+        source_words = len(source_text.split())
+        summary_words = len(summary.split())
+        compression_ratio = 1 - (summary_words / source_words) if source_words else 0.0
+        metrics["compression_ratio"] = compression_ratio
+    else:
+        metrics["compression_ratio"] = None
 
     summary_keywords = extract_keywords_for_alignment(summary, extractor)
     alignment = keyword_precision_recall(summary_keywords, source_keywords_list)

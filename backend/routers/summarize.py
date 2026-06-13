@@ -89,6 +89,7 @@ def summarize(req: SummarizeRequest) -> SummarizeResponse:
         summary=summary,
         source_keywords=keywords,
         extractor=extractor,
+        source_text=clean_text,          # <-- adicionado
     )
     kw_cov = metrics["keyword_coverage"]
     kw_align = metrics["summary_alignment"]

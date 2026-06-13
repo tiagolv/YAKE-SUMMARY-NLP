@@ -8,25 +8,30 @@ import {
 
 const MODE_COLORS = {
   full: '#6c8fff',
-  keywords_only: '#4ade80',
+  keywords_only: '#4ade80',   // corrigido: antes era yake_only
   no_keywords: '#fbbf24',
 }
 
 const MODE_LABELS = {
-  full: 'Full (YAKE + External)',
-  keywords_only: 'Keywords only',
-  no_keywords: 'No keywords',
+  full: 'Full pipeline',
+  keywords_only: 'Keywords only (YAKE)',
+  no_keywords: 'Text only',
 }
 
 function toNumber(val) {
-  if (val == null) return 0
+  if (val == null) return null   // em vez de 0, retorna null
   if (typeof val === 'number') return val
   if (typeof val === 'object') {
     if (val.coverage != null) return val.coverage
     const n = Object.values(val).find(v => typeof v === 'number')
-    return n ?? 0
+    return n ?? null
   }
-  return parseFloat(val) || 0
+  return parseFloat(val) || null
+}
+
+function formatMetric(value, decimals = 3) {
+  if (value == null) return '—'
+  return value.toFixed(decimals)
 }
 
 function SummaryCard({ mode, result }) {
@@ -34,6 +39,9 @@ function SummaryCard({ mode, result }) {
   const err = result?.error
   const compression = toNumber(result?.metrics?.compression_ratio)
   const coverage = toNumber(result?.metrics?.keyword_coverage)
+  const precision = toNumber(result?.metrics?.summary_alignment?.precision)
+  const recall = toNumber(result?.metrics?.summary_alignment?.recall)
+  
   return (
     <div className="surface-raised" style={{ padding: 14, flex: 1, minWidth: 0 }}>
       <div style={{
@@ -54,11 +62,19 @@ function SummaryCard({ mode, result }) {
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Compression</div>
-                <div className="mono" style={{ fontSize: 14, color }}>{compression.toFixed(3)}</div>
+                <div className="mono" style={{ fontSize: 14, color }}>{formatMetric(compression)}</div>
               </div>
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>KW coverage</div>
-                <div className="mono" style={{ fontSize: 14, color }}>{coverage.toFixed(3)}</div>
+                <div className="mono" style={{ fontSize: 14, color }}>{formatMetric(coverage)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Precision</div>
+                <div className="mono" style={{ fontSize: 14, color }}>{formatMetric(precision)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Recall</div>
+                <div className="mono" style={{ fontSize: 14, color }}>{formatMetric(recall)}</div>
               </div>
             </div>
           )}
@@ -68,7 +84,7 @@ function SummaryCard({ mode, result }) {
   )
 }
 
-export default function AblationComparison({ text, keywords, topK, ngramSize, temperature, savedResult, onResultSave }) {
+export default function AblationComparison({ text, topK, ngramSize, temperature, savedResult, onResultSave }) {
   const [results, setResults] = useState(savedResult || null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -79,16 +95,11 @@ export default function AblationComparison({ text, keywords, topK, ngramSize, te
     setLoading(true)
     setError(null)
     
-    // Ensure keywords list structure matching backend
-    const extKeywordsList = (keywords ?? '')
-      .split(',')
-      .map(k => k.trim())
-      .filter(Boolean)
-
+    // Não envia keywords externas – forçar YAKE local
     try {
       const data = await runAblation({
         text,
-        external_keywords: extKeywordsList,
+        external_keywords: [],   // sempre vazio
         top_k: topK ?? 10,
         max_ngram_size: ngramSize ?? 3,
         temperature: temperature ?? 0.2,
@@ -108,18 +119,19 @@ export default function AblationComparison({ text, keywords, topK, ngramSize, te
     }
   }
 
+  // Gráfico com compression e coverage, usando as chaves corretas
   const chartData = results
     ? [
         {
           metric: 'Compression',
           full: toNumber(results.full?.metrics?.compression_ratio),
-          yake_only: toNumber(results.yake_only?.metrics?.compression_ratio),
+          keywords_only: toNumber(results.keywords_only?.metrics?.compression_ratio),
           no_keywords: toNumber(results.no_keywords?.metrics?.compression_ratio),
         },
         {
           metric: 'KW Coverage',
           full: toNumber(results.full?.metrics?.keyword_coverage),
-          yake_only: toNumber(results.yake_only?.metrics?.keyword_coverage),
+          keywords_only: toNumber(results.keywords_only?.metrics?.keyword_coverage),
           no_keywords: toNumber(results.no_keywords?.metrics?.keyword_coverage),
         },
       ]
@@ -133,8 +145,7 @@ export default function AblationComparison({ text, keywords, topK, ngramSize, te
             <FlaskConical size={14} color="var(--accent)" /> Ablation analysis
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-            Exclui seletivamente partes do pipeline (Keywords Externas e/ou Keywords YAKE)<br/> 
-            para perceber qual é a contribuição de cada uma na qualidade do Summary final.
+            Compara o pipeline completo (YAKE + texto) vs apenas texto vs apenas keywords YAKE.
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -190,7 +201,7 @@ export default function AblationComparison({ text, keywords, topK, ngramSize, te
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11 }} domain={[0, 1]} axisLine={false} tickLine={false} />
                   <Tooltip
                     contentStyle={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 12 }}
-                    formatter={(v, name) => [v.toFixed(3), MODE_LABELS[name]]}
+                    formatter={(v, name) => [v?.toFixed(3) ?? '—', MODE_LABELS[name]]}
                   />
                   {Object.entries(MODE_COLORS).map(([mode, color]) => (
                     <Bar key={mode} dataKey={mode} fill={color} radius={[4, 4, 0, 0]} />

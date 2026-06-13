@@ -1,0 +1,2545 @@
+{
+  "experiment": "batch_parameter_variation",
+  "total_runs": 72,
+  "successful": 72,
+  "param_grid": {
+    "top_k": [
+      10,
+      20
+    ],
+    "max_ngram_size": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "temperature": [
+      0.2,
+      0.5,
+      0.8
+    ]
+  },
+  "timestamp": "2026-06-13T05:45:55.934263Z",
+  "results": [
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "Gitter chat",
+        "startup",
+        "software",
+        "code",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter"
+      ],
+      "summary": "GitLab, a software collaboration platform, has acquired chat startup Gitter, known for its chat rooms attached to code repositories. The acquisition will see the open-source of Gitter's code, and the launch of a new feature called Topics, which allows users to ask and answer questions similar to Stack Overflow. Gitter was founded in 2014, and has since attracted over 800,000 developers. Three of Gitter's six employees will join GitLab, while its cofounders will remain in London. GitLab continues to offer Mattermost as an alternative to the proprietary Slack app for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7651515151515151,
+        "coverage": 0.7,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "Gitter chat",
+        "startup",
+        "software",
+        "code",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired chat startup Gitter. The acquisition will see the open- sourcing of Gitter's code for further development. Gitter provides chat rooms linked to repositories of code for collaboration, and it has been popular on both GitLab and its main competitor, GitHub. As part of GitLab, Gitter is launching a new feature called Topics for Q&A, similar to Stack Overflow. The deal terms were not disclosed, and the integration of Gitter into GitLab's community and enterprise editions is yet to be announced. Gitter was launched in 2014 and has around 300,000 monthly active users. The acquisition follows a $20 million funding round for GitLab in September. GitLab continues to recommend the open-source Mattermost software as an alternative to the proprietary Slack app for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.654040404040404,
+        "coverage": 0.7,
+        "alignment_precision": 0.4,
+        "alignment_recall": 0.4,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "Gitter chat",
+        "startup",
+        "software",
+        "code",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter"
+      ],
+      "summary": "GitLab, a software repository startup, has acquired Gitter, another chat startup that integrates with code repositories for collaborative messaging. The acquisition will see Gitter's code being open-sourced, enabling others to build upon it. Gitter will introduce a new feature called Topics, resembling Stack Overflow, making it easier to structure questions and answers. Gitter launched in 2014 and has had over 800,000 developers register since then, with around 300,000 monthly active users. GitLab offers Mattermost as an open-source alternative to the proprietary Slack app for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7803030303030303,
+        "coverage": 0.6,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a chat startup that integrates with code repositories for collaboration. The acquisition includes Gitter's chat rooms and technology, which will be open-sourced for others to build upon. Gitter's Topics feature, similar to Stack Overflow, is launching for question and answer sessions. The deal terms were not disclosed, and some Gitter employees are joining GitLab. Gitter was founded in 2014 and has over 300,000 monthly active users. GitLab continues to offer Mattermost as an alternative to the proprietary Slack app for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7550505050505051,
+        "coverage": 0.5,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a chat startup that links to code repositories for collaborative messaging. The acquisition will see the open- sourcing of Gitter's code. Gitter's new feature, Topics, allows users to ask and answer questions, similar to Stack Overflow. Gitter launched in 2014 and has over 800,000 registered developers with around 300,000 monthly active users. GitLab will continue to recommend Mattermost for internal team communication as an alternative to proprietary Slack apps.",
+      "metrics": {
+        "compression_ratio": 0.7904040404040404,
+        "coverage": 0.5,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a chat startup that links to code repositories for collaboration. The deal will see GitLab open-source Gitter's code. Gitter's technology includes a feature called Topics, which allows users to ask and answer questions, similar to Stack Overflow. Both companies have previously offered alternatives to the proprietary Slack app. Notably, Gitter has been prominent on GitHub, a major competitor of GitLab. The acquisition is expected to improve collaboration and knowledge sharing within GitLab's community.",
+      "metrics": {
+        "compression_ratio": 0.7803030303030303,
+        "coverage": 0.5,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a software chat startup known for its chat rooms attached to repositories of code. The acquisition will see GitLab open-source Gitter's code, allowing others to build upon it. Gitter's new feature, Topics, which allows users to ask and answer questions like Stack Overflow, is also being launched. Three Gitter employees are joining GitLab, with cofounders Mike Bartlett and Andrew Newdigate remaining in London. Over 800,000 developers have registered on Gitter since its launch in 2014, with around 300,000 monthly active users. GitLab continues to offer Mattermost open-source software as an alternative to the proprietary Slack app for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7121212121212122,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a software chat startup known for its chat rooms attached to repositories of code. The acquisition includes Gitter's code, which will be open-sourced for others to build upon. Gitter's new feature, Topics, allows people to ask and answer questions similar to Stack Overflow. Gitter was founded in 2014 and has over 800,000 registered developers and around 300,000 monthly active users. GitLab continues to offer Mattermost as an alternative to the proprietary Slack app for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7702020202020202,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired chat startup Gitter. The acquisition will see GitLab open-source Gitter's code for others to build upon. Gitter provides chat rooms attached to repositories of code, facilitating collaboration among developers. Currently, the terms of the deal are undisclosed. Gitter, commonly found on GitHub, also appears within GitLab. In the future, GitLab will introduce a new feature called Topics in Gitter, allowing users to ask and answer questions akin to Stack Overflow. The acquisition is not expected to affect GitLab's existing Mattermost open-source software recommendation for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7474747474747474,
+        "coverage": 0.3,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter itself has a Gitter",
+        "acquires software chat startup Gitter",
+        "GitLab acquires software chat startup",
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code collaboration software, has acquired Gitter, a software chat startup known for its chat rooms attached to code repositories. The acquisition will see GitLab open-source Gitter's code, allowing for further development. Gitter's new feature, Topics, which allows users to ask and answer questions like Stack Overflow, is being launched. This technology is already available in beta on Github and will be rolled out on GitLab's Gitter pages over time. Gitter, founded in 2014, has over 800,000 registered developers and around 300,000 monthly active users. GitLab continues to recommend Mattermost, an open-source alternative to the proprietary Slack app, for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7247474747474747,
+        "coverage": 0.2,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter itself has a Gitter",
+        "acquires software chat startup Gitter",
+        "GitLab acquires software chat startup",
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter"
+      ],
+      "summary": "GitLab, a provider of open source and premium source code repository software, has acquired Gitter, a startup offering chat rooms linked to code repositories for collaboration. The deal will result in the open-source of Gitter's code. Gitter's new feature, Topics, allows users to ask and answer questions similar to Stack Overflow. The acquisition aims to improve GitLab's communication tools, as Gitter has become more prevalent on GitHub, a significant competitor. Three Gitter employees will join GitLab, whose team is remote. Over 800,000 developers have registered on Gitter since its launch in 2014, with around 300,000 monthly active users currently. GitLab continues to recommend Mattermost, an open-source alternative to the proprietary Slack app, for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7070707070707071,
+        "coverage": 0.2,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Gitter itself has a Gitter",
+        "acquires software chat startup Gitter",
+        "GitLab acquires software chat startup",
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter"
+      ],
+      "summary": "GitLab, a software collaboration platform, has acquired Gitter, a chat startup that integrates with code repositories for seamless communication among collaborators. Although financial details were not disclosed, GitLab plans to open-source Gitter's code for further development. The acquisition will also see the launch of Topics, a feature that allows for question and answer interactions similar to Stack Overflow within Gitter rooms on both GitHub and GitLab platforms. Gitter, established in 2014, has over 300,000 monthly active users and boasts integration with various other software platforms including Mattermost, an open-source alternative to Slack.",
+      "metrics": {
+        "compression_ratio": 0.7676767676767677,
+        "coverage": 0.2,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "Gitter chat",
+        "startup",
+        "software",
+        "code",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter",
+        "Gitter code",
+        "chat rooms",
+        "Ventures",
+        "chat startup",
+        "GitLab acquires",
+        "software chat",
+        "rooms",
+        "Gitter rooms",
+        "Sid Sijbrandij",
+        "people"
+      ],
+      "summary": "GitLab, a software collaboration platform, has acquired chat startup Gitter, known for its chat rooms attached to code repositories. The acquisition will see GitLab open-source Gitter's code, allowing for further development. Gitter's new feature, Topics, which enables question and answer sessions similar to Stack Overflow, is being launched as part of the deal. Gitter was founded in 2014 and has since attracted over 800,000 developers, with around 300,000 monthly active users. GitLab continues to recommend Mattermost, an open-source alternative to Slack, for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7853535353535354,
+        "coverage": 0.5,
+        "alignment_precision": 0.45,
+        "alignment_recall": 0.45,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "Gitter chat",
+        "startup",
+        "software",
+        "code",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter",
+        "Gitter code",
+        "chat rooms",
+        "Ventures",
+        "chat startup",
+        "GitLab acquires",
+        "software chat",
+        "rooms",
+        "Gitter rooms",
+        "Sid Sijbrandij",
+        "people"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired chat startup Gitter. The acquisition includes Gitter's chat rooms attached to repositories of code for collaboration purposes. GitLab will open-source Gitter's code, allowing others to build on it. Notably, Gitter's new feature, Topics, which enables Q&A similar to Stack Overflow, is being launched as part of the acquisition. This technology is currently available in beta on Gitter rooms on GitHub and will be rolled out on GitLab's Gitter pages over time. Gitter was founded in 2014, and its cofounders Mike Bartlett and Andrew Newdigate will remain in London. Over 800,000 developers have registered on Gitter since its launch, with around 300,000 monthly active users. GitLab continues to recommend the Mattermost open-source software for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.6742424242424243,
+        "coverage": 0.55,
+        "alignment_precision": 0.4,
+        "alignment_recall": 0.4,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "Gitter chat",
+        "startup",
+        "software",
+        "code",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter",
+        "Gitter code",
+        "chat rooms",
+        "Ventures",
+        "chat startup",
+        "GitLab acquires",
+        "software chat",
+        "rooms",
+        "Gitter rooms",
+        "Sid Sijbrandij",
+        "people"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code collaboration software, has acquired Gitter, a startup offering chat rooms linked to repositories of code for easier communication among collaborators. The deal terms are undisclosed. Gitter, also popular on GitHub (GitLab's main competitor), is integrated into GitLab. GitLab plans to open-source the Gitter code and introduce a new feature called 'Topics' that facilitates Q&A similar to Stack Overflow. Launched in 2014, Gitter has attracted over 800,000 developers, with around 300,000 monthly active users. GitLab offers Mattermost as an alternative to the proprietary Slack app for internal team communication and will continue to recommend it.",
+      "metrics": {
+        "compression_ratio": 0.7398989898989898,
+        "coverage": 0.45,
+        "alignment_precision": 0.25,
+        "alignment_recall": 0.25,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter",
+        "code repository software",
+        "Gitter code",
+        "chat rooms"
+      ],
+      "summary": "GitLab, a provider of open-source and premium code repository software, has acquired Gitter, a chat startup that offers chat rooms attached to code repositories for collaboration. The acquisition will see GitLab open-source the Gitter code. Gitter's new feature, Topics, allows users to ask and answer questions similar to Stack Overflow. Gitter was founded in 2014 and has over 800,000 registered developers with around 300,000 monthly active users. GitLab continues to offer Mattermost as an alternative to the proprietary Slack app for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7878787878787878,
+        "coverage": 0.45,
+        "alignment_precision": 0.35,
+        "alignment_recall": 0.35,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter",
+        "code repository software",
+        "Gitter code",
+        "chat rooms"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a startup offering chat rooms attached to code repositories for collaboration. The acquisition includes Gitter's code, which will be open-sourced for others to build upon. Gitter's new feature, Topics, allows users to ask and answer questions like on Stack Overflow. Three of Gitter's six employees are joining GitLab, while cofounders Mike Bartlett and Andrew Newdigate remain in London. Over 800,000 developers have registered on Gitter since its launch, with around 300,000 monthly active users. GitLab continues to offer Mattermost open-source software as an alternative to the proprietary Slack app for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7297979797979798,
+        "coverage": 0.4,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter",
+        "code repository software",
+        "Gitter code",
+        "chat rooms"
+      ],
+      "summary": "GitLab, a provider of open source and premium code repository software, has acquired chat startup Gitter. Gitter offers chat rooms attached to repositories of code for collaboration. The acquisition will see GitLab open-source Gitter's code, allowing others to build upon it. Gitter's Topics feature, which allows users to ask and answer questions like Stack Overflow, is being launched as part of the acquisition. Gitter, founded in 2014, has over 800,000 developers registered and around 300,000 monthly active users. GitLab offers Mattermost open source software as an alternative to Slack for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7651515151515151,
+        "coverage": 0.5,
+        "alignment_precision": 0.35,
+        "alignment_recall": 0.35,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a chat startup that integrates with code repositories for collaborative messaging. The acquisition will see GitLab open-source Gitter's code. Gitter's chat rooms are prevalent on both GitHub (GitLab's main competitor) and GitLab. GitLab won't immediately integrate Gitter into its community or enterprise editions, but it plans to open-source the technology for others to build upon. As part of GitLab, Gitter is introducing a new feature called Topics, which allows users to ask and answer questions similar to Stack Overflow. The acquisition follows GitLab's $20 million funding round in September. Gitter cofounders Mike Bartlett and Andrew Newdigate will remain in London, while three of Gitter's six employees are joining GitLab. More than 800,000 developers have registered on Gitter since its launch, with around 300,000 monthly active users. GitLab continues to recommend Mattermost, an open-source alternative to the proprietary Slack app,",
+      "metrics": {
+        "compression_ratio": 0.6136363636363636,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter"
+      ],
+      "summary": "GitLab, an open-source software collaboration platform, has acquired Gitter, a software chat startup known for its chat rooms linked to code repositories. The acquisition will see the open- sourcing of Gitter's code and the launch of a new feature called Topics, which allows users to ask and answer questions similar to Stack Overflow. Gitter was founded in 2014 and has over 300,000 monthly active users. Three of its six employees will join GitLab, whose team is remote. GitLab continues to offer Mattermost as an alternative to Slack for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.7702020202020202,
+        "coverage": 0.35,
+        "alignment_precision": 0.05,
+        "alignment_recall": 0.05,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij",
+        "acquires software",
+        "chat",
+        "startup Gitter"
+      ],
+      "summary": "GitLab, a software collaboration company, has acquired Gitter, a chat startup that integrates with code repositories for easy communication between collaborators. The acquisition includes Gitter's codebase, which will be open-source for further development. Gitter is known for its chat rooms attached to code repositories and is popular on GitHub, a major competitor of GitLab. As part of the acquisition, Gitter will introduce a new feature called Topics, enabling question-and-answer discussions similar to Stack Overflow. The technology behind this feature is already in beta testing on Gitter rooms on GitHub and will be available on GitLab's Gitter pages over time. Gitter was launched in 2014 and has attracted over 800,000 developers since its inception, with around 300,000 monthly active users currently. Despite the acquisition, GitLab will continue to recommend Mattermost, an open-source alternative to Slack, for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.6515151515151515,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter itself has a Gitter",
+        "acquires software chat startup Gitter",
+        "GitLab acquires software chat startup",
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a software chat startup known for its chat rooms attached to code repositories. The acquisition will see GitLab open-source the Gitter code. Gitter's Topics feature, which allows users to ask and answer questions like Stack Overflow, is being launched as part of the deal. Notably, Gitter has been prevalent on GitHub, a significant competitor of GitLab. Three of Gitter's six employees are joining GitLab, whose team operates remotely. Since its launch in 2014, Gitter has registered over 800,000 developers and currently boasts around 300,000 monthly active users. The acquisition follows GitLab's $20 million funding round announced in September. GitLab continues to recommend Mattermost, an open-source alternative to the proprietary Slack app, for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.6742424242424243,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter itself has a Gitter",
+        "acquires software chat startup Gitter",
+        "GitLab acquires software chat startup",
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij"
+      ],
+      "summary": "GitLab, a software collaboration platform, has acquired Gitter, a software chat startup known for providing chat rooms attached to code repositories. The acquisition will see GitLab open-source the Gitter code, allowing others to build upon it. Gitter's new feature, Topics, which allows users to ask and answer questions like Stack Overflow, is being launched as part of the deal. Notably, Gitter has been prevalent on GitHub, a significant competitor of GitLab. The acquisition will see three of Gitter's six employees joining GitLab, with cofounders Mike Bartlett and Andrew Newdigate remaining in London. Since its launch in 2014, over 800,000 developers have registered on Gitter, with around 300,000 monthly active users. GitLab continues to recommend Mattermost, an open-source software alternative to the proprietary Slack app, for internal team communication.",
+      "metrics": {
+        "compression_ratio": 0.6767676767676767,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample2",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Gitter itself has a Gitter",
+        "acquires software chat startup Gitter",
+        "GitLab acquires software chat startup",
+        "acquires software chat startup",
+        "Gitter",
+        "software chat startup Gitter",
+        "GitLab acquires software chat",
+        "GitLab",
+        "acquires software chat",
+        "chat startup Gitter",
+        "software chat startup",
+        "Gitter chat",
+        "GitLab acquires software",
+        "startup",
+        "software",
+        "code",
+        "Gitter chat rooms",
+        "Gitter chat room",
+        "CEO Sid Sijbrandij",
+        "Sijbrandij"
+      ],
+      "summary": "GitLab, a provider of open-source and premium source code repository software, has acquired Gitter, a chat startup that integrates with repositories of code for collaboration. The acquisition will result in the open- sourcing of Gitter's code. Gitter offers chat rooms attached to code repositories and has been prominent on GitHub, a significant competitor of GitLab. Gitter's new feature, Topics, allows users to ask and answer questions similar to Stack Overflow. Three of Gitter's employees are joining GitLab, with cofounders Mike Bartlett and Andrew Newdigate remaining in London. Since its launch in 2014, over 800,000 developers have registered on Gitter, with around 300,000 monthly active users. GitLab also continues to recommend Mattermost for internal team communication as an alternative to the proprietary Slack app.",
+      "metrics": {
+        "compression_ratio": 0.6893939393939394,
+        "coverage": 0.25,
+        "alignment_precision": 0.05,
+        "alignment_recall": 0.05,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "video",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE"
+      ],
+      "summary": "Genius, a media company once focused on annotating the internet, has undergone significant changes. After laying off a quarter of its staff, primarily engineers, in January, the company is shifting resources towards video content and distribution, aiming to become more video-focused as a media company. This move aims to make knowledge more accessible and attract a wider audience, particularly beyond the music world. The company continues to hire for roles in video and sales, and has redesigned its homepage to accommodate editorial content and advertising. Genius' shift from an all-encompassing internet annotator to a traditional media company model is more dramatic than most, as it competes with numerous well-capitalized competitors in the video market.",
+      "metrics": {
+        "compression_ratio": 0.7931034482758621,
+        "coverage": 0.4,
+        "alignment_precision": 0.4,
+        "alignment_recall": 0.4,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "video",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE"
+      ],
+      "summary": "Genius, a media company once focused on annotating the entire internet, has undergone significant changes by laying off a quarter of its staff, primarily engineers, to focus more on video content production and distribution. This shift aims to make knowledge more accessible through easier-to-consume formats like videos and partnerships with Spotify's Behind the Lyrics feature. The move illustrates Genius' struggle to attract contributors and audience beyond the music world, with video content intended to reach its core audience of rap fans more effectively.",
+      "metrics": {
+        "compression_ratio": 0.8493647912885662,
+        "coverage": 0.4,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "video",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE"
+      ],
+      "summary": "Genius, once a media company raising $56.9 million for annotating the entire internet, has made a significant shift in strategy. After quietly laying off a quarter of its staff, mainly engineers, the company is pivoting towards becoming a more video-focused media company. The move aims to make knowledge distribution easier through formats like videos and Spotify collaborations, due to challenges in attracting contributors and audience outside the music world. Video content includes artist interviews and freestyle performances, with the goal of reaching a wider audience beyond its website and apps.",
+      "metrics": {
+        "compression_ratio": 0.8366606170598911,
+        "coverage": 0.4,
+        "alignment_precision": 0.3,
+        "alignment_recall": 0.3,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "Tom Lehman told",
+        "video",
+        "co-founder Tom Lehman"
+      ],
+      "summary": "Genius, a media company previously focused on annotating the internet, underwent significant changes in January by laying off a quarter of its staff, primarily engineers, to focus more on video content. Co-founder Tom Lehman explained this shift as a need to package and distribute knowledge into easily consumable formats like videos and Spotify partnerships. The move aims to reach and engage the core audience, particularly rap fans, beyond the website and apps. Genius' new direction illustrates its struggle to attract contributors and an audience outside of the music world.",
+      "metrics": {
+        "compression_ratio": 0.8384754990925589,
+        "coverage": 0.6,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "Tom Lehman told",
+        "video",
+        "co-founder Tom Lehman"
+      ],
+      "summary": "Genius, a media company originally focused on annotating the internet, has undergone significant changes. In January, they quietly laid off a quarter of their staff, primarily engineers, to focus more on video content and advertising. The shift aims to make knowledge more accessible through easier-to-consume formats like videos and Spotify partnerships. This move highlights Genius' challenge in attracting contributors and an audience beyond the music world. They are now producing videos featuring artist interviews and freestyle performances, with the goal of reaching their core audience, primarily rap fans, beyond their website and apps.",
+      "metrics": {
+        "compression_ratio": 0.8312159709618875,
+        "coverage": 0.5,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "Tom Lehman told",
+        "video",
+        "co-founder Tom Lehman"
+      ],
+      "summary": "Genius, a media company formerly focused on annotating the internet, underwent significant changes in January by laying off a quarter of its staff, primarily engineers. Co-founder Tom Lehman announced this shift towards becoming more video-focused as a means to package and distribute knowledge more efficiently. The company has redesigned its homepage for expanded editorial content and advertising, deepened its partnership with Spotify, and is hiring for roles in video and sales. Despite the move towards video, Genius faces challenges attracting contributors and audience beyond the music world due to the complexity of its website.",
+      "metrics": {
+        "compression_ratio": 0.8294010889292196,
+        "coverage": 0.6,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES"
+      ],
+      "summary": "Genius, a media company that raised $56.9 million for annotating the internet, has undergone significant changes. In January, they laid off a quarter of their staff, primarily engineers, to focus more on video content and less on the annotation platform. The shift aims to package and distribute knowledge in easy-to-consume formats like videos and Spotify partnerships. This move is aimed at reaching a wider audience, particularly beyond the music world, due to challenges attracting contributors and viewers. Genius continues to hire for video and sales roles, with a redesigned homepage featuring expanded editorial content and advertising.",
+      "metrics": {
+        "compression_ratio": 0.8257713248638838,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES"
+      ],
+      "summary": "Genius, a media company that raised $56.9 million for annotating the internet, has undergone significant changes. After laying off a quarter of its staff, mainly engineers, in January, Genius is shifting focus from knowledge capture to packaging and distributing it as video content and Spotify partnerships. The move aims to reach a broader audience beyond their website and apps, particularly rap fans, due to the complexity of using the site for detailed song analysis. The company's videos include artist interviews and original freestyle performances.",
+      "metrics": {
+        "compression_ratio": 0.8475499092558983,
+        "coverage": 0.3,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES"
+      ],
+      "summary": "Genius, a media company once promising to annotate the entire internet, has undergone significant changes. In January, they quietly laid off a quarter of their staff, primarily from engineering, as they shift focus towards video content and becoming more of a traditional media company. The move aims to package and distribute knowledge in easier-to-consume formats like video and Spotify partnerships. This transformation is aimed at reaching a wider audience, particularly beyond the music world, as attracting contributors remains challenging. The company has redesigned its homepage for expanded editorial content and advertising, with videos featuring interviews and performances as key components of the new strategy.",
+      "metrics": {
+        "compression_ratio": 0.8112522686025408,
+        "coverage": 0.3,
+        "alignment_precision": 0.3,
+        "alignment_recall": 0.3,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "SHIFT RESOURCES FROM CAPTURING KNOWLEDGE",
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "co-founder Tom Lehman told employees"
+      ],
+      "summary": "Genius, a media company that aimed to annotate the entire internet, has undergone significant changes. Co-founder Tom Lehman announced the layoff of a quarter of the staff, primarily engineers, in January 2023. The company is shifting its focus from knowledge capture to packaging and distributing knowledge, particularly through video content and partnerships with Spotify. This move aims to make Genius more accessible and engaging for its core audience, primarily rap fans. The company has also redesigned its homepage to accommodate expanded editorial content and advertising.",
+      "metrics": {
+        "compression_ratio": 0.8457350272232305,
+        "coverage": 0.5,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "SHIFT RESOURCES FROM CAPTURING KNOWLEDGE",
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "co-founder Tom Lehman told employees"
+      ],
+      "summary": "Genius, a media company that initially aimed to annotate the entire internet, underwent significant changes in January by laying off a quarter of its staff, primarily engineers. Co-founder Tom Lehman announced this shift towards becoming more video-focused, intending to allocate resources towards packaging and distributing knowledge rather than just capturing it. The company is hiring for roles in video and sales, and has redesigned its homepage to accommodate editorial content and advertising. Genius aims to reach a wider audience, particularly rap fans, through videos featuring artist interviews and freestyle performances.",
+      "metrics": {
+        "compression_ratio": 0.8366606170598911,
+        "coverage": 0.5,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "SHIFT RESOURCES FROM CAPTURING KNOWLEDGE",
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "co-founder Tom Lehman told employees"
+      ],
+      "summary": "Genius, a media company that aimed to annotate the entire internet, has shifted focus from knowledge capture to packaging and distributing knowledge, notably through video content and Spotify partnerships. This transition led to the layoff of a quarter of its staff, primarily engineers. The company's new approach aims to make content more accessible and appealing to its core audience, particularly rap fans, while addressing challenges in attracting contributors beyond the music world.",
+      "metrics": {
+        "compression_ratio": 0.8693284936479129,
+        "coverage": 0.4,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "video",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE",
+        "Lehman told",
+        "KNOWLEDGE",
+        "laid",
+        "Tom Lehman",
+        "shift",
+        "company quietly",
+        "Lyrics",
+        "resources",
+        "media",
+        "Genius website"
+      ],
+      "summary": "Genius, a media company that raised $56.9 million for annotating the internet, has undergone significant changes. In January, they quietly laid off a quarter of their staff, primarily engineers, to shift focus towards video content and advertising. The company aims to become more video-centric and is hiring for roles in video and sales. They have redesigned their homepage to accommodate expanded editorial content and advertising. Genius is also deepening its partnership with Spotify's Behind the Lyrics feature. This shift from knowledge capture to distribution, including video and Spotify collaborations, aims to make Genius more accessible and attract a wider audience, particularly beyond the music world.",
+      "metrics": {
+        "compression_ratio": 0.809437386569873,
+        "coverage": 0.5,
+        "alignment_precision": 0.3,
+        "alignment_recall": 0.3,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "video",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE",
+        "Lehman told",
+        "KNOWLEDGE",
+        "laid",
+        "Tom Lehman",
+        "shift",
+        "company quietly",
+        "Lyrics",
+        "resources",
+        "media",
+        "Genius website"
+      ],
+      "summary": "Genius, a media company previously known for annotating the internet, made a significant shift in January by laying off a quarter of its staff, primarily engineers, to focus more on video content and advertising. The company aims to become a video-focused media company, with continued hiring in video and sales. This shift is aimed at making knowledge more accessible through easier-to-consume formats like videos and Spotify's Behind the Lyrics partnership. The move highlights Genius' struggle to attract contributors and an audience outside of the music world. The company's videos will now include interviews with artists, original freestyle performances, and other content aimed at reaching a broader audience, particularly rap fans.",
+      "metrics": {
+        "compression_ratio": 0.8003629764065336,
+        "coverage": 0.4,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "video",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE",
+        "Lehman told",
+        "KNOWLEDGE",
+        "laid",
+        "Tom Lehman",
+        "shift",
+        "company quietly",
+        "Lyrics",
+        "resources",
+        "media",
+        "Genius website"
+      ],
+      "summary": "Genius, a media company previously focused on annotating the internet, has undergone a significant shift in strategy due to financial considerations, leading to the quiet layoff of a quarter of its staff, primarily engineers. The company is now focusing more on video content and partnerships like Spotify's Behind the Lyrics to package and distribute knowledge more effectively. This transformation aims to make Genius more accessible and appealing to a wider audience, particularly rap fans, through video content. The move illustrates challenges in attracting contributors and an audience beyond the music world.",
+      "metrics": {
+        "compression_ratio": 0.8348457350272233,
+        "coverage": 0.4,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "Tom Lehman told",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE",
+        "Lehman told",
+        "KNOWLEDGE",
+        "laid",
+        "Tom Lehman",
+        "shift",
+        "company quietly"
+      ],
+      "summary": "Genius, a media company that aimed to annotate the entire internet, has undergone significant changes. In January, they quietly laid off a quarter of their staff, primarily engineers, to shift resources towards video content and distribution. The company is now focusing on becoming a more video-centric media platform, as evidenced by their redesigned homepage and deepened partnership with Spotify's Behind the Lyrics feature. This transformation aims to make Genius content more accessible, particularly for its core audience of rap fans.",
+      "metrics": {
+        "compression_ratio": 0.8548094373865699,
+        "coverage": 0.4,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "Tom Lehman told",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE",
+        "Lehman told",
+        "KNOWLEDGE",
+        "laid",
+        "Tom Lehman",
+        "shift",
+        "company quietly"
+      ],
+      "summary": "The media company Genius, once promising to annotate the entire internet, has undergone significant changes. Co-founder Tom Lehman announced a quarter of the staff was laid off, primarily from engineering, in January 2023. The company is shifting focus towards becoming more video-centric, aiming to package and distribute knowledge more effectively. This change includes expanding editorial content and advertising on their homepage, deepening partnerships with Spotify for Behind the Lyrics features, and producing videos featuring artists and original freestyles. The move reflects Genius' struggle to attract contributors and an audience outside of the music world, with video being seen as a means to reach and engage its core audience, primarily rap fans.",
+      "metrics": {
+        "compression_ratio": 0.7985480943738656,
+        "coverage": 0.5,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "quietly laid",
+        "Tom Lehman told",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE",
+        "Lehman told",
+        "KNOWLEDGE",
+        "laid",
+        "Tom Lehman",
+        "shift",
+        "company quietly"
+      ],
+      "summary": "The media company Genius, known for its promise to annotate the entire internet, underwent a significant shift in strategy by quietly laying off a quarter of its staff, primarily engineers, and focusing more on video content. This shift aims to distribute knowledge more effectively and attract a larger audience, particularly outside of the music world. The company is continuing to hire for roles in video and sales, while deepening its partnership with Spotify's Behind the Lyrics feature. The move highlights Genius' struggle to attract contributors and an audience beyond its platform.",
+      "metrics": {
+        "compression_ratio": 0.8348457350272233,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES",
+        "quietly laid",
+        "co-founder Tom Lehman told",
+        "Tom Lehman told",
+        "SHIFT RESOURCES FROM CAPTURING",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE"
+      ],
+      "summary": "Genius, a media company previously focused on annotating the internet, underwent significant changes in January by laying off a quarter of its staff, primarily engineers. Co-founder Tom Lehman explained that resources would be shifted towards video content and distribution to reach a wider audience, particularly rap fans. The company aims to expand its partnership with Spotify's Behind the Lyrics feature and produce videos featuring artist interviews and freestyle performances. This transition reflects Genius' struggle to attract contributors and an audience outside of the music world.",
+      "metrics": {
+        "compression_ratio": 0.8457350272232305,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES",
+        "quietly laid",
+        "co-founder Tom Lehman told",
+        "Tom Lehman told",
+        "SHIFT RESOURCES FROM CAPTURING",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE"
+      ],
+      "summary": "Genius, a media company once focused on annotating the entire internet, has undergone significant changes. Co-founder Tom Lehman announced a shift in resources from knowledge capture to packaging and distributing it via video and partnerships like Spotify's Behind the Lyrics. This change led to the quiet layoff of a quarter of the staff, primarily engineers. The company aims to make content more accessible through videos, targeting its core audience of rap fans beyond its website and apps.",
+      "metrics": {
+        "compression_ratio": 0.8602540834845736,
+        "coverage": 0.3,
+        "alignment_precision": 0.15,
+        "alignment_recall": 0.15,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES",
+        "quietly laid",
+        "co-founder Tom Lehman told",
+        "Tom Lehman told",
+        "SHIFT RESOURCES FROM CAPTURING",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "CAPTURING KNOWLEDGE",
+        "SHIFT RESOURCES",
+        "DISTRIBUTING KNOWLEDGE"
+      ],
+      "summary": "Genius, a media company originally focused on annotating the internet, has undergone significant changes. Co-founder Tom Lehman announced a layoff of 17 employees (quarter of the staff), primarily engineers, due to a shift in focus from knowledge capture to packaging and distributing knowledge, particularly through video content and partnerships with Spotify. The company aims to reach and engage its core audience, particularly rap fans, beyond its website and apps by making the content more accessible via video. This shift reflects Genius' efforts to attract contributors and an audience outside of the music world.",
+      "metrics": {
+        "compression_ratio": 0.8312159709618875,
+        "coverage": 0.4,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "SHIFT RESOURCES FROM CAPTURING KNOWLEDGE",
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "co-founder Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES",
+        "quietly laid",
+        "co-founder Tom Lehman told",
+        "Tom Lehman told",
+        "SHIFT RESOURCES FROM CAPTURING",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "Lehman told employees that Genius"
+      ],
+      "summary": "Genius, a media company that aimed to annotate the entire internet, has undergone significant changes. Co-founder Tom Lehman announced a shift in resources from knowledge capture to packaging and distributing knowledge, particularly focusing on video content. This led to the quiet layoff of a quarter of the staff, primarily engineers. The company is continuing to hire for roles in video and sales, and has redesigned its homepage to accommodate editorial content and advertising. Genius' move towards video content aims to reach and engage its core audience, particularly rap fans, beyond its website and mobile apps.",
+      "metrics": {
+        "compression_ratio": 0.8275862068965517,
+        "coverage": 0.35,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "SHIFT RESOURCES FROM CAPTURING KNOWLEDGE",
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "co-founder Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES",
+        "quietly laid",
+        "co-founder Tom Lehman told",
+        "Tom Lehman told",
+        "SHIFT RESOURCES FROM CAPTURING",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "Lehman told employees that Genius"
+      ],
+      "summary": "Genius, a media company that raised $56.9 million for annotating the internet, faced financial challenges and laid off a quarter of its staff, primarily engineers. Co-founder Tom Lehman announced this shift to prioritize video content over knowledge capture, aiming to make knowledge more accessible through videos and partnerships with Spotify. The company is continuing to hire for roles in video and sales, while focusing on expanding editorial content and advertising on its homepage. The move signifies Genius' struggle to attract contributors and audience outside the music world, as it transitions from a comprehensive internet annotator to a more traditional media company model.",
+      "metrics": {
+        "compression_ratio": 0.8148820326678766,
+        "coverage": 0.3,
+        "alignment_precision": 0.05,
+        "alignment_recall": 0.05,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample3",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "SHIFT RESOURCES FROM CAPTURING KNOWLEDGE",
+        "Genius",
+        "company",
+        "Genius quietly laid",
+        "company quietly laid",
+        "media company",
+        "Lehman",
+        "PACKAGING AND DISTRIBUTING KNOWLEDGE",
+        "Tom Lehman told employees",
+        "co-founder Tom Lehman told employees",
+        "RESOURCES FROM CAPTURING KNOWLEDGE",
+        "NEEDED TO SHIFT RESOURCES",
+        "quietly laid",
+        "co-founder Tom Lehman told",
+        "Tom Lehman told",
+        "SHIFT RESOURCES FROM CAPTURING",
+        "video",
+        "co-founder Tom Lehman",
+        "Genius quietly",
+        "Lehman told employees that Genius"
+      ],
+      "summary": "Genius, a media company previously focused on annotating the internet, has undergone significant changes. Co-founder Tom Lehman announced a layoff of 17 employees (full-time and part-time), mainly from the engineering department, to shift resources towards video content and distribution. The aim is to make knowledge more accessible and reach a wider audience, particularly rap fans. Genius has been expanding its partnership with Spotify's 'Behind the Lyrics', and producing videos featuring artist interviews and freestyles. The move reflects Genius' challenge in attracting contributors and audience outside the music world.",
+      "metrics": {
+        "compression_ratio": 0.8402903811252269,
+        "coverage": 0.3,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "segunda-feira",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "Diego Souza"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, preparing for matches against Uruguay and Paraguay on the 23rd and 28th, respectively, in the South American qualifiers for the 2018 World Cup in Russia. The training, which takes place at 4 PM (Bras\u00edlia time) at the Corinthians Training Center, will be attended by Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, Renato Augusto, and two players who trained at the S\u00e3o Paulo Training Center last week. The team will have all its players for training on Tuesday, which takes place at the S\u00e3o Paulo Training Center. Nine more athletes are expected to join the other invited players by Monday evening, including Marquinhos, Thiago Silva, Fernandinho, Giuliano, Coutinho, Firmino, Neymar, Daniel Alves, and Alisson, who will complete the roster on Tuesday. Brazil leads the South American qualifiers with 27 points and faces second-place Uruguay (",
+      "metrics": {
+        "compression_ratio": 0.5079872204472844,
+        "coverage": 0.3,
+        "alignment_precision": 0.3,
+        "alignment_recall": 0.3,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "segunda-feira",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "Diego Souza"
+      ],
+      "summary": "The Brazilian national team will train with 14 players on Monday, preparing for matches against Uruguay and Paraguay on the 23rd and 28th, which are part of the South American qualifiers for the 2018 World Cup in Russia. The training, scheduled for 4 PM (Bras\u00edlia time) at the Corinthians Training Center, will feature players such as Marcelo, Casemiro, Ederson, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, Renato Augusto, and others who have been training at S\u00e3o Paulo's CT during the previous week. The team will be missing some players who are expected to arrive between Monday afternoon and Tuesday morning. Renato Augusto, currently with Beijing Guoan, discussed the challenges of the match against Uruguay, noting that it would resemble a Libertadores-like climate, they'd play away, face natural difficulties, but should avoid playing their game and focus on their own to win. The full squad will only be available for training on Tuesday at S\u00e3o Paulo's CT. Six of the nine remaining players are expected to join by Monday",
+      "metrics": {
+        "compression_ratio": 0.4536741214057508,
+        "coverage": 0.3,
+        "alignment_precision": 0.3,
+        "alignment_recall": 0.3,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 2,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "segunda-feira",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "Diego Souza"
+      ],
+      "summary": "The Brazilian national football team will train with only 14 players on Monday, ahead of matches against Uruguay and Paraguay in the South American qualifiers for the 2018 World Cup in Russia. Coach Tite will lead the team's first training session this Monday at Corinthians' training center. The remaining players are expected to arrive between late Monday and Tuesday morning. Renato Augusto, currently with Beijing Guoan, discussed the challenges of the Uruguay match during his arrival at the Brazilian squad's hotel. He noted that the weather would be similar to the Libertadores, they will play away from home, and will encounter natural resistance, but emphasized that they should not let the game belong to their opponents, and must focus on their own game to win. Tite will have all his players available for training on Tuesday at S\u00e3o Paulo's training center. Six more athletes are still expected to join the team on Monday: Marquinhos, Thiago Silva, Fernandinho, Giuliano, Coutinho, and Firmino. The full squad is expected to be complete only by Tuesday with the arrival of Neymar, Daniel Alves, and Alisson. Brazil leads the",
+      "metrics": {
+        "compression_ratio": 0.41214057507987223,
+        "coverage": 0.2,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "Copa da R\u00fassia",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, preparing for matches against Uruguay and Paraguay on the 23rd and 28th, which are part of the South American qualifiers for the 2018 World Cup in Russia. Coach Tite will conduct the first training session on Monday at the Corinthians Training Center. The training, scheduled for 4 PM (Bras\u00edlia time), will include players such as Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, Renato Augusto, and two players who trained at the S\u00e3o Paulo Training Center last week. The team will face a challenging climate similar to that of the Libertadores Cup, play away from home, and encounter natural obstacles, but they aim to focus on their own game to secure victories. The full squad will be available for training on Tuesday at the S\u00e3o Paulo Training Center. Six more players are expected to join the team on Monday, including Marquinhos, Thiago Silva, Fernandinho, Giuliano, Coutinho, and Fir",
+      "metrics": {
+        "compression_ratio": 0.4664536741214057,
+        "coverage": 0.2,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "Copa da R\u00fassia",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, ahead of matches against Uruguay and Paraguay on the 23rd and 28th for the South American qualifiers for the 2018 Russia World Cup. The training session, led by Tite, will take place at 4 PM (Bras\u00edlia time) at Corinthians' training center. Key players such as Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, and Renato Augusto will participate, with the latter having already trained at S\u00e3o Paulo's training center last week. Renato Augusto expressed concerns about the upcoming match against Uruguay, stating that they must avoid playing to Uruguay's strengths and focus on their own game to win. The full squad will be available for training on Tuesday at S\u00e3o Paulo's training center, with six additional players arriving on Monday. The remaining nine players, including Marquinhos, Thiago Silva, Fernandinho, Giuliano, Coutinho, Firmino, Neymar, Daniel",
+      "metrics": {
+        "compression_ratio": 0.5111821086261981,
+        "coverage": 0.2,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "Copa da R\u00fassia",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo"
+      ],
+      "summary": "The Brazilian national football team will train with only 14 players on Monday, as they prepare for upcoming matches against Uruguay and Paraguay, which are part of the South American qualifiers for the 2018 World Cup in Russia. The training session, scheduled for 4 PM (Bras\u00edlia time) at Corinthians' training center, will be attended by Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, Renato Augusto, and two players who trained at S\u00e3o Paulo's training center last week. The team is currently facing challenges as they prepare to play Uruguay away from home. Tite will have all his players available for the following day's training session in S\u00e3o Paulo. Six more players are expected to join on Monday, including Marquinhos, Thiago Silva, Fernandinho, Giuliano, Coutinho, and Firmino. The team will be at full strength by Tuesday with the arrivals of Neymar, Daniel Alves, and Alisson. Brazil, leading the South American qualifiers with 2",
+      "metrics": {
+        "compression_ratio": 0.4920127795527156,
+        "coverage": 0.2,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, under the command of Tite. This training session is preparatory for matches against Uruguay and Paraguay on the 23rd and 28th, which are part of the South American qualifiers for the 2018 World Cup in Russia. The remaining players will join by Tuesday afternoon or Wednesday morning. The training, scheduled for 4 PM (Bras\u00edlia time) at the Corinthians' training center, will include key players like Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, Renato Augusto, and two others who trained at the S\u00e3o Paulo's training center last week. Renato Augusto, currently with Beijing Guoan, discussed the challenges of the Uruguay match, played away from home. He stated, 'It will be a climate similar to that of the Libertadores, we'll play away, face a natural obstacle, but we must not get drawn into their game, we need to keep our heads and play our own game to",
+      "metrics": {
+        "compression_ratio": 0.47284345047923326,
+        "coverage": 0.1,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, under the command of Tite. This training session is in preparation for matches against Uruguay and Paraguay on the 23rd and 28th, which are part of the South American qualifiers for the 2018 World Cup in Russia. The remaining players will join by Tuesday afternoon. The first training session, scheduled for 4 PM (Bras\u00edlia time) at Corinthians' training center, will be attended by Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, Renato Augusto, and two players who trained at S\u00e3o Paulo's training center last week. Renato Augusto, currently with Beijing Guoan, discussed the challenges of the Uruguay match, played away from home. He said, \"It will be a climate similar to that of the Libertadores, we will play away, we will face natural opposition, but we should not get sucked into their game, we need to keep our heads and play our own game to win.\" Tite will",
+      "metrics": {
+        "compression_ratio": 0.4664536741214057,
+        "coverage": 0.1,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 4,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, under the command of Tite, as they prepare for matches against Uruguay and Paraguay, on the 23rd and 28th respectively, in the South American qualifiers for the 2018 Russia World Cup. The initial training session will take place at the Corinthians Training Center at 4 PM (Bras\u00edlia time). Renato Augusto, currently with Beijing Guoan, discussed the challenges facing the team against Uruguay, stating that they must avoid playing to their opponents' strengths and focus on their own game to secure victory. The remaining players will join the squad between Monday afternoon and Tuesday morning, with Neymar, Daniel Alves, and Alisson expected to arrive by Tuesday.",
+      "metrics": {
+        "compression_ratio": 0.6261980830670926,
+        "coverage": 0.1,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira treinar\u00e1 com apenas",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando as partidas",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "t\u00e9cnico Tite comandar\u00e1 nesta segunda-feira",
+        "primeiro treinamento da Sele\u00e7\u00e3o Brasileira",
+        "treinamento da Sele\u00e7\u00e3o Brasileira visando",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas para",
+        "Tite comandar\u00e1 nesta segunda-feira"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, with Tite commanding the first training session ahead of matches against Uruguay and Paraguay on the 23rd and 28th, respectively, which are part of the South American qualifiers for the 2018 World Cup in Russia. The initial training will take place at 4 PM (Bras\u00edlia time) at the Corinthians' training center. The selected players include Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, and Renato Augusto. The remaining players will join by Tuesday morning. The training session will be followed by the arrival of Neymar, Daniel Alves, and Alisson on Tuesday, completing the full squad. Brazil leads the South American qualifiers with 27 points and faces second-placed Uruguay (23 points) on the following Thursday in Montevideo. The team will then face Paraguay on March 2nd at the Itaquera Stadium.",
+      "metrics": {
+        "compression_ratio": 0.5271565495207668,
+        "coverage": 0.0,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.5
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira treinar\u00e1 com apenas",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando as partidas",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "t\u00e9cnico Tite comandar\u00e1 nesta segunda-feira",
+        "primeiro treinamento da Sele\u00e7\u00e3o Brasileira",
+        "treinamento da Sele\u00e7\u00e3o Brasileira visando",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas para",
+        "Tite comandar\u00e1 nesta segunda-feira"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, with Tite commanding the first training session ahead of upcoming matches against Uruguay and Paraguay on the 23rd and 28th, respectively, which are part of the South American qualifiers for the 2018 World Cup in Russia. The initial training will take place at 4 PM (Bras\u00edlia time) at the Corinthians training center. The team, currently concentrated at a hotel, will be missing several players who will join later on Monday and Tuesday. The training session will include 14 players, including Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, and Renato Augusto. Neymar, Daniel Alves, and Alisson will join the team on Tuesday to complete the roster. The Brazilian team, leading the South American qualifiers with 27 points, faces second-placed Uruguay (with 23 points) on the following Friday at 8 PM (Bras\u00edlia time) in Montevideo. The team will",
+      "metrics": {
+        "compression_ratio": 0.5015974440894568,
+        "coverage": 0.0,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 5,
+        "temperature": 0.8
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira treinar\u00e1 com apenas",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando as partidas",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "t\u00e9cnico Tite comandar\u00e1 nesta segunda-feira",
+        "primeiro treinamento da Sele\u00e7\u00e3o Brasileira",
+        "treinamento da Sele\u00e7\u00e3o Brasileira visando",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas para",
+        "Tite comandar\u00e1 nesta segunda-feira"
+      ],
+      "summary": "The Brazilian national soccer team will train with only 14 players on Monday, led by coach Tite. This first training session is in preparation for upcoming matches against Uruguay and Paraguay on the 23rd and 28th, which are part of the South American qualifiers for the 2018 World Cup in Russia. The remaining players will join by Tuesday afternoon or Wednesday morning. The training, scheduled for 4 PM (Bras\u00edlia time) at the Corinthians training center, will include key players such as Marcelo, Casemiro, Ederson, Diego, and Renato Augusto. Additional players Marquinhos, Thiago Silva, Fernandinho, Giuliano, Coutinho, Firmino, Neymar, Daniel Alves, and Alisson will join by Tuesday, with the full squad assembled on Wednesday. Brazil, currently leading in the South American qualifiers with 27 points, faces second-place Uruguay on the following Thursday at 8 PM (Bras\u00edlia time) in Montevideo. On March 2nd, they will play Paraguay at Itaquera Stadium.",
+      "metrics": {
+        "compression_ratio": 0.5271565495207668,
+        "coverage": 0.0,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "segunda-feira",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "Diego Souza",
+        "nesta",
+        "Brasileira visando",
+        "S\u00e3o",
+        "ser\u00e1 realizado",
+        "para",
+        "Filipe Lu\u00eds",
+        "ser\u00e1",
+        "apenas",
+        "Augusto",
+        "Diego"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, preparing for matches against Uruguay and Paraguay on the 23rd and 28th, which are part of the South American qualifiers for the 2018 World Cup in Russia. The training session, held at the Corinthians Training Center, will include players such as Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Luis, Willian, Miranda, Paulinho, Gil, and Renato Augusto. The team is missing several players who will arrive between Monday afternoon and Tuesday morning. Renato Augusto, currently with Beijing Guoan, discussed the challenges of the upcoming match against Uruguay. He stated that the climate would be similar to that of the Libertadores, they would play away from home, and face a natural challenge, but emphasized that they should not play Uruguay's game, instead focusing on their own to win. Coach Tite will have all his players available for training on Tuesday at the S\u00e3o Paulo Training Center. The remaining nine players, including Marquinhos, Thiago Silva, Fernand",
+      "metrics": {
+        "compression_ratio": 0.46325878594249204,
+        "coverage": 0.35,
+        "alignment_precision": 0.15,
+        "alignment_recall": 0.15,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "segunda-feira",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "Diego Souza",
+        "nesta",
+        "Brasileira visando",
+        "S\u00e3o",
+        "ser\u00e1 realizado",
+        "para",
+        "Filipe Lu\u00eds",
+        "ser\u00e1",
+        "apenas",
+        "Augusto",
+        "Diego"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, preparing for upcoming matches against Uruguay and Paraguay in the South American qualifiers for the 2018 World Cup in Russia. Renato Augusto, currently playing for Beijing Guoan, discussed challenges facing the team during the away match against Uruguay. Tite will have all his players available for training on Tuesday at the CT do S\u00e3o Paulo. Nine more players, including Neymar, Daniel Alves, and Alisson, will join the team by Wednesday. The Brazilian team currently leads the South American qualifiers with 27 points, facing second-place Uruguay on the following Thursday in Montevideo.",
+      "metrics": {
+        "compression_ratio": 0.670926517571885,
+        "coverage": 0.25,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 2,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "segunda-feira",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "Diego Souza",
+        "nesta",
+        "Brasileira visando",
+        "S\u00e3o",
+        "ser\u00e1 realizado",
+        "para",
+        "Filipe Lu\u00eds",
+        "ser\u00e1",
+        "apenas",
+        "Augusto",
+        "Diego"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, preparing for upcoming matches against Uruguay and Paraguay in the South American qualifiers for the 2018 World Cup in Russia. The training session will take place at 4 PM (Bras\u00edlia time) at Corinthians' training center. Key players such as Marcelo, Casemiro, Ederson, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, Renato Augusto, and a few others who trained in S\u00e3o Paulo last week will be present. The remaining players are expected to arrive between Monday afternoon and Tuesday morning. The training session on Tuesday will be held at S\u00e3o Paulo's training center, where the full squad will be present. The team is currently leading the South American qualifiers with 27 points and faces second-placed Uruguay on the following Wednesday in Montevideo.",
+      "metrics": {
+        "compression_ratio": 0.5654952076677316,
+        "coverage": 0.4,
+        "alignment_precision": 0.2,
+        "alignment_recall": 0.2,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "Copa da R\u00fassia",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "jogadores nesta segunda-feira",
+        "meia Renato Augusto",
+        "comandar\u00e1 nesta segunda-feira",
+        "v\u00e1lidos pela Eliminat\u00f3rias",
+        "segunda-feira",
+        "S\u00e3o Paulo durante",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "apenas nesta ter\u00e7a-feira",
+        "Diego Souza"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, preparing for matches against Uruguay and Paraguay on the 23rd and 28th, which are valid for the South American qualifiers for the 2018 World Cup in Russia. The coach Tite will have 14 out of 23 invited players available for this initial training session. The remaining players will arrive between Monday afternoon and Tuesday morning. The training, scheduled for 4 PM (Bras\u00edlia time) at Corinthians' training center, will be attended by Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, and Renato Augusto - the last two having trained at S\u00e3o Paulo's training center during the previous week. Upon arrival at the hotel where the Brazilian team is concentrating, midfielder Renato Augusto, currently with Beijing Guoan, discussed the main challenges of the upcoming match against Uruguay. 'It will be a climate similar to that of the Libertadores, we'll play away, we'll face",
+      "metrics": {
+        "compression_ratio": 0.48881789137380194,
+        "coverage": 0.15,
+        "alignment_precision": 0.05,
+        "alignment_recall": 0.05,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "Copa da R\u00fassia",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "jogadores nesta segunda-feira",
+        "meia Renato Augusto",
+        "comandar\u00e1 nesta segunda-feira",
+        "v\u00e1lidos pela Eliminat\u00f3rias",
+        "segunda-feira",
+        "S\u00e3o Paulo durante",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "apenas nesta ter\u00e7a-feira",
+        "Diego Souza"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, preparing for matches against Uruguay and Paraguay, valid for the South American qualifiers for the 2018 World Cup in Russia. Coach Tite will have 14 out of 23 players available for this initial training session. The remaining players are expected to arrive between late Monday and Tuesday morning. The training, which takes place at 4 PM (Bras\u00edlia time) at Corinthians' CT, will be attended by Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, and Renato Augusto. The latter two have been training at S\u00e3o Paulo's CT in the past week. Upon arrival at the hotel where the Brazilian team is concentrated, midfielder Renato Augusto, currently with Beijing Guoan, discussed the main challenges of the Uruguay game, away from home. 'It will be a climate similar to that of the Libertadores, we will play away, we will face a natural catimba, but we should not get involved in",
+      "metrics": {
+        "compression_ratio": 0.4696485623003195,
+        "coverage": 0.15,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 3,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "Copa da R\u00fassia",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "jogadores nesta segunda-feira",
+        "meia Renato Augusto",
+        "comandar\u00e1 nesta segunda-feira",
+        "v\u00e1lidos pela Eliminat\u00f3rias",
+        "segunda-feira",
+        "S\u00e3o Paulo durante",
+        "Eliminat\u00f3rias Sul-Americanas",
+        "apenas nesta ter\u00e7a-feira",
+        "Diego Souza"
+      ],
+      "summary": "The Brazilian national team will train with 14 players on Monday, as they prepare for matches against Uruguay and Paraguay, which are valid for the South American qualifiers for the 2018 World Cup in Russia. The first training session will take place at 4 PM (Bras\u00edlia time) at Corinthians' training center. Key players such as Marcelo, Casemiro, Ederson, Diego Souza, and Renato Augusto are among those participating. Renato Augusto discussed the challenges of playing against Uruguay away from home upon arrival at the team hotel. He emphasized that the team should focus on their own game to win, despite facing challenging conditions similar to those in the Libertadores Cup and playing away from home. The full squad will be available for training on Tuesday at S\u00e3o Paulo's training center. Six of the nine remaining players are expected to join the team on Monday, including Marquinhos, Thiago Silva, Fernandinho, Giuliano, Coutinho, and Firmino. The roster will be complete by Tuesday with the arrivals of Neymar, Daniel Alves, and Alisson. Brazil leads the South American qualifiers with 27",
+      "metrics": {
+        "compression_ratio": 0.43769968051118213,
+        "coverage": 0.15,
+        "alignment_precision": 0.1,
+        "alignment_recall": 0.1,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas",
+        "treinamento da Sele\u00e7\u00e3o Brasileira",
+        "Brasileira visando as partidas",
+        "Gil e Renato Augusto",
+        "t\u00e9cnico Tite comandar\u00e1 nesta",
+        "pela Eliminat\u00f3rias Sul-Americanas para"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, as Tite prepares for the first training session ahead of matches against Uruguay and Paraguay on the 23rd and 28th, which are valid for the South American qualifiers for the 2018 World Cup in Russia. The remaining players will join between Monday afternoon and Tuesday morning. The training, scheduled for 4 PM (Bras\u00edlia time) at the Corinthians' training center, will feature Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, and Renato Augusto. Tite will have all his players available for training on Tuesday at the S\u00e3o Paulo training center. Six more players, including Marquinhos, Thiago Silva, Fernandinho, Giuliano, Coutinho, and Firmino, are expected to join on Monday. The full squad will be complete by Tuesday with the arrivals of Neymar, Daniel Alves, and Alisson. Brazil, leading the South American qualifiers with 27 points, faces second",
+      "metrics": {
+        "compression_ratio": 0.5079872204472844,
+        "coverage": 0.1,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas",
+        "treinamento da Sele\u00e7\u00e3o Brasileira",
+        "Brasileira visando as partidas",
+        "Gil e Renato Augusto",
+        "t\u00e9cnico Tite comandar\u00e1 nesta",
+        "pela Eliminat\u00f3rias Sul-Americanas para"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, with Tite commanding the first training session ahead of matches against Uruguay and Paraguay on the 23rd and 28th, respectively, which are valid for the South American qualifiers for the 2018 World Cup in Russia. The training, held at Corinthians' CT, will include Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, and Renato Augusto. Renato Augusto discussed the challenges faced in the Uruguay match, played away from home. The full squad will be available for training on Tuesday at S\u00e3o Paulo's CT, with six more players arriving on Monday. Neymar, Daniel Alves, and Alisson are expected to join the team by Tuesday, completing the roster. Brazil, leading the South American qualifiers with 27 points, faces second-place Uruguay (23 points) next Thursday at 8 PM Bras\u00edlia time in Montevideo's Centen\u00e1rio Stadium, followed by a match against Paragu",
+      "metrics": {
+        "compression_ratio": 0.5047923322683706,
+        "coverage": 0.1,
+        "alignment_precision": 0.05,
+        "alignment_recall": 0.05,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 4,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "S\u00e3o Paulo",
+        "brasileira",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas",
+        "treinamento da Sele\u00e7\u00e3o Brasileira",
+        "Brasileira visando as partidas",
+        "Gil e Renato Augusto",
+        "t\u00e9cnico Tite comandar\u00e1 nesta",
+        "pela Eliminat\u00f3rias Sul-Americanas para"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, with Tite commanding the first training session ahead of matches against Uruguay and Paraguay on the 23rd and 28th, which are valid for the South American qualifiers for the 2018 World Cup in Russia. The team is currently in a concentrated state at the Corinthians CT. The training, starting at 4 PM (Brasilia time), will include Marcelo, Casemiro, Ederson, Weverton, Diego, Diego Souza, Fagner, Dudu, Filipe Lu\u00eds, Willian, Miranda, Paulinho, Gil, and Renato Augusto. The latter two have been training at S\u00e3o Paulo's CT in the previous week. With the arrival at the team hotel, midfielder Renato Augusto (currently with Beijing Guoan) discussed the main challenges of the Uruguay game, played away from home. 'It will be a climate similar to that of the Libertadores, we'll play away, we'll face a natural obstacle, but we should not get involved in their game, we need to keep our head and play",
+      "metrics": {
+        "compression_ratio": 0.4824281150159745,
+        "coverage": 0.1,
+        "alignment_precision": 0.05,
+        "alignment_recall": 0.05,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.2
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira treinar\u00e1 com apenas",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando as partidas",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "t\u00e9cnico Tite comandar\u00e1 nesta segunda-feira",
+        "primeiro treinamento da Sele\u00e7\u00e3o Brasileira",
+        "treinamento da Sele\u00e7\u00e3o Brasileira visando",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas para",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Brasileira visando as partidas contra",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "est\u00e1 concentrada a Sele\u00e7\u00e3o Brasileira"
+      ],
+      "summary": "The Brazilian national soccer team will train with only 14 players on Monday, led by coach Tite. This training session is to prepare for upcoming matches against Uruguay and Paraguay, valid for the South American qualifiers for the 2018 World Cup in Russia. The team is currently concentrated at a hotel in Brazil. Renato Augusto, one of the players, discussed the challenges they may face against Uruguay, stating that they must focus on their own game to win. The full squad will be available for training on Tuesday.",
+      "metrics": {
+        "compression_ratio": 0.7188498402555911,
+        "coverage": 0.05,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.5
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira treinar\u00e1 com apenas",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando as partidas",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "t\u00e9cnico Tite comandar\u00e1 nesta segunda-feira",
+        "primeiro treinamento da Sele\u00e7\u00e3o Brasileira",
+        "treinamento da Sele\u00e7\u00e3o Brasileira visando",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas para",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Brasileira visando as partidas contra",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "est\u00e1 concentrada a Sele\u00e7\u00e3o Brasileira"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, ahead of matches against Uruguay and Paraguay in the South American qualifiers for the 2018 World Cup in Russia. The coach Tite will command this first training session. On Tuesday, the remaining players will join, and the full squad will be available for training at the S\u00e3o Paulo training center on Wednesday. The team is currently concentrated at a hotel, with Renato Augusto, who plays for Beijing Guoan, already training at the S\u00e3o Paulo training center last week. The Brazilian team, leading the South American qualifiers with 27 points, faces second-placed Uruguay on the following Thursday in Montevideo, and Paraguay on March 2nd in Sao Paulo.",
+      "metrics": {
+        "compression_ratio": 0.6230031948881789,
+        "coverage": 0.05,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    },
+    {
+      "document": "Sample4",
+      "params": {
+        "top_k": 20,
+        "max_ngram_size": 5,
+        "temperature": 0.8
+      },
+      "num_keywords": 20,
+      "keywords": [
+        "sele\u00e7\u00e3o brasileira treinar\u00e1",
+        "sele\u00e7\u00e3o brasileira treinar\u00e1 com apenas",
+        "sele\u00e7\u00e3o brasileira",
+        "Sele\u00e7\u00e3o Brasileira visando as partidas",
+        "Sele\u00e7\u00e3o Brasileira visando",
+        "t\u00e9cnico Tite comandar\u00e1 nesta segunda-feira",
+        "primeiro treinamento da Sele\u00e7\u00e3o Brasileira",
+        "treinamento da Sele\u00e7\u00e3o Brasileira visando",
+        "v\u00e1lidos pela Eliminat\u00f3rias Sul-Americanas para",
+        "Tite comandar\u00e1 nesta segunda-feira",
+        "Brasileira visando as partidas contra",
+        "Sele\u00e7\u00e3o Brasileira encara",
+        "Renato Augusto",
+        "brasileira treinar\u00e1",
+        "brasileira treinar\u00e1 com apenas",
+        "Copa da R\u00fassia",
+        "concentrada a Sele\u00e7\u00e3o Brasileira",
+        "nesta segunda-feira",
+        "sele\u00e7\u00e3o",
+        "est\u00e1 concentrada a Sele\u00e7\u00e3o Brasileira"
+      ],
+      "summary": "The Brazilian national team will train with only 14 players on Monday, under the command of coach Tite. This first training session aims to prepare for the upcoming matches against Uruguay and Paraguay, on the 23rd and 28th, which are qualifiers for the 2018 World Cup in Russia. The team is currently concentrated at the Corinthians' training center. For this initial activity, Tite will have only 14 out of 23 players available. The remaining players will arrive between Monday afternoon and Tuesday morning. Renato Augusto, who plays for Beijing Guoan, has already trained at the S\u00e3o Paulo training center during the previous week. The Brazilian team faces Uruguay on the following Thursday, with Paraguay to follow on March 2nd. The team is currently leading the South American qualifiers with 27 points.",
+      "metrics": {
+        "compression_ratio": 0.5814696485623003,
+        "coverage": 0.05,
+        "alignment_precision": 0.0,
+        "alignment_recall": 0.0,
+        "yake_vs_gold_precision": null,
+        "yake_vs_gold_recall": null
+      }
+    }
+  ]
+}

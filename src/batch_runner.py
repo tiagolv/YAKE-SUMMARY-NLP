@@ -5,7 +5,7 @@ parameter combinations and generates a consolidated results report.
 
 Usage:
     python -m src.batch_runner --config config.yaml
-    python -m src.batch_runner --config config.yaml --output outputs/batch_results.json
+    python -m src.batch_runner --config config.yaml --docs-pattern "yake_demo_*" --output outputs/batch_results.json
 """
 
 from __future__ import annotations
@@ -25,19 +25,22 @@ from .preprocessor import normalize_text, truncate_text
 from .prompt_builder import PromptConfig, build_prompt
 
 
-# Parameter grid for systematic experimentation
+# Parameter grid for systematic experimentation (4×4×3 = 48 combos)
 PARAM_GRID = {
-    "top_k": [5, 10, 15, 20],
-    "max_ngram_size": [1, 2, 3],
-    "temperature": [0.1, 0.3, 0.7],
+    "top_k": [10, 20],
+    "max_ngram_size": [2, 3, 4, 5],      # agora até 5
+    "temperature": [0.2, 0.5, 0.8],
 }
 
 
-def collect_documents(samples_dir: Path) -> list[Path]:
-    """Collect all .txt files from the samples directory."""
-    docs = sorted(samples_dir.glob("*.txt"))
+def collect_documents(samples_dir: Path, pattern: str | None = None) -> list[Path]:
+    """Collect .txt files from samples directory, optionally filtering by glob pattern."""
+    if pattern:
+        docs = sorted(samples_dir.glob(pattern))
+    else:
+        docs = sorted(samples_dir.glob("*.txt"))
     if not docs:
-        raise FileNotFoundError(f"No .txt files found in {samples_dir}")
+        raise FileNotFoundError(f"No .txt files found in {samples_dir} with pattern {pattern}")
     return docs
 
 
@@ -80,12 +83,13 @@ def run_single_experiment(
                 gold_keywords = item.get("gold_keywords", [])
                 break
 
-    # Evaluate
+    # Evaluate with source_text for compression_ratio
     metrics = evaluate_metrics(
         summary=summary,
         source_keywords=keywords,
         extractor=extractor,
         gold_keywords=gold_keywords,
+        source_text=clean_text,          # <-- adicionado
     )
 
     return {
@@ -99,6 +103,7 @@ def run_single_experiment(
         "keywords": keywords,
         "summary": summary,
         "metrics": {
+            "compression_ratio": metrics.get("compression_ratio"),
             "coverage": metrics["keyword_coverage"]["coverage"],
             "alignment_precision": metrics["summary_alignment"]["precision"],
             "alignment_recall": metrics["summary_alignment"]["recall"],
@@ -115,19 +120,20 @@ def run_single_experiment(
 def generate_markdown_table(results: list[dict]) -> str:
     """Generate a markdown table from batch results."""
     header = (
-        "| Document | top_k | n-gram | Temp | Keywords | Coverage | "
+        "| Document | top_k | n-gram | Temp | Keywords | Compression | Coverage | "
         "Align Prec | Align Recall | Gold Prec | Gold Recall |\n"
-        "|---|---|---|---|---|---|---|---|---|---|\n"
+        "|---|---|---|---|---|---|---|---|---|---|---|\n"
     )
     rows = []
     for r in results:
         p = r["params"]
         m = r["metrics"]
+        comp = f'{m["compression_ratio"]:.3f}' if m["compression_ratio"] is not None else "—"
         gp = f'{m["yake_vs_gold_precision"]:.3f}' if m["yake_vs_gold_precision"] is not None else "—"
         gr = f'{m["yake_vs_gold_recall"]:.3f}' if m["yake_vs_gold_recall"] is not None else "—"
         row = (
             f'| {r["document"][:25]} | {p["top_k"]} | {p["max_ngram_size"]} | '
-            f'{p["temperature"]} | {r["num_keywords"]} | '
+            f'{p["temperature"]} | {r["num_keywords"]} | {comp} | '
             f'{m["coverage"]:.3f} | {m["alignment_precision"]:.3f} | '
             f'{m["alignment_recall"]:.3f} | {gp} | {gr} |'
         )
@@ -142,14 +148,22 @@ def main() -> None:
     parser.add_argument("--gold", default="data/eval/inspec_gold.json", help="Gold keywords JSON")
     parser.add_argument("--output", default="outputs/batch_results.json", help="Output JSON path")
     parser.add_argument(
+        "--docs-pattern",
+        default=None,
+        help="Glob pattern to filter documents (e.g., 'yake_demo_*')",
+    )
+    parser.add_argument(
         "--quick",
         action="store_true",
         help="Quick mode: only test 2 documents with reduced grid",
     )
+    parser.add_argument("--max-docs", type=int, default=0, help="Limit number of documents (0=all)")
     args = parser.parse_args()
 
     base_config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
-    documents = collect_documents(Path(args.samples_dir))
+    documents = collect_documents(Path(args.samples_dir), args.docs_pattern)
+    if args.max_docs > 0:
+        documents = documents[:args.max_docs]
     gold_path = Path(args.gold) if args.gold else None
 
     # In quick mode, reduce the grid

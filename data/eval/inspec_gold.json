@@ -152,6 +152,162 @@
         "factual consistency",
         "encoder-decoder"
       ]
+    },
+    {
+      "id": "yake_demo_sample1",
+      "gold_keywords": [
+        "keyword extraction",
+        "text mining",
+        "unsupervised",
+        "statistical features",
+        "document summarization"
+      ]
+    },
+    {
+      "id": "yake_demo_sample2",
+      "gold_keywords": [
+        "information retrieval",
+        "keyphrase extraction",
+        "TF-IDF",
+        "graph-based ranking",
+        "TextRank"
+      ]
+    },
+    {
+      "id": "yake_demo_sample3",
+      "gold_keywords": [
+        "natural language processing",
+        "machine learning",
+        "feature selection",
+        "corpus statistics",
+        "YAKE algorithm"
+      ]
+    },
+    {
+      "id": "yake_demo_sample4",
+      "gold_keywords": [
+        "semantic similarity",
+        "word embeddings",
+        "document clustering",
+        "topic modeling",
+        "LDA"
+      ]
+    },
+    {
+      "id": "yake_demo_sample5",
+      "gold_keywords": [
+        "multilingual processing",
+        "language detection",
+        "stopword lists",
+        "cross-lingual IR",
+        "transliteration"
+      ]
+    },
+    {
+      "id": "yake_demo_sample6",
+      "gold_keywords": [
+        "text summarization",
+        "extractive methods",
+        "sentence scoring",
+        "ROUGE evaluation",
+        "query-focused"
+      ]
+    },
+    {
+      "id": "yake_demo_sample7",
+      "gold_keywords": [
+        "social media analytics",
+        "trend detection",
+        "hashtag extraction",
+        "event detection",
+        "sentiment analysis"
+      ]
+    },
+    {
+      "id": "yake_demo_sample8",
+      "gold_keywords": [
+        "biomedical text mining",
+        "gene name recognition",
+        "protein interactions",
+        "pubmed abstracts",
+        "MeSH terms"
+      ]
+    },
+    {
+      "id": "yake_demo_sample9",
+      "gold_keywords": [
+        "legal document processing",
+        "statute extraction",
+        "case law summarization",
+        "NER for law",
+        "citation analysis"
+      ]
+    },
+    {
+      "id": "yake_demo_sample10",
+      "gold_keywords": [
+        "news summarization",
+        "event extraction",
+        "temporal ranking",
+        "named entity linking",
+        "fact checking"
+      ]
+    },
+    {
+      "id": "Sample1",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample2",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample3",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample4",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample5",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample6",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample7",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample8",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample9",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample10",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample11",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample12",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample13",
+      "gold_keywords": []
+    },
+    {
+      "id": "Sample14",
+      "gold_keywords": []
     }
   ]
 }

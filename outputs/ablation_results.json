@@ -1,0 +1,97 @@
+{
+  "experiment": "ablation_study",
+  "modes": [
+    "full",
+    "no_keywords",
+    "keywords_only"
+  ],
+  "total_runs": 3,
+  "successful": 3,
+  "timestamp": "2026-06-13T07:14:28.020093Z",
+  "results": [
+    {
+      "document": "Sample1",
+      "mode": "full",
+      "keywords": [
+        "Google",
+        "Kaggle",
+        "CEO Anthony Goldbloom",
+        "data science",
+        "acquiring data science",
+        "Google Cloud Platform",
+        "data",
+        "San Francisco",
+        "Anthony Goldbloom declined",
+        "science",
+        "science community Kaggle",
+        "machine learning"
+      ],
+      "summary": "Google is acquiring data science community platform Kaggle, a service known for hosting data science and machine learning competitions. The acquisition, which could be officially announced at Google's Cloud Next conference in San Francisco this week, has been declined to be confirmed by both parties involved. Kaggle, founded by Anthony Goldbloom and Ben Hamner in 2010, boasts a community of about half a million data scientists. The service is expected to continue operating under its current name, with Google likely benefiting from increased mindshare within the data science community due to the acquisition. Kaggle has previously collaborated with Google on a $100,000 machine learning competition and has developed tools for hosting competitions and 'kernels' (source code for analyzing data sets). The future of Kaggle's job board is unclear following the acquisition. Since its launch in 2010, Kaggle has raised around $12.5 million from investors including Index Ventures, SV Angel, Max Levchin, Naval Ravikant, Google chief economist Hal Varian, Khosla Ventures, and Yuri Milner.",
+      "summary_length": 163,
+      "metrics": {
+        "compression_ratio": 0.555858310626703,
+        "coverage": 0.6666666666666666,
+        "found_keywords": 8,
+        "missing_keywords": 4,
+        "alignment_precision": 0.5,
+        "alignment_recall": 0.5
+      }
+    },
+    {
+      "document": "Sample1",
+      "mode": "no_keywords",
+      "keywords": [
+        "Google",
+        "Kaggle",
+        "CEO Anthony Goldbloom",
+        "data science",
+        "acquiring data science",
+        "Google Cloud Platform",
+        "data",
+        "San Francisco",
+        "Anthony Goldbloom declined",
+        "science",
+        "science community Kaggle",
+        "machine learning"
+      ],
+      "summary": "Google is reportedly acquiring data science community platform Kaggle, known for hosting data science and machine learning competitions. The acquisition details are still vague, but an official announcement could be made during Google's Cloud Next conference this week. Kaggle, founded in 2010 by Anthony Goldbloom and Ben Hamner, has about half a million data scientists on its platform and is considered the de facto home for running such competitions. The acquisition would give Google increased mindshare within the data science community, building upon existing projects like Tensorflow. Kaggle has a history with Google, having recently teamed up to host a $100,000 machine learning competition around classifying YouTube videos. It's expected that Kaggle will continue operating under its current name post-acquisition, though the fate of its job board is unclear. Kaggle has raised approximately $12.5 million since its launch in 2010 from investors including Index Ventures, SV Angel, Max Levchin, Naval Ravikant, Google chief economist Hal Varian, Khosla Ventures, and Yuri Milner.",
+      "summary_length": 161,
+      "metrics": {
+        "compression_ratio": 0.561307901907357,
+        "coverage": 0.5833333333333334,
+        "found_keywords": 7,
+        "missing_keywords": 5,
+        "alignment_precision": 0.3333333333333333,
+        "alignment_recall": 0.3333333333333333
+      }
+    },
+    {
+      "document": "Sample1",
+      "mode": "keywords_only",
+      "keywords": [
+        "Google",
+        "Kaggle",
+        "CEO Anthony Goldbloom",
+        "data science",
+        "acquiring data science",
+        "Google Cloud Platform",
+        "data",
+        "San Francisco",
+        "Anthony Goldbloom declined",
+        "science",
+        "science community Kaggle",
+        "machine learning"
+      ],
+      "summary": "Summary: Google has acquired Kaggle, a leading platform for data science competitions and collaboration in the machine learning field. Kaggle's CEO, Anthony Goldbloom, will continue to lead the company, but has declined to disclose specific details about the acquisition. The acquisition aims to strengthen Google's position in the data science community and leverage Kaggle's resources for improving its cloud-based services, particularly Google Cloud Platform. This move is expected to foster advancements in machine learning within the broader science community, based in San Francisco.",
+      "summary_length": 83,
+      "metrics": {
+        "compression_ratio": 0.773841961852861,
+        "coverage": 0.75,
+        "found_keywords": 9,
+        "missing_keywords": 3,
+        "alignment_precision": 0.16666666666666666,
+        "alignment_recall": 0.16666666666666666
+      }
+    }
+  ]
+}

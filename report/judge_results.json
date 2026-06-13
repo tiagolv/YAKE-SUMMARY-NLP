@@ -1,0 +1,218 @@
+[
+  {
+    "document": "Sample2",
+    "mode": "full",
+    "judge": {
+      "fidelity": {
+        "score": 5.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 5.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 3.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 3.0,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 5,\n    \"justification\": \"The summary accurately reflects the facts presented in the original document, such as GitLab acquiring Gitter and open-sourcing its code, the existence of Gitter chat rooms in some GitLab repositories, and the launch of a new feature called Topics.\"\n  },\n  \"coverage\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary covers most key information from the original document, including the acquisition, open-sourcing of Gitter code, the existence of Gitter chat rooms in GitLab repositories, and the new Topics feature. However, it does not mention some details like the terms of the deal or the funding round announced by GitLab.\"\n  },\n  \"coherence\": {\n    \"score\": 5,\n    \"justification\": \"The summary is well-structured, logical, and easy to read. It presents the information in a clear and concise manner, making it simple for readers to understand the main points.\"\n  },\n  \"keyword_relevance\": {"
+    }
+  },
+  {
+    "document": "Sample2",
+    "mode": "no_keywords",
+    "judge": {
+      "fidelity": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 4.75,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 4.75,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 3.0,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary accurately reflects the key facts from the original document such as the acquisition of Gitter by GitLab, the open-sourcing of Gitter's code, and the launch of Topics feature. However, it slightly simplifies some details like the number of employees joining GitLab.\"\n  },\n  \"coverage\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary covers all the essential points from the original document including the acquisition, open-sourcing, and new feature launch. It also mentions the history of Gitter and its user base.\"\n  },\n  \"coherence\": {\n    \"score\": 4.75,\n    \"justification\": \"The summary is well-structured and easy to read with a logical flow. The information is presented in a clear and concise manner.\"\n  },\n  \"keyword_relevance\": {\n    \"score\": 4.75,\n    \"justification\": \"All the provided keywords are directly relevant to the summary and are used"
+    }
+  },
+  {
+    "document": "Sample2",
+    "mode": "keywords_only",
+    "judge": {
+      "fidelity": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 4.7,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 5.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 4.625,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary accurately reflects the key points of the original document, such as GitLab acquiring Gitter and integrating its chat functionality into their platform.\"\n  },\n  \"coverage\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary effectively covers the main aspects of the original document, including the acquisition, integration of Gitter's chat rooms, and the purpose of improving collaboration among developers.\"\n  },\n  \"coherence\": {\n    \"score\": 4.7,\n    \"justification\": \"The summary is well-structured, logical, and easy to read, with a clear focus on the main points and a concise writing style.\"\n  },\n  \"keyword_relevance\": {\n    \"score\": 5.0,\n    \"justification\": \"All provided keywords are directly relevant to the summary and are used appropriately throughout the text.\"\n  },\n  \"overall\": 4.625,\n  \"final_verdict\": \"The summary is an excellent representation of"
+    }
+  },
+  {
+    "document": "Sample3",
+    "mode": "full",
+    "judge": {
+      "fidelity": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 4.7,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 4.6,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary accurately reflects the original document's information about Genius laying off staff and shifting focus towards video content.\"\n  },\n  \"coverage\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary effectively covers the key points of the original document, including the company's transformation, the layoffs, and the focus on video content.\"\n  },\n  \"coherence\": {\n    \"score\": 4.7,\n    \"justification\": \"The summary is well-structured, logical, and easy to read, with a clear progression from the initial goal of Genius to its current focus on video content.\"\n  },\n  \"keyword_relevance\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary incorporates several provided keywords such as 'Genius', 'company', 'quietly laid off', and 'Tom Lehman' in a relevant context.\"\n  },\n  \"overall\": 4.6,\n  \"final_verdict\":"
+    }
+  },
+  {
+    "document": "Sample3",
+    "mode": "no_keywords",
+    "judge": {
+      "fidelity": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 4.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 3.0,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary accurately reflects the key points about Genius laying off a quarter of its staff and shifting focus to become a more video-centric media company, as stated in the original document.\"\n  },\n  \"coverage\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary effectively covers the main points about Genius' changes, including the layoffs, the focus on videos, and the challenges in attracting contributors and audience outside the music world.\"\n  },\n  \"coherence\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary is well-structured, logical, and easy to read, with a clear progression of ideas that aligns with the original document.\"\n  },\n  \"keyword_relevance\": {\n    \"score\": 4.0,\n    \"justification\": \"While the summary incorporates most of the provided keywords, it does not explicitly mention 'CAPTURING KNOWLEDGE' as stated in the original document.\"\n  },\n  \""
+    }
+  },
+  {
+    "document": "Sample3",
+    "mode": "keywords_only",
+    "judge": {
+      "fidelity": {
+        "score": 4.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 3.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 4.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 3.0,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 4,\n    \"justification\": \"The summary accurately captures the main point of the original document which is Genius laying off a quarter of its staff and shifting focus from annotation to video content.\"\n  },\n  \"coverage\": {\n    \"score\": 3.5,\n    \"justification\": \"While the summary covers the key event of Genius laying off staff and changing focus, it does not fully capture the details about the reasons for the changes or the specifics of the new focus on video and Spotify partnership.\"\n  },\n  \"coherence\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary is well-structured and easy to read, with a clear and concise narrative that accurately reflects the original document.\"\n  },\n  \"keyword_relevance\": {\n    \"score\": 4,\n    \"justification\": \"The summary incorporates several of the provided keywords, such as Genius, company, Lehman, quietly laid, video, and CAPTURING KNOWLEDGE.\"\n  },\n  \"over"
+    }
+  },
+  {
+    "document": "Sample4",
+    "mode": "full",
+    "judge": {
+      "fidelity": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 4.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 3.0,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary accurately captures the key facts about the Brazilian national team training with only 14 players on Monday for matches against Uruguay and Paraguay in the South American qualifiers for the 2018 World Cup in Russia.\"\n  },\n  \"coverage\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary covers all the essential information from the original document, including the number of players training, the purpose of the training sessions, and the teams they will be playing against.\"\n  },\n  \"coherence\": {\n    \"score\": 4.0,\n    \"justification\": \"While the summary is factually accurate and covers all necessary information, it could benefit from better organization and structure to improve readability.\"\n  },\n  \"keyword_relevance\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary effectively incorporates and respects the provided keywords, including 'sele\u00e7\u00e3o brasileira treinar\u00e1', 'Copa da R\u00fassia',"
+    }
+  },
+  {
+    "document": "Sample4",
+    "mode": "no_keywords",
+    "judge": {
+      "fidelity": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 4.5,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 4.75,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 4.25,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 3.0,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary accurately captures the key facts about the Brazilian national soccer team training with only 14 players on Monday ahead of matches against Uruguay and Paraguay for South American qualifiers for the 2018 World Cup in Russia.\"\n  },\n  \"coverage\": {\n    \"score\": 4.5,\n    \"justification\": \"The summary covers all the essential information about the training session, the players attending, and Renato Augusto's comments on the Uruguay match.\"\n  },\n  \"coherence\": {\n    \"score\": 4.75,\n    \"justification\": \"The summary is well-structured, logical, and easy to read with a clear progression of thoughts.\"\n  },\n  \"keyword_relevance\": {\n    \"score\": 4.25,\n    \"justification\": \"While most of the provided keywords are present in the summary, some important ones like 'sele\u00e7\u00e3o brasileira visando', 'Copa da R\u00fassia', and 'S"
+    }
+  },
+  {
+    "document": "Sample4",
+    "mode": "keywords_only",
+    "judge": {
+      "fidelity": {
+        "score": 4.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coverage": {
+        "score": 3.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "coherence": {
+        "score": 4.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "keyword_relevance": {
+        "score": 3.0,
+        "justification": "Extracted from raw response (auto)"
+      },
+      "overall": 3.0,
+      "raw_response": "{\n  \"fidelity\": {\n    \"score\": 4,\n    \"justification\": \"The summary accurately captures the main idea that the Brazilian national soccer team will train on Monday to prepare for the upcoming Copa da Russia. However, it slightly deviates from the original document by not mentioning the specific opponents (Uruguai and Paraguai) or the dates of the matches.\"\n  },\n  \"coverage\": {\n    \"score\": 3,\n    \"justification\": \"The summary provides a general idea about the training session but does not cover all key information such as the number of players participating in the first training, the location of the training, or the challenges faced by the team.\"\n  },\n  \"coherence\": {\n    \"score\": 4,\n    \"justification\": \"The summary is well-structured and easy to read. It presents a logical flow of information, although some details are missing.\"\n  },\n  \"keyword_relevance\": {\n    \"score\": 3,\n    \"justification\": \"While the summary includes several keywords from the original document, it does not fully incorporate all provided keywords such as '"
+    }
+  }
+]

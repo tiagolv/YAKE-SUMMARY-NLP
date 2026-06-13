@@ -55,6 +55,7 @@ def _run_single_mode(
     mode: str,
     keywords: list[str],
     truncated_text: str,
+    source_text: str,                     # <-- para compression_ratio
     prompt_config: Any,
     llm_config: Any,
     extractor: YakeKeywordExtractor,
@@ -70,6 +71,7 @@ def _run_single_mode(
         summary=summary,
         source_keywords=keywords,
         extractor=extractor,
+        source_text=source_text,          # <-- passamos o texto original
     )
     kw_cov = metrics_raw["keyword_coverage"]
     kw_align = metrics_raw["summary_alignment"]
@@ -107,6 +109,7 @@ def _compute_averages(mode_results: list[AblationModeResult]) -> dict[str, Any]:
             "missing_count": len(result.metrics.keyword_coverage.missing),
             "alignment_precision": result.metrics.summary_alignment.precision,
             "alignment_recall": result.metrics.summary_alignment.recall,
+            "compression_ratio": result.metrics.compression_ratio,
             "summary_words": len(result.summary.split()),
         }
     return averages
@@ -121,14 +124,10 @@ def run_ablation(req: AblationRequest) -> AblationResponse:
     yake_config = get_yake_config(req.top_k, req.max_ngram_size)
     extractor = YakeKeywordExtractor(yake_config)
 
-    if req.external_keywords:
-        keywords = req.external_keywords
-        keywords_scored = [(kw, 0.0) for kw in keywords]
-        keyword_source = "external (user-provided)"
-    else:
-        keywords_scored = extractor.extract(clean_text)
-        keywords = [kw for kw, _ in keywords_scored]
-        keyword_source = "YAKE! (local)"
+    # FORÇAR YAKE local, ignorando external_keywords
+    keywords_scored = extractor.extract(clean_text)
+    keywords = [kw for kw, _ in keywords_scored]
+    keyword_source = "YAKE! (local)"
 
     prompt_config = get_prompt_config()
     truncated_text = truncate_text(clean_text, prompt_config.max_text_chars)
@@ -156,6 +155,7 @@ def run_ablation(req: AblationRequest) -> AblationResponse:
                 mode,
                 keywords,
                 truncated_text,
+                clean_text,               # <-- texto fonte para compression
                 prompt_config,
                 llm_config,
                 extractor,

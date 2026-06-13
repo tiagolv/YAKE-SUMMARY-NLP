@@ -232,7 +232,7 @@ def build_interface() -> gr.Blocks:
                 label="Top-K Keywords",
             )
             max_ngram = gr.Slider(
-                minimum=1, maximum=4, value=3, step=1,
+                minimum=1, maximum=5, value=3, step=1,
                 label="Tamanho máx. N-grama",
             )
             temperature = gr.Slider(

@@ -63,7 +63,7 @@ def run_ablation_experiment(
     llm = create_llm_client(llm_config)
     summary = llm.generate(prompt)
 
-    # Load gold keywords if available
+    # Load gold keywords
     gold_keywords = None
     if gold_path and gold_path.exists():
         gold_data = json.loads(gold_path.read_text(encoding="utf-8"))
@@ -77,7 +77,7 @@ def run_ablation_experiment(
         source_keywords=keywords,
         extractor=extractor,
         gold_keywords=gold_keywords,
-        source_text=clean_text,
+        source_text=clean_text,          # <-- adicionado
     )
 
     return {
@@ -107,10 +107,9 @@ def generate_ablation_table(results: list[dict]) -> str:
     rows = []
     for r in results:
         m = r["metrics"]
-        comp = f'{m["compression_ratio"]:.3f}' if m["compression_ratio"] is not None else "—"
         row = (
             f'| {r["document"][:25]} | {r["mode"]} | {r["summary_length"]} | '
-            f'{comp} | {m["coverage"]:.3f} | '
+            f'{m["compression_ratio"]:.3f} | {m["coverage"]:.3f} | '
             f'{m["found_keywords"]} | {m["missing_keywords"]} | '
             f'{m["alignment_precision"]:.3f} | {m["alignment_recall"]:.3f} |'
         )
@@ -182,7 +181,7 @@ def main() -> None:
         for mode in ABLATION_MODES:
             mode_results = [r for r in successful if r["mode"] == mode]
             if mode_results:
-                avg_comp = sum(r["metrics"]["compression_ratio"] or 0 for r in mode_results) / len(mode_results)
+                avg_comp = sum(r["metrics"]["compression_ratio"] for r in mode_results) / len(mode_results)
                 avg_cov = sum(r["metrics"]["coverage"] for r in mode_results) / len(mode_results)
                 avg_prec = sum(r["metrics"]["alignment_precision"] for r in mode_results) / len(mode_results)
                 avg_rec = sum(r["metrics"]["alignment_recall"] for r in mode_results) / len(mode_results)

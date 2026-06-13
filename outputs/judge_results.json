@@ -1,0 +1,74 @@
+[
+  {
+    "document": "Sample1",
+    "mode": "full",
+    "judge": {
+      "fidelity": {
+        "score": 5,
+        "justification": "The summary does not introduce any facts not present in the document."
+      },
+      "coverage": {
+        "score": 5,
+        "justification": "The key concepts from the document are well-represented in the summary."
+      },
+      "coherence": {
+        "score": 5,
+        "justification": "The summary is fluent, well-structured, and internally consistent."
+      },
+      "keyword_relevance": {
+        "score": 5,
+        "justification": "All provided keywords are genuinely central to the document's topic."
+      },
+      "overall": 5.0,
+      "raw_response": " {\n  \"fidelity\": {\"score\": 5, \"justification\": \"The summary does not introduce any facts not present in the document.\"},\n  \"coverage\": {\"score\": 5, \"justification\": \"The key concepts from the document are well-represented in the summary.\"},\n  \"coherence\": {\"score\": 5, \"justification\": \"The summary is fluent, well-structured, and internally consistent.\"},\n  \"keyword_relevance\": {\"score\": 5, \"justification\": \"All provided keywords are genuinely central to the document's topic.\"}\n}"
+    }
+  },
+  {
+    "document": "Sample1",
+    "mode": "no_keywords",
+    "judge": {
+      "fidelity": {
+        "score": 5,
+        "justification": "The summary does not introduce any facts not present in the document."
+      },
+      "coverage": {
+        "score": 5,
+        "justification": "The key concepts from the document are well-represented in the summary."
+      },
+      "coherence": {
+        "score": 5,
+        "justification": "The summary is fluent, well-structured, and internally consistent."
+      },
+      "keyword_relevance": {
+        "score": 5,
+        "justification": "All provided keywords are genuinely central to the document's topic."
+      },
+      "overall": 5.0,
+      "raw_response": " {\n  \"fidelity\": {\"score\": 5, \"justification\": \"The summary does not introduce any facts not present in the document.\"},\n  \"coverage\": {\"score\": 5, \"justification\": \"The key concepts from the document are well-represented in the summary.\"},\n  \"coherence\": {\"score\": 5, \"justification\": \"The summary is fluent, well-structured, and internally consistent.\"},\n  \"keyword_relevance\": {\"score\": 5, \"justification\": \"All provided keywords are genuinely central to the document's topic.\"}\n}"
+    }
+  },
+  {
+    "document": "Sample1",
+    "mode": "keywords_only",
+    "judge": {
+      "fidelity": {
+        "score": 5,
+        "justification": "The summary does not introduce any facts not present in the document."
+      },
+      "coverage": {
+        "score": 4,
+        "justification": "While the summary covers the main points of the document, it omits some details such as the history between Google and Kaggle, the number of competitors Kaggle has, and the specifics about what Google will do with Kaggle's job board."
+      },
+      "coherence": {
+        "score": 5,
+        "justification": "The summary is fluent, well-structured, and internally consistent."
+      },
+      "keyword_relevance": {
+        "score": 5,
+        "justification": "All provided keywords are genuinely central to the document's topic."
+      },
+      "overall": 4.75,
+      "raw_response": " {\n  \"fidelity\": {\"score\": 5, \"justification\": \"The summary does not introduce any facts not present in the document.\"},\n  \"coverage\": {\"score\": 4, \"justification\": \"While the summary covers the main points of the document, it omits some details such as the history between Google and Kaggle, the number of competitors Kaggle has, and the specifics about what Google will do with Kaggle's job board.\"},\n  \"coherence\": {\"score\": 5, \"justification\": \"The summary is fluent, well-structured, and internally consistent.\"},\n  \"keyword_relevance\": {\"score\": 5, \"justification\": \"All provided keywords are genuinely central to the document's topic.\"}\n}"
+    }
+  }
+]

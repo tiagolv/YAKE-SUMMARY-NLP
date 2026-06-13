@@ -273,7 +273,7 @@ export default function App() {
               key={activeRunId}
               document={lastParams?.text}
               summary={result?.summary}
-              keywords={extractKeywordNames(result?.keywords)}
+              keywords={extractKeywordNames(result?.keywords)}  // esta função deve retornar array
               savedResult={activeRun?.judgeResult}
               onResultSave={(data) => updateActiveRun({ judgeResult: data })}
             />}

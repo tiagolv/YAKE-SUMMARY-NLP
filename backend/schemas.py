@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 class SummarizeRequest(BaseModel):
     text: str = Field(..., min_length=1, description="Input document text")
     top_k: int = Field(12, ge=3, le=30)
-    max_ngram_size: int = Field(3, ge=1, le=4)
+    max_ngram_size: int = Field(3, ge=1, le=5)
     temperature: float = Field(0.2, ge=0.0, le=1.0)
     prompt_template: str = Field("zero_shot")
     ablation_mode: str = Field("full")
