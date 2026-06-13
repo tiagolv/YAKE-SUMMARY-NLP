@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_federated_learning",
+  "keywords": [
+    "federated learning",
+    "differential privacy",
+    "model training",
+    "communication efficiency",
+    "secure aggregation",
+    "data distributions",
+    "federated averaging",
+    "privacy guarantees"
+  ]
+}

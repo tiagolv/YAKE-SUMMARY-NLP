@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_medical_imaging",
+  "keywords": [
+    "medical image analysis",
+    "convolutional neural networks",
+    "deep learning",
+    "image segmentation",
+    "transfer learning",
+    "diabetic retinopathy",
+    "data augmentation",
+    "clinical practice"
+  ]
+}

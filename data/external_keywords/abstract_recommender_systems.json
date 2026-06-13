@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_recommender_systems",
+  "keywords": [
+    "recommender systems",
+    "collaborative filtering",
+    "matrix factorization",
+    "graph neural networks",
+    "sequential recommendation",
+    "deep learning models",
+    "cold-start problems",
+    "content-based approaches"
+  ]
+}

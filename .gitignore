@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Ambiente virtual (nao submeter)
+.venv/
+venv/
+env/
+
+# Recursos linguisticos / modelos locais (nao submeter — ver enunciado)
+models/*.gguf
+models/*.bin
+models/*.safetensors
+
+# Artefactos de teste/smoke
+outputs/_*.json
+
+# LaTeX
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.synctex.gz
+
+# Sistema
+.DS_Store
+Thumbs.db

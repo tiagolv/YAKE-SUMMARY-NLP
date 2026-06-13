@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "paper_mhealth",
+  "keywords": [
+    "mobile health",
+    "wearable sensors",
+    "activity recognition",
+    "accelerometer-based activity",
+    "lightweight models",
+    "energy constraints",
+    "clinical adoption",
+    "long-term monitoring"
+  ]
+}

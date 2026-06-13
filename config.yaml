@@ -1,0 +1,15 @@
+yake:
+  language: "en"
+  max_ngram_size: 3
+  deduplication_threshold: 0.9
+  top_k: 12
+
+llm:
+  backend: "ollama"  # llama_cpp or ollama
+  ollama_model: "mistral"
+  ollama_host: "http://localhost:11434"
+
+prompt:
+  system: "You are a concise scientific summarizer."
+  instruction: "Given these keywords extracted from the document, write a concise summary that covers the key concepts."
+  max_text_chars: 3000

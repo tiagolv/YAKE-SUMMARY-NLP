@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_autonomous_vehicles",
+  "keywords": [
+    "autonomous vehicles",
+    "object detection",
+    "sensor fusion",
+    "LiDAR point cloud",
+    "three-dimensional object",
+    "domain adaptation",
+    "semantic information",
+    "motion planning"
+  ]
+}

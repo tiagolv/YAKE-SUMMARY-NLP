@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_climate_ml",
+  "keywords": [
+    "machine learning techniques",
+    "climate science",
+    "convolutional neural networks",
+    "physics-informed neural networks",
+    "remote sensing data",
+    "weather prediction",
+    "transfer learning approaches",
+    "climate projections"
+  ]
+}

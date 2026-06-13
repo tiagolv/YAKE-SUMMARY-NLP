@@ -1,0 +1,157 @@
+{
+  "dataset": "inspec",
+  "documents": [
+    {
+      "id": "paper_mhealth",
+      "gold_keywords": [
+        "mobile health",
+        "wearable sensors",
+        "activity recognition",
+        "privacy",
+        "energy constraints"
+      ]
+    },
+    {
+      "id": "paper_yake",
+      "gold_keywords": [
+        "keyword extraction",
+        "yake",
+        "statistical ranking",
+        "scientific abstracts"
+      ]
+    },
+    {
+      "id": "abstract_nlp_transformers",
+      "gold_keywords": [
+        "transformer",
+        "self-attention",
+        "pre-trained language models",
+        "transfer learning",
+        "model compression",
+        "BERT",
+        "natural language processing"
+      ]
+    },
+    {
+      "id": "abstract_climate_ml",
+      "gold_keywords": [
+        "climate science",
+        "weather prediction",
+        "convolutional neural networks",
+        "remote sensing",
+        "physics-informed neural networks",
+        "downscaling"
+      ]
+    },
+    {
+      "id": "abstract_cybersecurity",
+      "gold_keywords": [
+        "intrusion detection",
+        "anomaly detection",
+        "deep learning",
+        "adversarial machine learning",
+        "federated learning",
+        "Internet of Things"
+      ]
+    },
+    {
+      "id": "abstract_medical_imaging",
+      "gold_keywords": [
+        "medical image analysis",
+        "convolutional neural networks",
+        "image segmentation",
+        "U-Net",
+        "transfer learning",
+        "diabetic retinopathy"
+      ]
+    },
+    {
+      "id": "abstract_renewable_energy",
+      "gold_keywords": [
+        "renewable energy",
+        "solar power",
+        "wind power",
+        "energy forecasting",
+        "deep neural networks",
+        "probabilistic forecasting"
+      ]
+    },
+    {
+      "id": "abstract_reinforcement_learning",
+      "gold_keywords": [
+        "reinforcement learning",
+        "robotic manipulation",
+        "sim-to-real transfer",
+        "policy optimization",
+        "multi-agent",
+        "safe exploration"
+      ]
+    },
+    {
+      "id": "abstract_recommender_systems",
+      "gold_keywords": [
+        "recommender systems",
+        "collaborative filtering",
+        "matrix factorization",
+        "graph neural networks",
+        "cold-start",
+        "sequential recommendation"
+      ]
+    },
+    {
+      "id": "abstract_autonomous_vehicles",
+      "gold_keywords": [
+        "autonomous vehicles",
+        "LiDAR",
+        "sensor fusion",
+        "object detection",
+        "point cloud",
+        "perception systems"
+      ]
+    },
+    {
+      "id": "abstract_sentiment_analysis",
+      "gold_keywords": [
+        "sentiment analysis",
+        "social media",
+        "aspect-based sentiment",
+        "pre-trained language models",
+        "multilingual",
+        "opinion mining"
+      ]
+    },
+    {
+      "id": "abstract_graph_neural_networks",
+      "gold_keywords": [
+        "graph neural networks",
+        "message passing",
+        "graph attention",
+        "molecular property prediction",
+        "knowledge graph",
+        "over-smoothing"
+      ]
+    },
+    {
+      "id": "abstract_federated_learning",
+      "gold_keywords": [
+        "federated learning",
+        "differential privacy",
+        "data heterogeneity",
+        "secure aggregation",
+        "communication efficiency",
+        "Byzantine robustness"
+      ]
+    },
+    {
+      "id": "abstract_text_summarization",
+      "gold_keywords": [
+        "text summarization",
+        "extractive summarization",
+        "abstractive summarization",
+        "ROUGE",
+        "factual consistency",
+        "encoder-decoder"
+      ]
+    }
+  ]
+}

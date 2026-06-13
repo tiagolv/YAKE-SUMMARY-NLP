@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_reinforcement_learning",
+  "keywords": [
+    "reinforcement learning",
+    "robotic manipulation",
+    "proximal policy optimization",
+    "sim-to-real transfer",
+    "domain randomization",
+    "multi-agent reinforcement",
+    "safe exploration",
+    "curriculum learning"
+  ]
+}

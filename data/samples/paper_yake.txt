@@ -1,0 +1,1 @@
+YAKE! is a statistical keyword extraction method that uses term casing, position, frequency, and context to rank candidates without external knowledge bases. This paper presents the method and compares it with supervised baselines on scientific abstracts and news datasets. Results show competitive performance with low computational cost.

@@ -1,0 +1,84 @@
+{
+  "experiment": "batch_parameter_variation",
+  "total_runs": 2,
+  "successful": 2,
+  "param_grid": {
+    "top_k": [
+      5,
+      10,
+      15,
+      20
+    ],
+    "max_ngram_size": [
+      1,
+      2,
+      3
+    ],
+    "temperature": [
+      0.1,
+      0.3,
+      0.7
+    ]
+  },
+  "timestamp": "2026-06-12T20:33:18.225345Z",
+  "results": [
+    {
+      "document": "abstract_autonomous_vehicles",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "complex driving environments",
+        "reliably detect",
+        "systems for autonomous",
+        "autonomous vehicles",
+        "vehicles must reliably",
+        "environments under varying",
+        "track objects",
+        "Perception systems",
+        "varying weather",
+        "lighting conditions"
+      ],
+      "summary": "Summary: Perception systems for autonomous vehicles aim to reliably detect, classify, and track objects in complex driving environments under varying weather and lighting conditions. This is achieved through a combination of LiDAR point cloud processing with architectures like PointNet and VoxelNet, camera-based methods using monocular and stereo vision, and sensor fusion approaches that combine data from multiple sensors (LiDAR, camera, radar) to improve detection robustness. Bird's-eye view representations are used for multi-sensor fusion, while temporal modeling helps with object tracking and trajectory prediction. Occupancy networks provide a general representation of the driving scene. Challenges include adverse weather conditions that degrade sensor performance, leading to research into domain adaptation and robust perception algorithms. Due to the high cost of annotating three-dimensional point clouds, there's interest in self-supervised and weakly-supervised learning methods.",
+      "metrics": {
+        "coverage": 0.9,
+        "alignment_precision": 0.7,
+        "alignment_recall": 0.7,
+        "yake_vs_gold_precision": 0.2,
+        "yake_vs_gold_recall": 0.3333333333333333
+      }
+    },
+    {
+      "document": "abstract_climate_ml",
+      "params": {
+        "top_k": 10,
+        "max_ngram_size": 3,
+        "temperature": 0.2
+      },
+      "num_keywords": 10,
+      "keywords": [
+        "modeling complex Earth",
+        "detecting extreme events",
+        "Earth system processes",
+        "complex Earth system",
+        "complex Earth",
+        "improving weather prediction",
+        "detecting extreme",
+        "extreme events",
+        "Earth system",
+        "techniques are increasingly"
+      ],
+      "summary": "The summary focuses on the application of machine learning techniques in climate science for enhancing weather prediction, detecting extreme events, and modeling complex Earth system processes. Key methods include convolutional neural networks, recurrent architectures, ensemble methods, physics-informed neural networks, remote sensing data utilization, transfer learning, and interpretable machine learning. These approaches aim to improve predictions by downscaling climate projections, capturing temporal dynamics, providing uncertainty quantification, integrating physical constraints, monitoring environmental changes, generalizing to new data, and revealing physically meaningful patterns. However, challenges persist in handling non-stationarity, accounting for feedback loops, and ensuring reliability under novel climate conditions.",
+      "metrics": {
+        "coverage": 0.8,
+        "alignment_precision": 0.8,
+        "alignment_recall": 0.8,
+        "yake_vs_gold_precision": 0.0,
+        "yake_vs_gold_recall": 0.0
+      }
+    }
+  ]
+}

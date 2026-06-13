@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_sentiment_analysis",
+  "keywords": [
+    "sentiment analysis",
+    "social media",
+    "pre-trained language models",
+    "aspect-based sentiment",
+    "multilingual sentiment",
+    "domain adaptation",
+    "multimodal sentiment",
+    "user-generated content"
+  ]
+}

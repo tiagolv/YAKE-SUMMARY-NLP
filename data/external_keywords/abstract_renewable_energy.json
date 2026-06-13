@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_renewable_energy",
+  "keywords": [
+    "renewable energy generation",
+    "short-term forecasting",
+    "machine learning approaches",
+    "deep neural networks",
+    "probabilistic forecasting",
+    "energy storage systems",
+    "meteorological variables",
+    "grid stability"
+  ]
+}

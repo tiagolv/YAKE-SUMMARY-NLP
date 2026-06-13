@@ -1,0 +1,18 @@
+# Core pipeline
+yake
+pyyaml
+requests
+
+# Evaluation
+rouge-score
+
+# LLM backends (instalar conforme necessário)
+# llama-cpp-python  # descomenta se usares llama_cpp
+
+# API backend
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.0.0
+
+# Frontend dev (instalado via npm, não pip)
+# vite, react, tailwindcss — ver frontend/package.json

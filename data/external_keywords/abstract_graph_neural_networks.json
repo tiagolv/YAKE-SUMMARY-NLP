@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_graph_neural_networks",
+  "keywords": [
+    "graph neural networks",
+    "message passing",
+    "graph attention networks",
+    "molecular property prediction",
+    "knowledge graph reasoning",
+    "node representations",
+    "drug discovery",
+    "temporal graph"
+  ]
+}

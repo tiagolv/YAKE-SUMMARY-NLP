@@ -1,0 +1,15 @@
+{
+  "source": "YAKE! online demo (https://yake.inesctec.pt/)",
+  "note": "Keywords extracted using the YAKE! online demo with default parameters for comparison with local extraction",
+  "document": "abstract_nlp_transformers",
+  "keywords": [
+    "pre-trained language models",
+    "natural language processing",
+    "self-attention mechanisms",
+    "transfer learning",
+    "model compression techniques",
+    "knowledge distillation",
+    "contextual embeddings",
+    "machine translation"
+  ]
+}
