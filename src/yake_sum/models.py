@@ -23,6 +23,24 @@ class ExtractiveResult:
 
 
 @dataclass
+class AbstractiveResult:
+    summary: str
+    keywords: list[Keyword]
+    prompt_used: str
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class HybridResult:
+    summary: str
+    keywords: list[Keyword]
+    retained_passages: list[str]
+    context_char_count: int
+    prompt_used: str
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
 class SummaryResult:
     text: str
     mode: str
