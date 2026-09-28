@@ -1,0 +1,149 @@
+{
+  "description": "Benchmark dataset with human reference summaries and gold keywords for ROUGE evaluation",
+  "version": "1.0.0",
+  "documents": [
+    {
+      "id": "paper_yake",
+      "title": "YAKE Keyword Extraction",
+      "document": "YAKE! is a statistical keyword extraction method that uses term casing, position, frequency, and context to rank candidates without external knowledge bases. This paper presents the method and compares it with supervised baselines on scientific abstracts and news datasets. Results show competitive performance with low computational cost.",
+      "gold_keywords": [
+        "keyword extraction",
+        "yake",
+        "statistical ranking",
+        "scientific abstracts",
+        "computational cost"
+      ],
+      "reference_summary": "YAKE! is an unsupervised, statistical keyword extraction algorithm that ranks candidates using contextual, frequency, and positional features without external knowledge bases. It demonstrates competitive performance against supervised models at low computational cost."
+    },
+    {
+      "id": "paper_mhealth",
+      "title": "Mobile Health and Activity Recognition",
+      "document": "Mobile health applications rely on wearable sensors for continuous activity recognition and health monitoring. However, privacy concerns, noisy sensor readings, and energy constraints limit practical deployment. We propose a lightweight federated learning framework that trains activity classification models locally on edge devices, preserving data privacy while reducing communication bandwidth by 45%.",
+      "gold_keywords": [
+        "mobile health",
+        "wearable sensors",
+        "activity recognition",
+        "privacy",
+        "energy constraints",
+        "federated learning"
+      ],
+      "reference_summary": "Mobile health monitoring uses wearable sensors for activity recognition but faces privacy and energy challenges. A lightweight federated learning framework trains models on edge devices, safeguarding user privacy and cutting communication bandwidth by 45%."
+    },
+    {
+      "id": "abstract_sentiment_analysis",
+      "title": "Sentiment Analysis in Social Media",
+      "document": "Sentiment analysis of social media text presents unique challenges due to the informal language, abbreviations, emojis, and sarcasm prevalent in user-generated content. Traditional approaches based on lexicon matching and bag-of-words features capture surface-level sentiment cues but fail to model contextual nuances and negation patterns. Pre-trained language models such as BERT and RoBERTa achieve superior performance by learning deep bidirectional representations that encode syntactic and semantic information from large text corpora. Aspect-based sentiment analysis extends the task beyond document-level polarity classification by identifying sentiment toward specific entities or features mentioned in the text, enabling more actionable insights for businesses and policymakers. Multilingual sentiment analysis addresses the need to process content in multiple languages, leveraging cross-lingual transfer learning and multilingual pre-trained models like XLM-RoBERTa. Multimodal sentiment analysis combines textual content with visual and acoustic signals from videos and images, capturing sentiment cues that text alone cannot convey. Domain adaptation remains essential as sentiment expressions vary significantly across product reviews, political discourse, and healthcare discussions. Explainable sentiment analysis methods provide justifications for predictions, highlighting which words or phrases most strongly influence the model output and building user trust in automated systems.",
+      "gold_keywords": [
+        "sentiment analysis",
+        "social media",
+        "language models",
+        "BERT",
+        "aspect-based sentiment analysis",
+        "multimodal sentiment analysis",
+        "domain adaptation",
+        "explainable AI"
+      ],
+      "reference_summary": "Social media sentiment analysis has evolved from traditional lexicon approaches to bidirectional pre-trained transformers like BERT and RoBERTa. Current research emphasizes aspect-based, multilingual, and multimodal methods to capture entity-level polarity and acoustic-visual cues across varied domains while improving model explainability."
+    },
+    {
+      "id": "abstract_nlp_transformers",
+      "title": "Transformer Architecture in NLP",
+      "document": "The transformer architecture has transformed natural language processing by replacing recurrent connections with multi-head self-attention mechanisms. Self-attention enables parallel computation over entire sequences, overcoming the sequential bottleneck of recurrent neural networks. Pre-trained language models like BERT, RoBERTa, and GPT have established state-of-the-art results across benchmarks. Transfer learning through pre-training on large corpora followed by fine-tuning on downstream tasks is standard practice. However, quadratic computational complexity with respect to sequence length limits processing of long documents. Efficient transformer variants, including sparse attention and linear attention, mitigate this constraint. Parameter sharing, knowledge distillation, and quantization compress models for resource-constrained deployment. Instruction tuning and reinforcement learning from human feedback have emerged as key techniques for aligning large language models with user intent.",
+      "gold_keywords": [
+        "transformer",
+        "self-attention",
+        "pre-trained language models",
+        "transfer learning",
+        "BERT",
+        "model compression",
+        "instruction tuning"
+      ],
+      "reference_summary": "Transformers revolutionized NLP through multi-head self-attention, replacing recurrent networks and enabling pre-trained models like BERT and GPT. Current advances focus on overcoming quadratic sequence complexity with efficient attention variants, model compression for edge deployment, and alignment via instruction tuning."
+    },
+    {
+      "id": "abstract_climate_ml",
+      "title": "Machine Learning in Climate Science",
+      "document": "Machine learning offers powerful tools for climate science, accelerating weather prediction and improving climate modeling. Deep learning methods analyze remote sensing data from satellites, detecting deforestation, monitoring sea ice, and tracking extreme weather events. Physics-informed neural networks embed conservation laws into model architectures, ensuring physical consistency in precipitation and temperature predictions. Downscaling techniques use super-resolution models to generate high-resolution regional climate projections from coarse global models. Climate change attribution studies quantify the human influence on extreme weather events through counterfactual simulations. Challenges include data scarcity in historical records, non-stationarity from changing climate baselines, and uncertainty quantification in long-term projections.",
+      "gold_keywords": [
+        "climate science",
+        "weather prediction",
+        "remote sensing",
+        "physics-informed neural networks",
+        "downscaling",
+        "uncertainty quantification"
+      ],
+      "reference_summary": "Machine learning advances climate science by enhancing weather forecasting, satellite remote sensing, and super-resolution downscaling. Physics-informed neural networks enforce physical conservation laws, while attribution studies measure anthropogenic impacts on extreme weather under non-stationary conditions."
+    },
+    {
+      "id": "abstract_cybersecurity",
+      "title": "Deep Learning for Cybersecurity",
+      "document": "Cybersecurity defense increasingly employs deep learning for automated intrusion detection and malware classification. Convolutional and recurrent architectures process network traffic and system call sequences, detecting zero-day vulnerabilities and advanced persistent threats. Adversarial attacks can fool machine learning models through small perturbations, creating security vulnerabilities in automated defenses. Federated learning enables privacy-preserving collaborative threat intelligence across organizations without sharing sensitive logs. Graph neural networks model relationships in attack graphs, tracking lateral movement within compromised enterprise networks. The Internet of Things introduces lightweight detection requirements for resource-constrained smart devices. Explainable cybersecurity models help security analysts understand detection rationales, reducing false alarms.",
+      "gold_keywords": [
+        "intrusion detection",
+        "malware classification",
+        "adversarial machine learning",
+        "federated learning",
+        "graph neural networks",
+        "explainable cybersecurity"
+      ],
+      "reference_summary": "Deep learning automates intrusion and malware detection across networks, but defenses must counter adversarial evasion attacks. Techniques such as federated threat sharing, graph neural networks for lateral movement tracking, and explainable models enhance enterprise and IoT security."
+    },
+    {
+      "id": "abstract_medical_imaging",
+      "title": "Deep Learning in Medical Imaging",
+      "document": "Deep learning has achieved high accuracy in medical image analysis, supporting radiological diagnosis, tumor segmentation, and pathology classification. Convolutional neural networks extract hierarchical spatial representations from MRI, CT scans, and histopathology slides, matching expert radiologist performance on specific screening tasks. Vision transformers model long-range spatial dependencies in high-resolution medical scans, improving lesion boundary detection. Self-supervised learning leverages unlabeled medical imaging archives, reducing dependency on expensive expert annotations. Diffusion models generate synthetic medical training data and assist in cross-modality image translation. Key clinical translation challenges include distribution shift across hospitals, lack of model interpretability, and regulatory compliance requirements.",
+      "gold_keywords": [
+        "medical image analysis",
+        "convolutional neural networks",
+        "vision transformers",
+        "self-supervised learning",
+        "diffusion models",
+        "distribution shift"
+      ],
+      "reference_summary": "Medical imaging deep learning matches specialist accuracy in radiology and histopathology through CNNs and vision transformers. Recent progress utilizes self-supervised learning and synthetic diffusion generation, though clinical adoption requires overcoming hospital domain shifts and interpretability requirements."
+    },
+    {
+      "id": "abstract_federated_learning",
+      "title": "Federated Learning Privacy and Scalability",
+      "document": "Federated learning enables distributed training of machine learning models across decentralized edge devices while keeping raw data local. Clients compute local model updates using private datasets and send only gradients or parameter updates to a central aggregation server. Federated averaging (FedAvg) aggregates client updates weighted by dataset size, forming a global model iteratively. Key challenges include statistical heterogeneity from non-identically distributed (non-IID) client data, systems heterogeneity from differing compute capabilities, and communication bottlenecks over wireless networks. Differential privacy adds calibrated noise to updates, providing formal privacy guarantees against reconstruction attacks. Secure aggregation protocols use cryptographic techniques to ensure the server inspects only combined updates. Applications span mobile keyboard prediction, personalized healthcare, and financial fraud detection.",
+      "gold_keywords": [
+        "federated learning",
+        "FedAvg",
+        "non-IID data",
+        "differential privacy",
+        "secure aggregation",
+        "distributed training"
+      ],
+      "reference_summary": "Federated learning trains decentralized models on edge devices without centralizing private data using algorithms like FedAvg. Incorporating differential privacy and cryptographic aggregation addresses security concerns, while ongoing research tackles non-IID data distributions and wireless bandwidth bottlenecks."
+    },
+    {
+      "id": "abstract_text_summarization",
+      "title": "Extractive and Abstractive Text Summarization",
+      "document": "Text summarization methods are categorized into extractive and abstractive approaches. Extractive summarization identifies and concatenates salient sentences directly from the source document, ensuring grammatical correctness and factual consistency. Unsupervised algorithms like TextRank and LexRank use graph centrality, while statistical keyword extraction methods like YAKE identify salient terms without training. Abstractive summarization generates novel sentences through sequence-to-sequence neural architectures, paraphrasing and condensing content in a human-like manner. Modern abstractive models utilize pre-trained encoder-decoder transformers such as BART and T5, fine-tuned on benchmark corpora like CNN/DailyMail and XSum. Factual inconsistency and hallucination remain significant challenges in abstractive systems. Evaluation combines automated n-gram metrics like ROUGE, semantic similarity metrics like BERTScore, and LLM-as-a-judge frameworks.",
+      "gold_keywords": [
+        "text summarization",
+        "extractive summarization",
+        "abstractive summarization",
+        "YAKE",
+        "transformers",
+        "hallucination",
+        "ROUGE"
+      ],
+      "reference_summary": "Summarization encompasses extractive techniques that select key sentences via statistical and graph methods like YAKE and TextRank, and abstractive transformers like BART and T5 that synthesize novel summaries. Current research focuses on reducing factual hallucinations and advancing evaluation beyond ROUGE to semantic and LLM-based metrics."
+    },
+    {
+      "id": "abstract_recommender_systems",
+      "title": "Modern Recommender Systems",
+      "document": "Recommender systems personalize user experiences across e-commerce, streaming platforms, and social media. Collaborative filtering models user-item interactions through matrix factorization and neural collaborative filtering, predicting preferences from historical behavior. Content-based filtering leverages item features and user profiles, recommending items similar to past selections. Deep learning models capture nonlinear feature interactions, sequential user behaviors, and multi-modal signals including text and images. Sequential recommendation models use recurrent networks, self-attention mechanisms, and transformers to predict users' next actions based on interaction history. Graph neural networks model complex relationships across heterogeneous user-item interaction graphs. Cold-start problems for new users and items remain a persistent challenge, addressed through hybrid architectures and multi-task learning.",
+      "gold_keywords": [
+        "recommender systems",
+        "collaborative filtering",
+        "content-based filtering",
+        "sequential recommendation",
+        "graph neural networks",
+        "cold-start problem"
+      ],
+      "reference_summary": "Recommender systems combine collaborative filtering, content analysis, and transformer-based sequential models to forecast user preferences. Graph neural networks model heterogeneous interaction topologies, while hybrid multi-task architectures alleviate cold-start limitations for new users and items."
+    }
+  ]
+}
