@@ -41,3 +41,14 @@ def test_hybrid_long_document():
     first_p = res.retained_passages[0]
     second_p = res.retained_passages[1]
     assert long_text.index(first_p) < long_text.index(second_p)
+
+
+def test_hybrid_context_budget_is_strict_for_oversized_passage():
+    long_passage = "important " * 200
+    summarizer = HybridSummarizer(llm_client=MockLLMClient(), max_context_chars=80)
+
+    result = summarizer.summarize(long_passage)
+
+    assert result.context_char_count <= 80
+    assert len(result.retained_passages) == 1
+    assert len(result.retained_passages[0]) == 80

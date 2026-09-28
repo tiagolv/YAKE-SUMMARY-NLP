@@ -416,3 +416,85 @@ Expected: All tests pass.
 ```bash
 git add backend/ src/pipeline.py tests/test_legacy_compat.py; git commit -m "refactor(compat): update FastAPI backend and legacy pipeline to consume yake_sum package"
 ```
+
+---
+
+## Completion Plan (2026-09-28)
+
+The core package is already implemented and the current test baseline is 19 passing tests. The remaining work below closes the gaps found during the implementation review. Do not mark a phase complete until its focused tests and the full suite pass.
+
+### Phase 1: Make the benchmark scientifically usable
+
+**Goal:** complete the ROUGE study without presenting deterministic mock output as model-quality evidence.
+
+- [ ] Expand `data/eval/benchmark_with_summaries.json` from 10 to at least 15 documents.
+- [ ] Add a `reference_source` field to every document and document whether each reference is an author abstract, curated reference, or project-created summary.
+- [ ] Validate dataset schema, unique IDs, non-empty document/reference fields, and the minimum document count in `tests/test_benchmark_runner.py`.
+- [ ] Keep `oracle_llm_guided` in the comparison matrix and test all five methods.
+- [ ] Keep the mock report explicitly labelled as a deterministic smoke test.
+- [ ] Add a local-model run path to the benchmark documentation, without requiring a model in CI.
+
+**Acceptance:** the dataset has at least 15 traceable entries; the runner produces Markdown and JSON; CI validates the structure without needing Ollama or GPU weights.
+
+### Phase 2: Finish the shared package contracts
+
+**Goal:** remove duplicated configuration and evaluation concepts from the new package.
+
+- [ ] Add `src/yake_sum/config.py` with typed configuration models for YAKE, LLM, prompt, extractive, and hybrid settings.
+- [ ] Make `Summarizer` and the lower-level engines accept these settings while preserving current constructor compatibility.
+- [ ] Add `src/yake_sum/evaluation/alignment.py` for keyword coverage, precision, recall, and summary alignment.
+- [ ] Add `src/yake_sum/evaluation/judge.py` with a protocol-based LLM-as-a-judge interface and deterministic mock support.
+- [ ] Export the new public types from `src/yake_sum/evaluation/__init__.py` and `src/yake_sum/__init__.py`.
+- [ ] Add unit tests for empty keywords, no-overlap metrics, duplicate keywords, and malformed judge responses.
+
+**Acceptance:** package evaluation APIs are importable, deterministic tests cover zero/empty cases, and no existing public API test changes its expected behavior.
+
+### Phase 3: Refactor legacy execution paths
+
+**Goal:** preserve the existing FastAPI and legacy CLI contracts while consuming `yake_sum` internally.
+
+- [ ] Add `tests/test_legacy_compat.py` covering `src.pipeline.run_pipeline` with a deterministic mock configuration.
+- [ ] Refactor `src/pipeline.py` to delegate extraction, summarization, and ROUGE calculation to package components where the legacy response format permits it.
+- [ ] Refactor `backend/routers/summarize.py` to use the package facade while preserving request and response schemas and ablation modes.
+- [ ] Keep legacy YAML loading and output JSON field names backward compatible.
+- [ ] Add API tests for empty input, external keywords, backend failure, and compression ratio.
+- [ ] Add a regression test that starts the FastAPI app and exercises `POST /api/summarize` with the mock backend.
+
+**Acceptance:** legacy pipeline output remains readable by existing consumers, FastAPI endpoint signatures remain unchanged, and all legacy plus package tests pass.
+
+### Phase 4: Harden backends and CLI behavior
+
+**Goal:** make operational failures explicit and retry behavior predictable.
+
+- [ ] Add bounded retry with backoff to `OllamaClient`, retrying only connection and transient HTTP failures.
+- [ ] Preserve `BackendConnectionError` with host/model/troubleshooting context after retries are exhausted.
+- [ ] Add tests using a fake transport for success-after-retry, permanent connection failure, timeout, and non-retryable HTTP errors.
+- [ ] Validate `max_context_chars`, sentence counts, and other numeric settings at construction time with clear `ValueError` messages.
+- [ ] Make the CLI return a non-zero exit code and an actionable error when `--reference` points to a missing file.
+- [ ] Add CLI tests for output files, JSON output, invalid reference paths, and backend selection.
+
+**Acceptance:** transient backend failures are retried deterministically, permanent failures expose a specific error, invalid CLI input fails visibly, and all new behavior is covered without network access.
+
+### Phase 5: Package, documentation, and reproducibility cleanup
+
+**Goal:** make the repository installable and understandable from a clean checkout.
+
+- [ ] Move runtime dependencies required by `yake_sum.config` and evaluation into the main dependency set; keep server and llama.cpp dependencies optional.
+- [ ] Verify editable installation with `pip install -e .` and the `yake-sum --help` entry point.
+- [ ] Update `README.md` with extractive, abstractive, hybrid, benchmark, and legacy API usage examples.
+- [ ] Document that the mock backend is for tests only and that benchmark quality claims require a configured local model.
+- [ ] Document the dataset provenance and how to regenerate `outputs/rouge_benchmark_report.md` and its JSON companion.
+- [ ] Add a clean-environment validation command to the project documentation.
+- [ ] Update this plan's earlier task checkboxes to reflect verified implementation status.
+
+**Acceptance:** a clean virtual environment can install the package, run the deterministic test suite, invoke the CLI, and reproduce the smoke-test report.
+
+### Final verification order
+
+1. `.venv\\Scripts\\python.exe -m pytest -q tests/test_rouge.py tests/test_extractive.py tests/test_backends.py tests/test_abstractive_hybrid.py tests/test_api_and_cli.py tests/test_benchmark_runner.py`
+2. `.venv\\Scripts\\python.exe -m pytest -q`
+3. `.venv\\Scripts\\python.exe -m benchmarks.run_rouge_study --backend mock --output outputs/rouge_benchmark_report.md`
+4. `.venv\\Scripts\\python.exe -m pip install -e .`
+5. `.venv\\Scripts\\yake-sum.exe --help`
+
+The project is complete when all five phases meet their acceptance criteria, the full suite is green, the benchmark report is reproducible, and no claim in the documentation exceeds what the selected backend and dataset provenance support.

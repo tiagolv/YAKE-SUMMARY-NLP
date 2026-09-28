@@ -72,8 +72,10 @@ class HybridSummarizer:
         passages = split_into_passages(clean_text)
 
         # If document already fits within context budget, retain all
-        if len(clean_text) <= self.max_context_chars or len(passages) <= 1:
+        if len(clean_text) <= self.max_context_chars:
             retained_passages = passages
+        elif len(passages) <= 1:
+            retained_passages = [passages[0][: self.max_context_chars]]
         else:
             # Score each passage using YakeSentenceScorer
             scorer = YakeSentenceScorer(keywords_scored=kw_tuples)
@@ -89,11 +91,16 @@ class HybridSummarizer:
             char_count = 0
             for idx in ranked_indices:
                 passage_len = len(passages[idx])
-                if char_count + passage_len <= self.max_context_chars or not selected_indices:
+                if char_count + passage_len <= self.max_context_chars:
                     selected_indices.append(idx)
                     char_count += passage_len
                 if char_count >= self.max_context_chars:
                     break
+
+            if not selected_indices:
+                best_idx = ranked_indices[0]
+                passages[best_idx] = passages[best_idx][: self.max_context_chars]
+                selected_indices.append(best_idx)
 
             # Re-sort chronologically by original position in document
             selected_indices.sort()
