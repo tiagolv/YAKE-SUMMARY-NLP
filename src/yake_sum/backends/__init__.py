@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .base import BackendConnectionError, BackendError, BaseLLMClient
+from .base import BackendConnectionError, BackendError, BackendTimeoutError, BaseLLMClient
 from .llama_cpp import LlamaCppClient
 from .mock import MockLLMClient
 from .ollama import OllamaClient
@@ -14,6 +14,7 @@ __all__ = [
     "BaseLLMClient",
     "BackendError",
     "BackendConnectionError",
+    "BackendTimeoutError",
     "MockLLMClient",
     "OllamaClient",
     "LlamaCppClient",
@@ -32,11 +33,16 @@ def get_llm_client(backend: str = "mock", **kwargs: Any) -> BaseLLMClient:
             model=kwargs.get("model", "mistral"),
             host=kwargs.get("host", "http://localhost:11434"),
             timeout=kwargs.get("timeout", 120),
+            max_retries=kwargs.get("max_retries", 2),
         )
     if name in ("llama_cpp", "llamacpp"):
         model_path = kwargs.get("model_path")
+        if not model_path and str(kwargs.get("model", "")).endswith(".gguf"):
+            model_path = kwargs["model"]
         if not model_path:
-            raise ValueError("'model_path' is required for llama_cpp backend.")
+            raise ValueError(
+                "llama_cpp backend needs 'model_path' (or a '.gguf' path passed as model)."
+            )
         return LlamaCppClient(
             model_path=model_path,
             n_ctx=kwargs.get("n_ctx", 4096),
@@ -47,6 +53,7 @@ def get_llm_client(backend: str = "mock", **kwargs: Any) -> BaseLLMClient:
             model=kwargs.get("model", "default"),
             api_key=kwargs.get("api_key", "none"),
             timeout=kwargs.get("timeout", 120),
+            max_retries=kwargs.get("max_retries", 2),
         )
     raise ValueError(
         f"Unsupported backend '{backend}'. Supported: 'mock', 'ollama', 'llama_cpp', 'openai_compatible'"

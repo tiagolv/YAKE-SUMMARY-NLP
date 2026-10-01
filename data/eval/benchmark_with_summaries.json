@@ -1,6 +1,6 @@
 {
-  "description": "Benchmark dataset with human reference summaries and gold keywords for ROUGE evaluation",
-  "version": "1.0.0",
+  "description": "Benchmark dataset with human reference summaries and gold keywords for ROUGE evaluation Each document carries `reference_source`: author_abstract | curated_reference | project_created | unverified. Entries marked `unverified` predate provenance tracking and should be reviewed before publishing results.",
+  "version": "2.0",
   "documents": [
     {
       "id": "paper_yake",
@@ -13,7 +13,8 @@
         "scientific abstracts",
         "computational cost"
       ],
-      "reference_summary": "YAKE! is an unsupervised, statistical keyword extraction algorithm that ranks candidates using contextual, frequency, and positional features without external knowledge bases. It demonstrates competitive performance against supervised models at low computational cost."
+      "reference_summary": "YAKE! is an unsupervised, statistical keyword extraction algorithm that ranks candidates using contextual, frequency, and positional features without external knowledge bases. It demonstrates competitive performance against supervised models at low computational cost.",
+      "reference_source": "unverified"
     },
     {
       "id": "paper_mhealth",
@@ -27,7 +28,8 @@
         "energy constraints",
         "federated learning"
       ],
-      "reference_summary": "Mobile health monitoring uses wearable sensors for activity recognition but faces privacy and energy challenges. A lightweight federated learning framework trains models on edge devices, safeguarding user privacy and cutting communication bandwidth by 45%."
+      "reference_summary": "Mobile health monitoring uses wearable sensors for activity recognition but faces privacy and energy challenges. A lightweight federated learning framework trains models on edge devices, safeguarding user privacy and cutting communication bandwidth by 45%.",
+      "reference_source": "unverified"
     },
     {
       "id": "abstract_sentiment_analysis",
@@ -43,7 +45,8 @@
         "domain adaptation",
         "explainable AI"
       ],
-      "reference_summary": "Social media sentiment analysis has evolved from traditional lexicon approaches to bidirectional pre-trained transformers like BERT and RoBERTa. Current research emphasizes aspect-based, multilingual, and multimodal methods to capture entity-level polarity and acoustic-visual cues across varied domains while improving model explainability."
+      "reference_summary": "Social media sentiment analysis has evolved from traditional lexicon approaches to bidirectional pre-trained transformers like BERT and RoBERTa. Current research emphasizes aspect-based, multilingual, and multimodal methods to capture entity-level polarity and acoustic-visual cues across varied domains while improving model explainability.",
+      "reference_source": "unverified"
     },
     {
       "id": "abstract_nlp_transformers",
@@ -58,7 +61,8 @@
         "model compression",
         "instruction tuning"
       ],
-      "reference_summary": "Transformers revolutionized NLP through multi-head self-attention, replacing recurrent networks and enabling pre-trained models like BERT and GPT. Current advances focus on overcoming quadratic sequence complexity with efficient attention variants, model compression for edge deployment, and alignment via instruction tuning."
+      "reference_summary": "Transformers revolutionized NLP through multi-head self-attention, replacing recurrent networks and enabling pre-trained models like BERT and GPT. Current advances focus on overcoming quadratic sequence complexity with efficient attention variants, model compression for edge deployment, and alignment via instruction tuning.",
+      "reference_source": "unverified"
     },
     {
       "id": "abstract_climate_ml",
@@ -72,7 +76,8 @@
         "downscaling",
         "uncertainty quantification"
       ],
-      "reference_summary": "Machine learning advances climate science by enhancing weather forecasting, satellite remote sensing, and super-resolution downscaling. Physics-informed neural networks enforce physical conservation laws, while attribution studies measure anthropogenic impacts on extreme weather under non-stationary conditions."
+      "reference_summary": "Machine learning advances climate science by enhancing weather forecasting, satellite remote sensing, and super-resolution downscaling. Physics-informed neural networks enforce physical conservation laws, while attribution studies measure anthropogenic impacts on extreme weather under non-stationary conditions.",
+      "reference_source": "unverified"
     },
     {
       "id": "abstract_cybersecurity",
@@ -86,7 +91,8 @@
         "graph neural networks",
         "explainable cybersecurity"
       ],
-      "reference_summary": "Deep learning automates intrusion and malware detection across networks, but defenses must counter adversarial evasion attacks. Techniques such as federated threat sharing, graph neural networks for lateral movement tracking, and explainable models enhance enterprise and IoT security."
+      "reference_summary": "Deep learning automates intrusion and malware detection across networks, but defenses must counter adversarial evasion attacks. Techniques such as federated threat sharing, graph neural networks for lateral movement tracking, and explainable models enhance enterprise and IoT security.",
+      "reference_source": "unverified"
     },
     {
       "id": "abstract_medical_imaging",
@@ -100,7 +106,8 @@
         "diffusion models",
         "distribution shift"
       ],
-      "reference_summary": "Medical imaging deep learning matches specialist accuracy in radiology and histopathology through CNNs and vision transformers. Recent progress utilizes self-supervised learning and synthetic diffusion generation, though clinical adoption requires overcoming hospital domain shifts and interpretability requirements."
+      "reference_summary": "Medical imaging deep learning matches specialist accuracy in radiology and histopathology through CNNs and vision transformers. Recent progress utilizes self-supervised learning and synthetic diffusion generation, though clinical adoption requires overcoming hospital domain shifts and interpretability requirements.",
+      "reference_source": "unverified"
     },
     {
       "id": "abstract_federated_learning",
@@ -114,7 +121,8 @@
         "secure aggregation",
         "distributed training"
       ],
-      "reference_summary": "Federated learning trains decentralized models on edge devices without centralizing private data using algorithms like FedAvg. Incorporating differential privacy and cryptographic aggregation addresses security concerns, while ongoing research tackles non-IID data distributions and wireless bandwidth bottlenecks."
+      "reference_summary": "Federated learning trains decentralized models on edge devices without centralizing private data using algorithms like FedAvg. Incorporating differential privacy and cryptographic aggregation addresses security concerns, while ongoing research tackles non-IID data distributions and wireless bandwidth bottlenecks.",
+      "reference_source": "unverified"
     },
     {
       "id": "abstract_text_summarization",
@@ -129,7 +137,8 @@
         "hallucination",
         "ROUGE"
       ],
-      "reference_summary": "Summarization encompasses extractive techniques that select key sentences via statistical and graph methods like YAKE and TextRank, and abstractive transformers like BART and T5 that synthesize novel summaries. Current research focuses on reducing factual hallucinations and advancing evaluation beyond ROUGE to semantic and LLM-based metrics."
+      "reference_summary": "Summarization encompasses extractive techniques that select key sentences via statistical and graph methods like YAKE and TextRank, and abstractive transformers like BART and T5 that synthesize novel summaries. Current research focuses on reducing factual hallucinations and advancing evaluation beyond ROUGE to semantic and LLM-based metrics.",
+      "reference_source": "unverified"
     },
     {
       "id": "abstract_recommender_systems",
@@ -143,7 +152,83 @@
         "graph neural networks",
         "cold-start problem"
       ],
-      "reference_summary": "Recommender systems combine collaborative filtering, content analysis, and transformer-based sequential models to forecast user preferences. Graph neural networks model heterogeneous interaction topologies, while hybrid multi-task architectures alleviate cold-start limitations for new users and items."
+      "reference_summary": "Recommender systems combine collaborative filtering, content analysis, and transformer-based sequential models to forecast user preferences. Graph neural networks model heterogeneous interaction topologies, while hybrid multi-task architectures alleviate cold-start limitations for new users and items.",
+      "reference_source": "unverified"
+    },
+    {
+      "id": "abstract_quantum_error_correction",
+      "title": "Quantum error correction with surface codes",
+      "document": "Quantum computers are fragile because qubits lose information through noise and interaction with their environment. Surface codes protect logical qubits by spreading information across a two-dimensional lattice of physical qubits and repeatedly measuring parity checks. When enough physical qubits operate below a critical error threshold, adding more of them exponentially suppresses the logical error rate. Decoding the measured syndromes fast enough is a major engineering challenge, and neural network decoders have recently been proposed to reduce latency. Experiments on small superconducting devices show that larger code distances can indeed lower logical errors, suggesting a practical path toward fault-tolerant quantum computation.",
+      "gold_keywords": [
+        "quantum error correction",
+        "surface codes",
+        "logical qubits",
+        "error threshold",
+        "syndrome decoding",
+        "fault-tolerant quantum computation"
+      ],
+      "reference_summary": "Surface codes protect logical qubits by encoding them across a lattice of noisy physical qubits and measuring parity checks. Below an error threshold, larger codes suppress logical errors, and early experiments support fault-tolerant quantum computation.",
+      "reference_source": "project_created"
+    },
+    {
+      "id": "abstract_protein_structure",
+      "title": "Deep learning for protein structure prediction",
+      "document": "Determining the three-dimensional shape of a protein from its amino acid sequence has long been one of the hardest problems in biology. Recent deep learning systems combine evolutionary information from multiple sequence alignments with attention-based networks to predict residue distances and orientations. These models reach accuracy comparable to experimental methods for many single-chain proteins, greatly reducing the need for costly crystallography. Predictions remain less reliable for flexible regions, protein complexes and proteins with few known relatives. Confidence estimates produced by the models help researchers decide which predicted structures can be trusted for drug discovery.",
+      "gold_keywords": [
+        "protein structure prediction",
+        "deep learning",
+        "multiple sequence alignments",
+        "attention-based networks",
+        "confidence estimates",
+        "drug discovery"
+      ],
+      "reference_summary": "Deep learning models using sequence alignments and attention predict protein structures with accuracy close to experiments for many single-chain proteins. They are weaker on flexible regions and complexes, and confidence estimates guide their use in drug discovery.",
+      "reference_source": "project_created"
+    },
+    {
+      "id": "abstract_graph_databases",
+      "title": "Graph databases for connected data",
+      "document": "Relational databases struggle when queries must follow many relationships between entities, because each hop requires an expensive join. Graph databases store nodes and edges natively and traverse relationships in time that depends on the size of the neighborhood rather than the size of the whole dataset. This makes them well suited to social networks, fraud detection and knowledge graphs. Query languages such as Cypher and Gremlin let developers express path patterns declaratively. However, horizontal scaling and consistent transactions across partitions remain difficult, and graph workloads with heavy aggregation can perform worse than columnar systems.",
+      "gold_keywords": [
+        "graph databases",
+        "relational databases",
+        "knowledge graphs",
+        "fraud detection",
+        "query languages",
+        "horizontal scaling"
+      ],
+      "reference_summary": "Graph databases store nodes and edges natively, so multi-hop relationship queries avoid costly joins and suit social networks, fraud detection and knowledge graphs. Scaling out, distributed transactions and aggregation-heavy workloads remain their main limitations.",
+      "reference_source": "project_created"
+    },
+    {
+      "id": "abstract_edge_iot",
+      "title": "Edge computing for IoT analytics",
+      "document": "Internet of Things deployments generate continuous streams of sensor data that are expensive and slow to send to a distant cloud. Edge computing moves part of the processing to gateways or devices close to the sensors, reducing latency, bandwidth use and exposure of raw data. Lightweight models obtained through quantization and pruning can run inference on microcontrollers with limited memory. The main difficulties are managing software updates across heterogeneous devices, keeping models accurate as conditions drift, and balancing energy consumption against accuracy. A hierarchical design that combines edge filtering with cloud retraining offers a practical compromise.",
+      "gold_keywords": [
+        "edge computing",
+        "internet of things",
+        "sensor data",
+        "latency",
+        "quantization",
+        "cloud retraining"
+      ],
+      "reference_summary": "Edge computing processes IoT sensor data near its source, cutting latency, bandwidth and data exposure, and compressed models can run on small devices. Device updates, model drift and energy trade-offs remain challenges, addressed by combining edge filtering with cloud retraining.",
+      "reference_source": "project_created"
+    },
+    {
+      "id": "abstract_low_resource_asr",
+      "title": "Speech recognition for low-resource languages",
+      "document": "Automatic speech recognition works well for languages with thousands of hours of transcribed audio, but most of the world's languages have almost none. Self-supervised pretraining on untranscribed speech allows models to learn useful acoustic representations that can then be fine-tuned with only a few hours of labeled data. Multilingual training further transfers knowledge from related languages, lowering word error rates substantially. Dialect variation, code-switching and inconsistent orthography still cause errors, and evaluation sets are scarce. Community involvement in data collection is essential to build systems that serve speakers fairly.",
+      "gold_keywords": [
+        "speech recognition",
+        "low-resource languages",
+        "self-supervised pretraining",
+        "multilingual training",
+        "word error rate",
+        "code-switching"
+      ],
+      "reference_summary": "Self-supervised pretraining and multilingual training let speech recognizers reach usable word error rates in low-resource languages with only a few hours of labeled audio. Dialects, code-switching and scarce evaluation data persist, so community-driven data collection is needed.",
+      "reference_source": "project_created"
     }
   ]
 }

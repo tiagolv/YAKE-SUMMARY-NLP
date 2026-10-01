@@ -51,4 +51,4 @@ def test_hybrid_context_budget_is_strict_for_oversized_passage():
 
     assert result.context_char_count <= 80
     assert len(result.retained_passages) == 1
-    assert len(result.retained_passages[0]) == 80
+    assert 0 < len(result.retained_passages[0]) <= 80

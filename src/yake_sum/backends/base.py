@@ -10,7 +10,11 @@ class BackendError(RuntimeError):
 
 
 class BackendConnectionError(BackendError):
-    """Raised when an LLM service is unreachable."""
+    """Raised when an LLM service is unreachable (after bounded retries)."""
+
+
+class BackendTimeoutError(BackendError):
+    """Raised when an LLM service does not answer within the configured timeout."""
 
 
 @runtime_checkable

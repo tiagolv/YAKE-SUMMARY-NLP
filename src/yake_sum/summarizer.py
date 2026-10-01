@@ -6,6 +6,7 @@ from typing import Any
 
 from .abstractive.summarizer import AbstractiveSummarizer
 from .backends import BaseLLMClient, get_llm_client
+from .evaluation.alignment import keyword_coverage
 from .evaluation.rouge import compute_rouge_metrics
 from .extractive.summarizer import ExtractiveSummarizer
 from .hybrid.summarizer import HybridSummarizer
@@ -31,6 +32,10 @@ class Summarizer:
         **kwargs: Any,
     ) -> None:
         self.mode = mode.lower().strip()
+        if self.mode not in ("extractive", "abstractive", "hybrid"):
+            raise ValueError(
+                f"Unknown mode '{mode}'. Choose from 'extractive', 'abstractive', 'hybrid'."
+            )
         self.language = language
         self.top_k = top_k
         self.max_ngram_size = max_ngram_size
@@ -110,6 +115,12 @@ class Summarizer:
                 "context_char_count": result.context_char_count,
                 "prompt_used": result.prompt_used,
             }
+
+        # Reference-free sanity metric: how many of the document keywords the summary covers.
+        if keywords and summary_text:
+            metrics["keyword_coverage"] = keyword_coverage(
+                summary_text, [k.keyword for k in keywords]
+            )
 
         # Calculate ROUGE if reference summary is provided
         if reference_summary and summary_text:

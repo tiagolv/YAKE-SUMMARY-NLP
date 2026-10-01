@@ -2,8 +2,14 @@
 
 from __future__ import annotations
 
+import time
+from typing import Any, Callable
+
 import requests
-from .base import BackendConnectionError, BackendError
+
+from ..validation import require_int
+from ._http import post_json_with_retry
+from .base import BackendError
 
 
 class OpenAICompatibleClient:
@@ -15,11 +21,19 @@ class OpenAICompatibleClient:
         model: str = "default",
         api_key: str = "none",
         timeout: int = 120,
+        max_retries: int = 2,
+        backoff: float = 1.0,
+        post: Callable[..., Any] | None = None,
+        sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.api_key = api_key
-        self.timeout = timeout
+        self.timeout = require_int("timeout", timeout)
+        self.max_retries = require_int("max_retries", max_retries, minimum=0)
+        self.backoff = backoff
+        self._post = post
+        self._sleep = sleep
 
     def generate(
         self,
@@ -40,18 +54,25 @@ class OpenAICompatibleClient:
             "temperature": temperature,
             "max_tokens": max_tokens,
         }
+        data = post_json_with_retry(
+            url,
+            payload,
+            headers=headers,
+            timeout=self.timeout,
+            max_retries=self.max_retries,
+            backoff=self.backoff,
+            post=self._post,
+            sleep=self._sleep,
+            service=f"OpenAI-compatible endpoint (model '{self.model}')",
+            troubleshooting=f"Check that the server at {self.base_url} is running and the model name is valid.",
+        )
         try:
-            response = requests.post(url, json=payload, headers=headers, timeout=self.timeout)
-            response.raise_for_status()
-        except requests.ConnectionError as exc:
-            raise BackendConnectionError(
-                f"Failed to connect to OpenAI endpoint at {self.base_url}: {exc}"
-            ) from exc
-        except requests.RequestException as exc:
-            raise BackendError(f"API request failed: {exc}") from exc
-
-        data = response.json()
-        return data["choices"][0]["message"]["content"].strip()
+            text = str(data["choices"][0]["message"]["content"]).strip()
+        except (KeyError, IndexError, TypeError) as exc:
+            raise BackendError(f"Unexpected response schema from {url}: {str(data)[:200]}") from exc
+        if not text:
+            raise BackendError(f"Endpoint {url} returned an empty completion.")
+        return text
 
     def is_available(self) -> tuple[bool, str]:
         try:

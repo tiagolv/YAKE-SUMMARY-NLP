@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 
+from .backends.base import BackendConnectionError, BackendError, BackendTimeoutError
 from .summarizer import Summarizer
 
 
@@ -18,7 +19,7 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "-i", "--input",
         required=True,
-        help="Path to input text file.",
+        help="Path to input text file, or '-' to read from stdin.",
     )
     parser.add_argument(
         "-m", "--mode",
@@ -50,6 +51,16 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
         help="Number of top keywords to extract with YAKE (default: 12).",
     )
     parser.add_argument(
+        "--host",
+        help="Ollama host or OpenAI-compatible base URL (e.g. http://localhost:11434).",
+    )
+    parser.add_argument(
+        "--max-context-chars",
+        type=int,
+        default=3000,
+        help="Context budget for hybrid mode (default: 3000).",
+    )
+    parser.add_argument(
         "-r", "--reference",
         help="Path to reference summary file for automated ROUGE evaluation.",
     )
@@ -65,31 +76,54 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
+def _fail(message: str, code: int) -> int:
+    print(f"Error: {message}", file=sys.stderr)
+    return code
+
+
 def main(args: list[str] | None = None) -> int:
     parsed = parse_args(args)
 
-    input_path = Path(parsed.input)
-    if not input_path.exists():
-        print(f"Error: Input file '{parsed.input}' not found.", file=sys.stderr)
-        return 1
-
-    text = input_path.read_text(encoding="utf-8")
+    if parsed.input == "-":
+        text = sys.stdin.read()
+    else:
+        input_path = Path(parsed.input)
+        if not input_path.is_file():
+            return _fail(f"input file '{parsed.input}' not found.", 1)
+        text = input_path.read_text(encoding="utf-8")
 
     ref_text = None
     if parsed.reference:
         ref_path = Path(parsed.reference)
-        if ref_path.exists():
-            ref_text = ref_path.read_text(encoding="utf-8")
+        if not ref_path.is_file():
+            return _fail(
+                f"reference file '{parsed.reference}' not found. "
+                "Check the path or drop --reference to skip ROUGE evaluation.",
+                2,
+            )
+        ref_text = ref_path.read_text(encoding="utf-8")
 
-    summarizer = Summarizer(
-        mode=parsed.mode,
-        backend=parsed.backend,
-        model=parsed.model,
-        num_sentences=parsed.sentences,
-        top_k=parsed.top_k,
-    )
+    extra: dict[str, str] = {}
+    if parsed.host:
+        extra["base_url" if parsed.backend in ("openai_compatible", "openai") else "host"] = parsed.host
 
-    result = summarizer.summarize(text=text, reference_summary=ref_text)
+    try:
+        summarizer = Summarizer(
+            mode=parsed.mode,
+            backend=parsed.backend,
+            model=parsed.model,
+            num_sentences=parsed.sentences,
+            top_k=parsed.top_k,
+            max_context_chars=parsed.max_context_chars,
+            **extra,
+        )
+        result = summarizer.summarize(text=text, reference_summary=ref_text)
+    except ValueError as exc:
+        return _fail(str(exc), 2)
+    except (BackendConnectionError, BackendTimeoutError) as exc:
+        return _fail(f"LLM backend unreachable. {exc}", 3)
+    except BackendError as exc:
+        return _fail(f"LLM backend failed. {exc}", 3)
 
     if parsed.json:
         payload = {

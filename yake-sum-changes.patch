@@ -1,0 +1,2980 @@
+diff --git a/benchmarks/run_rouge_study.py b/benchmarks/run_rouge_study.py
+index acbd400..875246f 100644
+--- a/benchmarks/run_rouge_study.py
++++ b/benchmarks/run_rouge_study.py
+@@ -12,6 +12,7 @@ from __future__ import annotations
+ 
+ import argparse
+ import json
++import random
+ from datetime import datetime, timezone
+ from pathlib import Path
+ from typing import Any
+@@ -22,6 +23,63 @@ from yake_sum.evaluation.rouge import compute_rouge_metrics
+ from yake_sum.extractive.summarizer import ExtractiveSummarizer, split_into_sentences
+ 
+ 
++VALID_REFERENCE_SOURCES = {"author_abstract", "curated_reference", "project_created", "unverified"}
++MIN_DOCUMENTS = 15
++_METRICS = ("rouge1_f", "rouge2_f", "rougeL_f")
++
++
++def validate_dataset(data: dict[str, Any], min_documents: int = MIN_DOCUMENTS) -> list[dict[str, Any]]:
++    """Validate the benchmark schema and return the documents; raise ValueError on problems."""
++    docs = data.get("documents")
++    if not isinstance(docs, list):
++        raise ValueError("Dataset must contain a 'documents' list.")
++    if len(docs) < min_documents:
++        raise ValueError(f"Dataset has {len(docs)} documents; at least {min_documents} required.")
++    seen: set[str] = set()
++    for i, doc in enumerate(docs):
++        for key in ("id", "document", "reference_summary", "reference_source"):
++            if not isinstance(doc.get(key), str) or not doc[key].strip():
++                raise ValueError(f"Document #{i}: field '{key}' is missing or empty.")
++        if doc["id"] in seen:
++            raise ValueError(f"Duplicate document id '{doc['id']}'.")
++        seen.add(doc["id"])
++        if doc["reference_source"] not in VALID_REFERENCE_SOURCES:
++            raise ValueError(
++                f"Document '{doc['id']}': invalid reference_source '{doc['reference_source']}'."
++            )
++        if not isinstance(doc.get("gold_keywords", []), list):
++            raise ValueError(f"Document '{doc['id']}': gold_keywords must be a list.")
++    return docs
++
++
++def bootstrap_ci(
++    values: list[float], n_boot: int = 2000, seed: int = 0, alpha: float = 0.05
++) -> tuple[float, float]:
++    """Deterministic percentile bootstrap CI of the mean (returns (0, 0) for empty input)."""
++    if not values:
++        return 0.0, 0.0
++    rng = random.Random(seed)
++    n = len(values)
++    means = sorted(sum(rng.choice(values) for _ in range(n)) / n for _ in range(n_boot))
++    lo = means[int((alpha / 2) * n_boot)]
++    hi = means[min(int((1 - alpha / 2) * n_boot), n_boot - 1)]
++    return round(lo, 4), round(hi, 4)
++
++
++def paired_comparison(a: list[float], b: list[float]) -> dict[str, Any]:
++    """Per-document paired comparison of ``a`` vs ``b`` (mean diff, CI, wins/ties/losses)."""
++    diffs = [x - y for x, y in zip(a, b)]
++    lo, hi = bootstrap_ci(diffs)
++    return {
++        "mean_diff": round(sum(diffs) / len(diffs), 4) if diffs else 0.0,
++        "ci95": [lo, hi],
++        "wins": sum(d > 1e-9 for d in diffs),
++        "ties": sum(abs(d) <= 1e-9 for d in diffs),
++        "losses": sum(d < -1e-9 for d in diffs),
++        "significant": bool(diffs) and (lo > 0 or hi < 0),
++    }
++
++
+ def compute_lead_3(text: str) -> str:
+     """Extract first 3 sentences as standard baseline."""
+     sentences = split_into_sentences(text)
+@@ -36,7 +94,8 @@ def run_rouge_benchmark(
+     llm_client: BaseLLMClient | None = None,
+ ) -> dict[str, Any]:
+     data = json.loads(benchmark_file.read_text(encoding="utf-8"))
+-    documents = data.get("documents", [])
++    # Full-dataset validation is enforced; ``max_samples`` only subsamples afterwards (smoke runs).
++    documents = validate_dataset(data)
+     if max_samples:
+         documents = documents[:max_samples]
+ 
+@@ -53,6 +112,7 @@ def run_rouge_benchmark(
+     ]
+ 
+     method_scores: dict[str, list[dict[str, float]]] = {m: [] for m in methods}
++    method_words: dict[str, list[int]] = {m: [] for m in methods}
+     sample_ids: list[str] = []
+ 
+     for doc in documents:
+@@ -66,6 +126,7 @@ def run_rouge_benchmark(
+         lead_summary = compute_lead_3(doc_text)
+         lead_rouge = compute_rouge_metrics(summary=lead_summary, reference=ref_summary)
+         method_scores["lead_3"].append(lead_rouge)
++        method_words["lead_3"].append(len(lead_summary.split()))
+ 
+         # 2. YAKE Extractive
+         yake_ext_res = extractive.summarize(doc_text)
+@@ -73,6 +134,7 @@ def run_rouge_benchmark(
+             summary=yake_ext_res.summary, reference=ref_summary
+         )
+         method_scores["yake_extractive"].append(yake_ext_rouge)
++        method_words["yake_extractive"].append(len(yake_ext_res.summary.split()))
+ 
+         # 3. LLM Unconditioned
+         llm_uncond_res = abstractive.summarize(doc_text, use_keywords=False)
+@@ -80,6 +142,7 @@ def run_rouge_benchmark(
+             summary=llm_uncond_res.summary, reference=ref_summary
+         )
+         method_scores["llm_unconditioned"].append(llm_uncond_rouge)
++        method_words["llm_unconditioned"].append(len(llm_uncond_res.summary.split()))
+ 
+         # 4. YAKE LLM Guided
+         yake_abs_res = abstractive.summarize(doc_text, use_keywords=True)
+@@ -87,6 +150,7 @@ def run_rouge_benchmark(
+             summary=yake_abs_res.summary, reference=ref_summary
+         )
+         method_scores["yake_llm_guided"].append(yake_abs_rouge)
++        method_words["yake_llm_guided"].append(len(yake_abs_res.summary.split()))
+ 
+         # 5. Oracle LLM Guided
+         oracle_res = abstractive.summarize(
+@@ -96,6 +160,7 @@ def run_rouge_benchmark(
+             summary=oracle_res.summary, reference=ref_summary
+         )
+         method_scores["oracle_llm_guided"].append(oracle_rouge)
++        method_words["oracle_llm_guided"].append(len(oracle_res.summary.split()))
+ 
+     # Compute averages across all samples
+     averaged_methods: dict[str, dict[str, float]] = {}
+@@ -114,15 +179,63 @@ def run_rouge_benchmark(
+             "rougeL_f": round(sum(s["rougeL_f"] for s in scores_list) / n, 4),
+         }
+ 
++    ci = {
++        m: {k: list(bootstrap_ci([s[k] for s in method_scores[m]])) for k in _METRICS}
++        for m in methods
++    }
++    baseline = "lead_3"
++    paired = {
++        m: {
++            k: paired_comparison([s[k] for s in method_scores[m]], [s[k] for s in method_scores[baseline]])
++            for k in _METRICS
++        }
++        for m in methods
++        if m != baseline
++    }
++    avg_words = {
++        m: round(sum(method_words[m]) / len(method_words[m]), 1) if method_words[m] else 0.0
++        for m in methods
++    }
+     return {
+         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+         "backend": backend,
++        "model": model if backend != "mock" else None,
+         "sample_ids": sample_ids,
++        "reference_sources": {d["id"]: d["reference_source"] for d in documents},
+         "methods": averaged_methods,
++        "ci95": ci,
++        "paired_vs_lead_3": paired,
++        "avg_summary_words": avg_words,
++        "avg_reference_words": round(
++            sum(len(d["reference_summary"].split()) for d in documents) / len(documents), 1
++        ),
+         "raw_scores": method_scores,
+     }
+ 
+ 
++def _uncertainty_table(results: dict[str, Any]) -> str:
++    rows = ["| Method | ROUGE-1 F1 [95% CI] | ROUGE-2 F1 [95% CI] | ROUGE-L F1 [95% CI] | Δ R1 vs Lead-3 (W/T/L) | Avg words |", "|---|---|---|---|---|---|"]
++    for m, vals in results["methods"].items():
++        cells = [f"{vals[k]:.3f} [{results['ci95'][m][k][0]:.3f}, {results['ci95'][m][k][1]:.3f}]" for k in _METRICS]
++        if m == "lead_3":
++            delta = "baseline"
++        else:
++            pc = results["paired_vs_lead_3"][m]["rouge1_f"]
++            sig = " *" if pc["significant"] else ""
++            delta = f"{pc['mean_diff']:+.3f}{sig} ({pc['wins']}/{pc['ties']}/{pc['losses']})"
++        rows.append(f"| {m} | {cells[0]} | {cells[1]} | {cells[2]} | {delta} | {results['avg_summary_words'][m]} |")
++    rows.append("")
++    rows.append("`*` = paired 95% CI excludes zero.")
++    return "\n".join(rows)
++
++
++def _provenance_line(results: dict[str, Any]) -> str:
++    counts: dict[str, int] = {}
++    for src in results["reference_sources"].values():
++        counts[src] = counts.get(src, 0) + 1
++    return ", ".join(f"{v} × `{k}`" for k, v in sorted(counts.items()))
++
++
+ def format_markdown_report(results: dict[str, Any]) -> str:
+     m = results["methods"]
+     n_docs = len(results["sample_ids"])
+@@ -135,6 +248,7 @@ def format_markdown_report(results: dict[str, Any]) -> str:
+         else "Interpret results together with backend and model details; scores depend on the selected model."
+     )
+ 
++    model_part = f" (model `{results['model']}`)" if results.get("model") else ""
+     report = f"""# 📊 Empirical ROUGE Benchmark Study Report
+ 
+ **Generated on:** {ts}  
+@@ -151,12 +265,24 @@ def format_markdown_report(results: dict[str, Any]) -> str:
+ | **Lead-3** | Extractive Baseline | {m['lead_3']['rouge1_f']:.4f} | {m['lead_3']['rouge1_r']:.4f} | {m['lead_3']['rouge2_f']:.4f} | {m['lead_3']['rouge2_r']:.4f} | {m['lead_3']['rougeL_f']:.4f} | {m['lead_3']['rougeL_r']:.4f} |
+ | **YAKE Extractive** | Zero-LLM Proposed | {m['yake_extractive']['rouge1_f']:.4f} | {m['yake_extractive']['rouge1_r']:.4f} | {m['yake_extractive']['rouge2_f']:.4f} | {m['yake_extractive']['rouge2_r']:.4f} | {m['yake_extractive']['rougeL_f']:.4f} | {m['yake_extractive']['rougeL_r']:.4f} |
+ | **LLM Unconditioned** | Baseline Abstractive | {m['llm_unconditioned']['rouge1_f']:.4f} | {m['llm_unconditioned']['rouge1_r']:.4f} | {m['llm_unconditioned']['rouge2_f']:.4f} | {m['llm_unconditioned']['rouge2_r']:.4f} | {m['llm_unconditioned']['rougeL_f']:.4f} | {m['llm_unconditioned']['rougeL_r']:.4f} |
+-| **YAKE LLM Guided** | Full Pipeline | **{m['yake_llm_guided']['rouge1_f']:.4f}** | **{m['yake_llm_guided']['rouge1_r']:.4f}** | **{m['yake_llm_guided']['rouge2_f']:.4f}** | **{m['yake_llm_guided']['rouge2_r']:.4f}** | **{m['yake_llm_guided']['rougeL_f']:.4f}** | **{m['yake_llm_guided']['rougeL_r']:.4f}** |
++| **YAKE LLM Guided** | Full Pipeline | {m['yake_llm_guided']['rouge1_f']:.4f} | {m['yake_llm_guided']['rouge1_r']:.4f} | {m['yake_llm_guided']['rouge2_f']:.4f} | {m['yake_llm_guided']['rouge2_r']:.4f} | {m['yake_llm_guided']['rougeL_f']:.4f} | {m['yake_llm_guided']['rougeL_r']:.4f} |
+ | **Oracle LLM Guided** | Upper Bound (Gold KW) | {m['oracle_llm_guided']['rouge1_f']:.4f} | {m['oracle_llm_guided']['rouge1_r']:.4f} | {m['oracle_llm_guided']['rouge2_f']:.4f} | {m['oracle_llm_guided']['rouge2_r']:.4f} | {m['oracle_llm_guided']['rougeL_f']:.4f} | {m['oracle_llm_guided']['rougeL_r']:.4f} |
+ 
+ ---
+ 
+-## 2. Interpretation
++## 2. Uncertainty and length
++
++With only {n_docs} short documents, differences between methods are often within noise. Values below are
++mean ROUGE-1/2/L F1 with a 95% bootstrap CI, the paired difference against Lead-3 (wins/ties/losses per
++document) and the average summary length (reference: {results['avg_reference_words']} words).
++
++{_uncertainty_table(results)}
++
++Reference provenance: {_provenance_line(results)}
++
++---
++
++## 3. Interpretation
+ 
+ - **Backend scope:** {interpretation}
+ - **Extractive comparison:** Lead-3 and YAKE Extractive are directly comparable without an LLM service.
+diff --git a/data/eval/benchmark_with_summaries.json b/data/eval/benchmark_with_summaries.json
+index 730395c..919c4c3 100644
+--- a/data/eval/benchmark_with_summaries.json
++++ b/data/eval/benchmark_with_summaries.json
+@@ -1,6 +1,6 @@
+ {
+-  "description": "Benchmark dataset with human reference summaries and gold keywords for ROUGE evaluation",
+-  "version": "1.0.0",
++  "description": "Benchmark dataset with human reference summaries and gold keywords for ROUGE evaluation Each document carries `reference_source`: author_abstract | curated_reference | project_created | unverified. Entries marked `unverified` predate provenance tracking and should be reviewed before publishing results.",
++  "version": "2.0",
+   "documents": [
+     {
+       "id": "paper_yake",
+@@ -13,7 +13,8 @@
+         "scientific abstracts",
+         "computational cost"
+       ],
+-      "reference_summary": "YAKE! is an unsupervised, statistical keyword extraction algorithm that ranks candidates using contextual, frequency, and positional features without external knowledge bases. It demonstrates competitive performance against supervised models at low computational cost."
++      "reference_summary": "YAKE! is an unsupervised, statistical keyword extraction algorithm that ranks candidates using contextual, frequency, and positional features without external knowledge bases. It demonstrates competitive performance against supervised models at low computational cost.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "paper_mhealth",
+@@ -27,7 +28,8 @@
+         "energy constraints",
+         "federated learning"
+       ],
+-      "reference_summary": "Mobile health monitoring uses wearable sensors for activity recognition but faces privacy and energy challenges. A lightweight federated learning framework trains models on edge devices, safeguarding user privacy and cutting communication bandwidth by 45%."
++      "reference_summary": "Mobile health monitoring uses wearable sensors for activity recognition but faces privacy and energy challenges. A lightweight federated learning framework trains models on edge devices, safeguarding user privacy and cutting communication bandwidth by 45%.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "abstract_sentiment_analysis",
+@@ -43,7 +45,8 @@
+         "domain adaptation",
+         "explainable AI"
+       ],
+-      "reference_summary": "Social media sentiment analysis has evolved from traditional lexicon approaches to bidirectional pre-trained transformers like BERT and RoBERTa. Current research emphasizes aspect-based, multilingual, and multimodal methods to capture entity-level polarity and acoustic-visual cues across varied domains while improving model explainability."
++      "reference_summary": "Social media sentiment analysis has evolved from traditional lexicon approaches to bidirectional pre-trained transformers like BERT and RoBERTa. Current research emphasizes aspect-based, multilingual, and multimodal methods to capture entity-level polarity and acoustic-visual cues across varied domains while improving model explainability.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "abstract_nlp_transformers",
+@@ -58,7 +61,8 @@
+         "model compression",
+         "instruction tuning"
+       ],
+-      "reference_summary": "Transformers revolutionized NLP through multi-head self-attention, replacing recurrent networks and enabling pre-trained models like BERT and GPT. Current advances focus on overcoming quadratic sequence complexity with efficient attention variants, model compression for edge deployment, and alignment via instruction tuning."
++      "reference_summary": "Transformers revolutionized NLP through multi-head self-attention, replacing recurrent networks and enabling pre-trained models like BERT and GPT. Current advances focus on overcoming quadratic sequence complexity with efficient attention variants, model compression for edge deployment, and alignment via instruction tuning.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "abstract_climate_ml",
+@@ -72,7 +76,8 @@
+         "downscaling",
+         "uncertainty quantification"
+       ],
+-      "reference_summary": "Machine learning advances climate science by enhancing weather forecasting, satellite remote sensing, and super-resolution downscaling. Physics-informed neural networks enforce physical conservation laws, while attribution studies measure anthropogenic impacts on extreme weather under non-stationary conditions."
++      "reference_summary": "Machine learning advances climate science by enhancing weather forecasting, satellite remote sensing, and super-resolution downscaling. Physics-informed neural networks enforce physical conservation laws, while attribution studies measure anthropogenic impacts on extreme weather under non-stationary conditions.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "abstract_cybersecurity",
+@@ -86,7 +91,8 @@
+         "graph neural networks",
+         "explainable cybersecurity"
+       ],
+-      "reference_summary": "Deep learning automates intrusion and malware detection across networks, but defenses must counter adversarial evasion attacks. Techniques such as federated threat sharing, graph neural networks for lateral movement tracking, and explainable models enhance enterprise and IoT security."
++      "reference_summary": "Deep learning automates intrusion and malware detection across networks, but defenses must counter adversarial evasion attacks. Techniques such as federated threat sharing, graph neural networks for lateral movement tracking, and explainable models enhance enterprise and IoT security.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "abstract_medical_imaging",
+@@ -100,7 +106,8 @@
+         "diffusion models",
+         "distribution shift"
+       ],
+-      "reference_summary": "Medical imaging deep learning matches specialist accuracy in radiology and histopathology through CNNs and vision transformers. Recent progress utilizes self-supervised learning and synthetic diffusion generation, though clinical adoption requires overcoming hospital domain shifts and interpretability requirements."
++      "reference_summary": "Medical imaging deep learning matches specialist accuracy in radiology and histopathology through CNNs and vision transformers. Recent progress utilizes self-supervised learning and synthetic diffusion generation, though clinical adoption requires overcoming hospital domain shifts and interpretability requirements.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "abstract_federated_learning",
+@@ -114,7 +121,8 @@
+         "secure aggregation",
+         "distributed training"
+       ],
+-      "reference_summary": "Federated learning trains decentralized models on edge devices without centralizing private data using algorithms like FedAvg. Incorporating differential privacy and cryptographic aggregation addresses security concerns, while ongoing research tackles non-IID data distributions and wireless bandwidth bottlenecks."
++      "reference_summary": "Federated learning trains decentralized models on edge devices without centralizing private data using algorithms like FedAvg. Incorporating differential privacy and cryptographic aggregation addresses security concerns, while ongoing research tackles non-IID data distributions and wireless bandwidth bottlenecks.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "abstract_text_summarization",
+@@ -129,7 +137,8 @@
+         "hallucination",
+         "ROUGE"
+       ],
+-      "reference_summary": "Summarization encompasses extractive techniques that select key sentences via statistical and graph methods like YAKE and TextRank, and abstractive transformers like BART and T5 that synthesize novel summaries. Current research focuses on reducing factual hallucinations and advancing evaluation beyond ROUGE to semantic and LLM-based metrics."
++      "reference_summary": "Summarization encompasses extractive techniques that select key sentences via statistical and graph methods like YAKE and TextRank, and abstractive transformers like BART and T5 that synthesize novel summaries. Current research focuses on reducing factual hallucinations and advancing evaluation beyond ROUGE to semantic and LLM-based metrics.",
++      "reference_source": "unverified"
+     },
+     {
+       "id": "abstract_recommender_systems",
+@@ -143,7 +152,83 @@
+         "graph neural networks",
+         "cold-start problem"
+       ],
+-      "reference_summary": "Recommender systems combine collaborative filtering, content analysis, and transformer-based sequential models to forecast user preferences. Graph neural networks model heterogeneous interaction topologies, while hybrid multi-task architectures alleviate cold-start limitations for new users and items."
++      "reference_summary": "Recommender systems combine collaborative filtering, content analysis, and transformer-based sequential models to forecast user preferences. Graph neural networks model heterogeneous interaction topologies, while hybrid multi-task architectures alleviate cold-start limitations for new users and items.",
++      "reference_source": "unverified"
++    },
++    {
++      "id": "abstract_quantum_error_correction",
++      "title": "Quantum error correction with surface codes",
++      "document": "Quantum computers are fragile because qubits lose information through noise and interaction with their environment. Surface codes protect logical qubits by spreading information across a two-dimensional lattice of physical qubits and repeatedly measuring parity checks. When enough physical qubits operate below a critical error threshold, adding more of them exponentially suppresses the logical error rate. Decoding the measured syndromes fast enough is a major engineering challenge, and neural network decoders have recently been proposed to reduce latency. Experiments on small superconducting devices show that larger code distances can indeed lower logical errors, suggesting a practical path toward fault-tolerant quantum computation.",
++      "gold_keywords": [
++        "quantum error correction",
++        "surface codes",
++        "logical qubits",
++        "error threshold",
++        "syndrome decoding",
++        "fault-tolerant quantum computation"
++      ],
++      "reference_summary": "Surface codes protect logical qubits by encoding them across a lattice of noisy physical qubits and measuring parity checks. Below an error threshold, larger codes suppress logical errors, and early experiments support fault-tolerant quantum computation.",
++      "reference_source": "project_created"
++    },
++    {
++      "id": "abstract_protein_structure",
++      "title": "Deep learning for protein structure prediction",
++      "document": "Determining the three-dimensional shape of a protein from its amino acid sequence has long been one of the hardest problems in biology. Recent deep learning systems combine evolutionary information from multiple sequence alignments with attention-based networks to predict residue distances and orientations. These models reach accuracy comparable to experimental methods for many single-chain proteins, greatly reducing the need for costly crystallography. Predictions remain less reliable for flexible regions, protein complexes and proteins with few known relatives. Confidence estimates produced by the models help researchers decide which predicted structures can be trusted for drug discovery.",
++      "gold_keywords": [
++        "protein structure prediction",
++        "deep learning",
++        "multiple sequence alignments",
++        "attention-based networks",
++        "confidence estimates",
++        "drug discovery"
++      ],
++      "reference_summary": "Deep learning models using sequence alignments and attention predict protein structures with accuracy close to experiments for many single-chain proteins. They are weaker on flexible regions and complexes, and confidence estimates guide their use in drug discovery.",
++      "reference_source": "project_created"
++    },
++    {
++      "id": "abstract_graph_databases",
++      "title": "Graph databases for connected data",
++      "document": "Relational databases struggle when queries must follow many relationships between entities, because each hop requires an expensive join. Graph databases store nodes and edges natively and traverse relationships in time that depends on the size of the neighborhood rather than the size of the whole dataset. This makes them well suited to social networks, fraud detection and knowledge graphs. Query languages such as Cypher and Gremlin let developers express path patterns declaratively. However, horizontal scaling and consistent transactions across partitions remain difficult, and graph workloads with heavy aggregation can perform worse than columnar systems.",
++      "gold_keywords": [
++        "graph databases",
++        "relational databases",
++        "knowledge graphs",
++        "fraud detection",
++        "query languages",
++        "horizontal scaling"
++      ],
++      "reference_summary": "Graph databases store nodes and edges natively, so multi-hop relationship queries avoid costly joins and suit social networks, fraud detection and knowledge graphs. Scaling out, distributed transactions and aggregation-heavy workloads remain their main limitations.",
++      "reference_source": "project_created"
++    },
++    {
++      "id": "abstract_edge_iot",
++      "title": "Edge computing for IoT analytics",
++      "document": "Internet of Things deployments generate continuous streams of sensor data that are expensive and slow to send to a distant cloud. Edge computing moves part of the processing to gateways or devices close to the sensors, reducing latency, bandwidth use and exposure of raw data. Lightweight models obtained through quantization and pruning can run inference on microcontrollers with limited memory. The main difficulties are managing software updates across heterogeneous devices, keeping models accurate as conditions drift, and balancing energy consumption against accuracy. A hierarchical design that combines edge filtering with cloud retraining offers a practical compromise.",
++      "gold_keywords": [
++        "edge computing",
++        "internet of things",
++        "sensor data",
++        "latency",
++        "quantization",
++        "cloud retraining"
++      ],
++      "reference_summary": "Edge computing processes IoT sensor data near its source, cutting latency, bandwidth and data exposure, and compressed models can run on small devices. Device updates, model drift and energy trade-offs remain challenges, addressed by combining edge filtering with cloud retraining.",
++      "reference_source": "project_created"
++    },
++    {
++      "id": "abstract_low_resource_asr",
++      "title": "Speech recognition for low-resource languages",
++      "document": "Automatic speech recognition works well for languages with thousands of hours of transcribed audio, but most of the world's languages have almost none. Self-supervised pretraining on untranscribed speech allows models to learn useful acoustic representations that can then be fine-tuned with only a few hours of labeled data. Multilingual training further transfers knowledge from related languages, lowering word error rates substantially. Dialect variation, code-switching and inconsistent orthography still cause errors, and evaluation sets are scarce. Community involvement in data collection is essential to build systems that serve speakers fairly.",
++      "gold_keywords": [
++        "speech recognition",
++        "low-resource languages",
++        "self-supervised pretraining",
++        "multilingual training",
++        "word error rate",
++        "code-switching"
++      ],
++      "reference_summary": "Self-supervised pretraining and multilingual training let speech recognizers reach usable word error rates in low-resource languages with only a few hours of labeled audio. Dialects, code-switching and scarce evaluation data persist, so community-driven data collection is needed.",
++      "reference_source": "project_created"
+     }
+   ]
+-}
++}
+\ No newline at end of file
+diff --git a/outputs/rouge_benchmark_report.json b/outputs/rouge_benchmark_report.json
+index 780d4dc..edcda55 100644
+--- a/outputs/rouge_benchmark_report.json
++++ b/outputs/rouge_benchmark_report.json
+@@ -1,6 +1,7 @@
+ {
+-  "timestamp": "2026-09-28T15:49:49.703806Z",
++  "timestamp": "2026-10-01T13:33:51.444221Z",
+   "backend": "mock",
++  "model": null,
+   "sample_ids": [
+     "paper_yake",
+     "paper_mhealth",
+@@ -11,77 +12,321 @@
+     "abstract_medical_imaging",
+     "abstract_federated_learning",
+     "abstract_text_summarization",
+-    "abstract_recommender_systems"
++    "abstract_recommender_systems",
++    "abstract_quantum_error_correction",
++    "abstract_protein_structure",
++    "abstract_graph_databases",
++    "abstract_edge_iot",
++    "abstract_low_resource_asr"
+   ],
++  "reference_sources": {
++    "paper_yake": "unverified",
++    "paper_mhealth": "unverified",
++    "abstract_sentiment_analysis": "unverified",
++    "abstract_nlp_transformers": "unverified",
++    "abstract_climate_ml": "unverified",
++    "abstract_cybersecurity": "unverified",
++    "abstract_medical_imaging": "unverified",
++    "abstract_federated_learning": "unverified",
++    "abstract_text_summarization": "unverified",
++    "abstract_recommender_systems": "unverified",
++    "abstract_quantum_error_correction": "project_created",
++    "abstract_protein_structure": "project_created",
++    "abstract_graph_databases": "project_created",
++    "abstract_edge_iot": "project_created",
++    "abstract_low_resource_asr": "project_created"
++  },
+   "methods": {
+     "lead_3": {
+-      "rouge1_p": 0.3591,
+-      "rouge1_r": 0.4865,
+-      "rouge1_f": 0.4116,
+-      "rouge2_p": 0.1213,
+-      "rouge2_r": 0.1668,
+-      "rouge2_f": 0.14,
+-      "rougeL_p": 0.2497,
+-      "rougeL_r": 0.3394,
+-      "rougeL_f": 0.2868
++      "rouge1_p": 0.3545,
++      "rouge1_r": 0.5133,
++      "rouge1_f": 0.4179,
++      "rouge2_p": 0.1371,
++      "rouge2_r": 0.2047,
++      "rouge2_f": 0.1638,
++      "rougeL_p": 0.2526,
++      "rougeL_r": 0.3684,
++      "rougeL_f": 0.2988
++    },
++    "yake_extractive": {
++      "rouge1_p": 0.3479,
++      "rouge1_r": 0.5004,
++      "rouge1_f": 0.409,
++      "rouge2_p": 0.1319,
++      "rouge2_r": 0.1951,
++      "rouge2_f": 0.1569,
++      "rougeL_p": 0.2466,
++      "rougeL_r": 0.3573,
++      "rougeL_f": 0.291
++    },
++    "llm_unconditioned": {
++      "rouge1_p": 0.3708,
++      "rouge1_r": 0.1883,
++      "rouge1_f": 0.2462,
++      "rouge2_p": 0.1285,
++      "rouge2_r": 0.0657,
++      "rouge2_f": 0.0857,
++      "rougeL_p": 0.2838,
++      "rougeL_r": 0.1456,
++      "rougeL_f": 0.1898
++    },
++    "yake_llm_guided": {
++      "rouge1_p": 0.2282,
++      "rouge1_r": 0.2083,
++      "rouge1_f": 0.216,
++      "rouge2_p": 0.072,
++      "rouge2_r": 0.0672,
++      "rouge2_f": 0.0689,
++      "rougeL_p": 0.1792,
++      "rougeL_r": 0.1645,
++      "rougeL_f": 0.1702
++    },
++    "oracle_llm_guided": {
++      "rouge1_p": 0.368,
++      "rouge1_r": 0.3114,
++      "rouge1_f": 0.3349,
++      "rouge2_p": 0.1361,
++      "rouge2_r": 0.1178,
++      "rouge2_f": 0.1255,
++      "rougeL_p": 0.2495,
++      "rougeL_r": 0.211,
++      "rougeL_f": 0.227
++    }
++  },
++  "ci95": {
++    "lead_3": {
++      "rouge1_f": [
++        0.3735,
++        0.4733
++      ],
++      "rouge2_f": [
++        0.1169,
++        0.2172
++      ],
++      "rougeL_f": [
++        0.2458,
++        0.3674
++      ]
++    },
++    "yake_extractive": {
++      "rouge1_f": [
++        0.3628,
++        0.4662
++      ],
++      "rouge2_f": [
++        0.1112,
++        0.211
++      ],
++      "rougeL_f": [
++        0.2376,
++        0.3613
++      ]
++    },
++    "llm_unconditioned": {
++      "rouge1_f": [
++        0.1893,
++        0.3137
++      ],
++      "rouge2_f": [
++        0.0501,
++        0.1295
++      ],
++      "rougeL_f": [
++        0.1425,
++        0.2456
++      ]
++    },
++    "yake_llm_guided": {
++      "rouge1_f": [
++        0.1729,
++        0.2655
++      ],
++      "rouge2_f": [
++        0.041,
++        0.1027
++      ],
++      "rougeL_f": [
++        0.1319,
++        0.213
++      ]
+     },
++    "oracle_llm_guided": {
++      "rouge1_f": [
++        0.2982,
++        0.3749
++      ],
++      "rouge2_f": [
++        0.0988,
++        0.1545
++      ],
++      "rougeL_f": [
++        0.1846,
++        0.2721
++      ]
++    }
++  },
++  "paired_vs_lead_3": {
+     "yake_extractive": {
+-      "rouge1_p": 0.3532,
+-      "rouge1_r": 0.4674,
+-      "rouge1_f": 0.4009,
+-      "rouge2_p": 0.1138,
+-      "rouge2_r": 0.1551,
+-      "rouge2_f": 0.1309,
+-      "rougeL_p": 0.2605,
+-      "rougeL_r": 0.3461,
+-      "rougeL_f": 0.2962
++      "rouge1_f": {
++        "mean_diff": -0.0089,
++        "ci95": [
++          -0.0305,
++          0.0047
++        ],
++        "wins": 1,
++        "ties": 12,
++        "losses": 2,
++        "significant": false
++      },
++      "rouge2_f": {
++        "mean_diff": -0.0068,
++        "ci95": [
++          -0.0257,
++          0.005
++        ],
++        "wins": 2,
++        "ties": 12,
++        "losses": 1,
++        "significant": false
++      },
++      "rougeL_f": {
++        "mean_diff": -0.0079,
++        "ci95": [
++          -0.0271,
++          0.0041
++        ],
++        "wins": 1,
++        "ties": 12,
++        "losses": 2,
++        "significant": false
++      }
+     },
+     "llm_unconditioned": {
+-      "rouge1_p": 0.4551,
+-      "rouge1_r": 0.2251,
+-      "rouge1_f": 0.2964,
+-      "rouge2_p": 0.174,
+-      "rouge2_r": 0.0881,
+-      "rouge2_f": 0.1152,
+-      "rougeL_p": 0.3505,
+-      "rougeL_r": 0.1749,
+-      "rougeL_f": 0.2297
++      "rouge1_f": {
++        "mean_diff": -0.1717,
++        "ci95": [
++          -0.2306,
++          -0.1183
++        ],
++        "wins": 1,
++        "ties": 0,
++        "losses": 14,
++        "significant": true
++      },
++      "rouge2_f": {
++        "mean_diff": -0.0781,
++        "ci95": [
++          -0.1293,
++          -0.0338
++        ],
++        "wins": 3,
++        "ties": 0,
++        "losses": 12,
++        "significant": true
++      },
++      "rougeL_f": {
++        "mean_diff": -0.109,
++        "ci95": [
++          -0.1724,
++          -0.0569
++        ],
++        "wins": 2,
++        "ties": 0,
++        "losses": 13,
++        "significant": true
++      }
+     },
+     "yake_llm_guided": {
+-      "rouge1_p": 0.2719,
+-      "rouge1_r": 0.2445,
+-      "rouge1_f": 0.2549,
+-      "rouge2_p": 0.0969,
+-      "rouge2_r": 0.0904,
+-      "rouge2_f": 0.0926,
+-      "rougeL_p": 0.2184,
+-      "rougeL_r": 0.1978,
+-      "rougeL_f": 0.2057
++      "rouge1_f": {
++        "mean_diff": -0.202,
++        "ci95": [
++          -0.2505,
++          -0.1578
++        ],
++        "wins": 0,
++        "ties": 0,
++        "losses": 15,
++        "significant": true
++      },
++      "rouge2_f": {
++        "mean_diff": -0.0949,
++        "ci95": [
++          -0.144,
++          -0.053
++        ],
++        "wins": 2,
++        "ties": 0,
++        "losses": 13,
++        "significant": true
++      },
++      "rougeL_f": {
++        "mean_diff": -0.1286,
++        "ci95": [
++          -0.1876,
++          -0.0788
++        ],
++        "wins": 1,
++        "ties": 0,
++        "losses": 14,
++        "significant": true
++      }
+     },
+     "oracle_llm_guided": {
+-      "rouge1_p": 0.3984,
+-      "rouge1_r": 0.3262,
+-      "rouge1_f": 0.3556,
+-      "rouge2_p": 0.1492,
+-      "rouge2_r": 0.1261,
+-      "rouge2_f": 0.1357,
+-      "rougeL_p": 0.2968,
+-      "rougeL_r": 0.2459,
+-      "rougeL_f": 0.2668
++      "rouge1_f": {
++        "mean_diff": -0.083,
++        "ci95": [
++          -0.1373,
++          -0.0314
++        ],
++        "wins": 3,
++        "ties": 0,
++        "losses": 12,
++        "significant": true
++      },
++      "rouge2_f": {
++        "mean_diff": -0.0383,
++        "ci95": [
++          -0.0833,
++          0.001
++        ],
++        "wins": 4,
++        "ties": 0,
++        "losses": 11,
++        "significant": false
++      },
++      "rougeL_f": {
++        "mean_diff": -0.0718,
++        "ci95": [
++          -0.1329,
++          -0.0189
++        ],
++        "wins": 5,
++        "ties": 0,
++        "losses": 10,
++        "significant": true
++      }
+     }
+   },
++  "avg_summary_words": {
++    "lead_3": 53.7,
++    "yake_extractive": 53.5,
++    "llm_unconditioned": 19.3,
++    "yake_llm_guided": 34.3,
++    "oracle_llm_guided": 31.3
++  },
++  "avg_reference_words": 36.7,
+   "raw_scores": {
+     "lead_3": [
+       {
+-        "rouge1_p": 0.4615,
+-        "rouge1_r": 0.5625,
+-        "rouge1_f": 0.507,
+-        "rouge2_p": 0.2105,
+-        "rouge2_r": 0.2581,
+-        "rouge2_f": 0.2319,
+-        "rougeL_p": 0.3846,
+-        "rougeL_r": 0.4688,
+-        "rougeL_f": 0.4225
++        "rouge1_p": 0.4894,
++        "rouge1_r": 0.7188,
++        "rouge1_f": 0.5823,
++        "rouge2_p": 0.2391,
++        "rouge2_r": 0.3548,
++        "rouge2_f": 0.2857,
++        "rougeL_p": 0.4043,
++        "rougeL_r": 0.5938,
++        "rougeL_f": 0.481
+       },
+       {
+         "rouge1_p": 0.5294,
+@@ -181,19 +426,74 @@
+         "rougeL_p": 0.1957,
+         "rougeL_r": 0.2432,
+         "rougeL_f": 0.2169
++      },
++      {
++        "rouge1_p": 0.4643,
++        "rouge1_r": 0.7222,
++        "rouge1_f": 0.5652,
++        "rouge2_p": 0.2545,
++        "rouge2_r": 0.4,
++        "rouge2_f": 0.3111,
++        "rougeL_p": 0.3929,
++        "rougeL_r": 0.6111,
++        "rougeL_f": 0.4783
++      },
++      {
++        "rouge1_p": 0.2812,
++        "rouge1_r": 0.4737,
++        "rouge1_f": 0.3529,
++        "rouge2_p": 0.0952,
++        "rouge2_r": 0.1622,
++        "rouge2_f": 0.12,
++        "rougeL_p": 0.2031,
++        "rougeL_r": 0.3421,
++        "rougeL_f": 0.2549
++      },
++      {
++        "rouge1_p": 0.339,
++        "rouge1_r": 0.5556,
++        "rouge1_f": 0.4211,
++        "rouge2_p": 0.2069,
++        "rouge2_r": 0.3429,
++        "rouge2_f": 0.2581,
++        "rougeL_p": 0.2712,
++        "rougeL_r": 0.4444,
++        "rougeL_f": 0.3368
++      },
++      {
++        "rouge1_p": 0.3167,
++        "rouge1_r": 0.4634,
++        "rouge1_f": 0.3762,
++        "rouge2_p": 0.0678,
++        "rouge2_r": 0.1,
++        "rouge2_f": 0.0808,
++        "rougeL_p": 0.2167,
++        "rougeL_r": 0.3171,
++        "rougeL_f": 0.2574
++      },
++      {
++        "rouge1_p": 0.2969,
++        "rouge1_r": 0.4634,
++        "rouge1_f": 0.3619,
++        "rouge2_p": 0.1905,
++        "rouge2_r": 0.3,
++        "rouge2_f": 0.233,
++        "rougeL_p": 0.1875,
++        "rougeL_r": 0.2927,
++        "rougeL_f": 0.2286
+       }
+     ],
+     "yake_extractive": [
+       {
+-        "rouge1_p": 0.4615,
+-        "rouge1_r": 0.5625,
+-        "rouge1_f": 0.507,
+-        "rouge2_p": 0.2105,
+-        "rouge2_r": 0.2581,
+-        "rouge2_f": 0.2319,
+-        "rougeL_p": 0.3846,
+-        "rougeL_r": 0.4688,
+-        "rougeL_f": 0.4225
++        "rouge1_p": 0.4894,
++        "rouge1_r": 0.7188,
++        "rouge1_f": 0.5823,
++        "rouge2_p": 0.2391,
++        "rouge2_r": 0.3548,
++        "rouge2_f": 0.2857,
++        "rougeL_p": 0.4043,
++        "rougeL_r": 0.5938,
++        "rougeL_f": 0.481
+       },
+       {
+         "rouge1_p": 0.5294,
+@@ -207,15 +507,15 @@
+         "rougeL_f": 0.5882
+       },
+       {
+-        "rouge1_p": 0.2958,
+-        "rouge1_r": 0.4773,
+-        "rouge1_f": 0.3652,
+-        "rouge2_p": 0.0571,
+-        "rouge2_r": 0.093,
+-        "rouge2_f": 0.0708,
+-        "rougeL_p": 0.1831,
+-        "rougeL_r": 0.2955,
+-        "rougeL_f": 0.2261
++        "rouge1_p": 0.3067,
++        "rouge1_r": 0.5227,
++        "rouge1_f": 0.3866,
++        "rouge2_p": 0.0676,
++        "rouge2_r": 0.1163,
++        "rouge2_f": 0.0855,
++        "rougeL_p": 0.1467,
++        "rougeL_r": 0.25,
++        "rougeL_f": 0.1849
+       },
+       {
+         "rouge1_p": 0.3846,
+@@ -229,26 +529,26 @@
+         "rougeL_f": 0.2979
+       },
+       {
+-        "rouge1_p": 0.2857,
+-        "rouge1_r": 0.3784,
+-        "rouge1_f": 0.3256,
+-        "rouge2_p": 0.125,
+-        "rouge2_r": 0.1667,
+-        "rouge2_f": 0.1429,
+-        "rougeL_p": 0.2653,
+-        "rougeL_r": 0.3514,
+-        "rougeL_f": 0.3023
++        "rouge1_p": 0.3462,
++        "rouge1_r": 0.4865,
++        "rouge1_f": 0.4045,
++        "rouge2_p": 0.1569,
++        "rouge2_r": 0.2222,
++        "rouge2_f": 0.1839,
++        "rougeL_p": 0.2692,
++        "rougeL_r": 0.3784,
++        "rougeL_f": 0.3146
+       },
+       {
+-        "rouge1_p": 0.3953,
+-        "rouge1_r": 0.4595,
+-        "rouge1_f": 0.425,
+-        "rouge2_p": 0.0714,
++        "rouge1_p": 0.3478,
++        "rouge1_r": 0.4324,
++        "rouge1_f": 0.3855,
++        "rouge2_p": 0.0667,
+         "rouge2_r": 0.0833,
+-        "rouge2_f": 0.0769,
+-        "rougeL_p": 0.2558,
+-        "rougeL_r": 0.2973,
+-        "rougeL_f": 0.275
++        "rouge2_f": 0.0741,
++        "rougeL_p": 0.2174,
++        "rougeL_r": 0.2703,
++        "rougeL_f": 0.241
+       },
+       {
+         "rouge1_p": 0.2593,
+@@ -273,15 +573,15 @@
+         "rougeL_f": 0.2222
+       },
+       {
+-        "rouge1_p": 0.2708,
+-        "rouge1_r": 0.2826,
+-        "rouge1_f": 0.2766,
+-        "rouge2_p": 0.0213,
+-        "rouge2_r": 0.0222,
+-        "rouge2_f": 0.0217,
+-        "rougeL_p": 0.1875,
+-        "rougeL_r": 0.1957,
+-        "rougeL_f": 0.1915
++        "rouge1_p": 0.3265,
++        "rouge1_r": 0.3478,
++        "rouge1_f": 0.3368,
++        "rouge2_p": 0.0833,
++        "rouge2_r": 0.0889,
++        "rouge2_f": 0.086,
++        "rougeL_p": 0.1633,
++        "rougeL_r": 0.1739,
++        "rougeL_f": 0.1684
+       },
+       {
+         "rouge1_p": 0.3478,
+@@ -293,6 +593,61 @@
+         "rougeL_p": 0.1957,
+         "rougeL_r": 0.2432,
+         "rougeL_f": 0.2169
++      },
++      {
++        "rouge1_p": 0.4643,
++        "rouge1_r": 0.7222,
++        "rouge1_f": 0.5652,
++        "rouge2_p": 0.2545,
++        "rouge2_r": 0.4,
++        "rouge2_f": 0.3111,
++        "rougeL_p": 0.3929,
++        "rougeL_r": 0.6111,
++        "rougeL_f": 0.4783
++      },
++      {
++        "rouge1_p": 0.2812,
++        "rouge1_r": 0.4737,
++        "rouge1_f": 0.3529,
++        "rouge2_p": 0.0952,
++        "rouge2_r": 0.1622,
++        "rouge2_f": 0.12,
++        "rougeL_p": 0.2031,
++        "rougeL_r": 0.3421,
++        "rougeL_f": 0.2549
++      },
++      {
++        "rouge1_p": 0.2203,
++        "rouge1_r": 0.3611,
++        "rouge1_f": 0.2737,
++        "rouge2_p": 0.1034,
++        "rouge2_r": 0.1714,
++        "rouge2_f": 0.129,
++        "rougeL_p": 0.1695,
++        "rougeL_r": 0.2778,
++        "rougeL_f": 0.2105
++      },
++      {
++        "rouge1_p": 0.3167,
++        "rouge1_r": 0.4634,
++        "rouge1_f": 0.3762,
++        "rouge2_p": 0.0678,
++        "rouge2_r": 0.1,
++        "rouge2_f": 0.0808,
++        "rougeL_p": 0.2167,
++        "rougeL_r": 0.3171,
++        "rougeL_f": 0.2574
++      },
++      {
++        "rouge1_p": 0.2969,
++        "rouge1_r": 0.4634,
++        "rouge1_f": 0.3619,
++        "rouge2_p": 0.1905,
++        "rouge2_r": 0.3,
++        "rouge2_f": 0.233,
++        "rougeL_p": 0.1875,
++        "rougeL_r": 0.2927,
++        "rougeL_f": 0.2286
+       }
+     ],
+     "llm_unconditioned": [
+@@ -405,6 +760,61 @@
+         "rougeL_p": 0.2667,
+         "rougeL_r": 0.1081,
+         "rougeL_f": 0.1538
++      },
++      {
++        "rouge1_p": 0.2353,
++        "rouge1_r": 0.1111,
++        "rouge1_f": 0.1509,
++        "rouge2_p": 0.0625,
++        "rouge2_r": 0.0286,
++        "rouge2_f": 0.0392,
++        "rougeL_p": 0.1176,
++        "rougeL_r": 0.0556,
++        "rougeL_f": 0.0755
++      },
++      {
++        "rouge1_p": 0.12,
++        "rouge1_r": 0.0789,
++        "rouge1_f": 0.0952,
++        "rouge2_p": 0.0,
++        "rouge2_r": 0.0,
++        "rouge2_f": 0.0,
++        "rougeL_p": 0.08,
++        "rougeL_r": 0.0526,
++        "rougeL_f": 0.0635
++      },
++      {
++        "rouge1_p": 0.25,
++        "rouge1_r": 0.1389,
++        "rouge1_f": 0.1786,
++        "rouge2_p": 0.0,
++        "rouge2_r": 0.0,
++        "rouge2_f": 0.0,
++        "rougeL_p": 0.15,
++        "rougeL_r": 0.0833,
++        "rougeL_f": 0.1071
++      },
++      {
++        "rouge1_p": 0.1739,
++        "rouge1_r": 0.0976,
++        "rouge1_f": 0.125,
++        "rouge2_p": 0.0455,
++        "rouge2_r": 0.025,
++        "rouge2_f": 0.0323,
++        "rougeL_p": 0.1739,
++        "rougeL_r": 0.0976,
++        "rougeL_f": 0.125
++      },
++      {
++        "rouge1_p": 0.2308,
++        "rouge1_r": 0.1463,
++        "rouge1_f": 0.1791,
++        "rouge2_p": 0.08,
++        "rouge2_r": 0.05,
++        "rouge2_f": 0.0615,
++        "rougeL_p": 0.2308,
++        "rougeL_r": 0.1463,
++        "rougeL_f": 0.1791
+       }
+     ],
+     "yake_llm_guided": [
+@@ -517,6 +927,61 @@
+         "rougeL_p": 0.1667,
+         "rougeL_r": 0.1351,
+         "rougeL_f": 0.1493
++      },
++      {
++        "rouge1_p": 0.1875,
++        "rouge1_r": 0.1667,
++        "rouge1_f": 0.1765,
++        "rouge2_p": 0.0323,
++        "rouge2_r": 0.0286,
++        "rouge2_f": 0.0303,
++        "rougeL_p": 0.0938,
++        "rougeL_r": 0.0833,
++        "rougeL_f": 0.0882
++      },
++      {
++        "rouge1_p": 0.0952,
++        "rouge1_r": 0.1053,
++        "rouge1_f": 0.1,
++        "rouge2_p": 0.0,
++        "rouge2_r": 0.0,
++        "rouge2_f": 0.0,
++        "rougeL_p": 0.0714,
++        "rougeL_r": 0.0789,
++        "rougeL_f": 0.075
++      },
++      {
++        "rouge1_p": 0.1429,
++        "rouge1_r": 0.1389,
++        "rouge1_f": 0.1408,
++        "rouge2_p": 0.0,
++        "rouge2_r": 0.0,
++        "rouge2_f": 0.0,
++        "rougeL_p": 0.0857,
++        "rougeL_r": 0.0833,
++        "rougeL_f": 0.0845
++      },
++      {
++        "rouge1_p": 0.1282,
++        "rouge1_r": 0.122,
++        "rouge1_f": 0.125,
++        "rouge2_p": 0.0263,
++        "rouge2_r": 0.025,
++        "rouge2_f": 0.0256,
++        "rougeL_p": 0.1026,
++        "rougeL_r": 0.0976,
++        "rougeL_f": 0.1
++      },
++      {
++        "rouge1_p": 0.15,
++        "rouge1_r": 0.1463,
++        "rouge1_f": 0.1481,
++        "rouge2_p": 0.0513,
++        "rouge2_r": 0.05,
++        "rouge2_f": 0.0506,
++        "rougeL_p": 0.15,
++        "rougeL_r": 0.1463,
++        "rougeL_f": 0.1481
+       }
+     ],
+     "oracle_llm_guided": [
+@@ -629,6 +1094,61 @@
+         "rougeL_p": 0.25,
+         "rougeL_r": 0.1892,
+         "rougeL_f": 0.2154
++      },
++      {
++        "rouge1_p": 0.3667,
++        "rouge1_r": 0.3056,
++        "rouge1_f": 0.3333,
++        "rouge2_p": 0.1379,
++        "rouge2_r": 0.1143,
++        "rouge2_f": 0.125,
++        "rougeL_p": 0.2,
++        "rougeL_r": 0.1667,
++        "rougeL_f": 0.1818
++      },
++      {
++        "rouge1_p": 0.275,
++        "rouge1_r": 0.2895,
++        "rouge1_f": 0.2821,
++        "rouge2_p": 0.0769,
++        "rouge2_r": 0.0811,
++        "rouge2_f": 0.0789,
++        "rougeL_p": 0.125,
++        "rougeL_r": 0.1316,
++        "rougeL_f": 0.1282
++      },
++      {
++        "rouge1_p": 0.3125,
++        "rouge1_r": 0.2778,
++        "rouge1_f": 0.2941,
++        "rouge2_p": 0.0968,
++        "rouge2_r": 0.0857,
++        "rouge2_f": 0.0909,
++        "rougeL_p": 0.1562,
++        "rougeL_r": 0.1389,
++        "rougeL_f": 0.1471
++      },
++      {
++        "rouge1_p": 0.2571,
++        "rouge1_r": 0.2195,
++        "rouge1_f": 0.2368,
++        "rouge2_p": 0.0588,
++        "rouge2_r": 0.05,
++        "rouge2_f": 0.0541,
++        "rougeL_p": 0.1429,
++        "rougeL_r": 0.122,
++        "rougeL_f": 0.1316
++      },
++      {
++        "rouge1_p": 0.325,
++        "rouge1_r": 0.3171,
++        "rouge1_f": 0.321,
++        "rouge2_p": 0.1795,
++        "rouge2_r": 0.175,
++        "rouge2_f": 0.1772,
++        "rougeL_p": 0.15,
++        "rougeL_r": 0.1463,
++        "rougeL_f": 0.1481
+       }
+     ]
+   }
+diff --git a/outputs/rouge_benchmark_report.md b/outputs/rouge_benchmark_report.md
+index 8fa4ea9..f66dc53 100644
+--- a/outputs/rouge_benchmark_report.md
++++ b/outputs/rouge_benchmark_report.md
+@@ -1,7 +1,7 @@
+ # 📊 Empirical ROUGE Benchmark Study Report
+ 
+-**Generated on:** 2026-09-28T15:49:49.703806Z  
+-**Evaluated Samples:** 10 documents from `data/eval/benchmark_with_summaries.json`  
++**Generated on:** 2026-10-01T13:33:51.444221Z  
++**Evaluated Samples:** 15 documents from `data/eval/benchmark_with_summaries.json`  
+ **Backend:** `mock`  
+ **Interpretation:** This is a deterministic pipeline smoke test. Mock outputs must not be used as evidence of abstractive summary quality or keyword-conditioning gains.
+ 
+@@ -11,15 +11,35 @@
+ 
+ | Method | Type | ROUGE-1 F1 | ROUGE-1 Recall | ROUGE-2 F1 | ROUGE-2 Recall | ROUGE-L F1 | ROUGE-L Recall |
+ |---|---|---|---|---|---|---|---|
+-| **Lead-3** | Extractive Baseline | 0.4116 | 0.4865 | 0.1400 | 0.1668 | 0.2868 | 0.3394 |
+-| **YAKE Extractive** | Zero-LLM Proposed | 0.4009 | 0.4674 | 0.1309 | 0.1551 | 0.2962 | 0.3461 |
+-| **LLM Unconditioned** | Baseline Abstractive | 0.2964 | 0.2251 | 0.1152 | 0.0881 | 0.2297 | 0.1749 |
+-| **YAKE LLM Guided** | Full Pipeline | **0.2549** | **0.2445** | **0.0926** | **0.0904** | **0.2057** | **0.1978** |
+-| **Oracle LLM Guided** | Upper Bound (Gold KW) | 0.3556 | 0.3262 | 0.1357 | 0.1261 | 0.2668 | 0.2459 |
++| **Lead-3** | Extractive Baseline | 0.4179 | 0.5133 | 0.1638 | 0.2047 | 0.2988 | 0.3684 |
++| **YAKE Extractive** | Zero-LLM Proposed | 0.4090 | 0.5004 | 0.1569 | 0.1951 | 0.2910 | 0.3573 |
++| **LLM Unconditioned** | Baseline Abstractive | 0.2462 | 0.1883 | 0.0857 | 0.0657 | 0.1898 | 0.1456 |
++| **YAKE LLM Guided** | Full Pipeline | 0.2160 | 0.2083 | 0.0689 | 0.0672 | 0.1702 | 0.1645 |
++| **Oracle LLM Guided** | Upper Bound (Gold KW) | 0.3349 | 0.3114 | 0.1255 | 0.1178 | 0.2270 | 0.2110 |
+ 
+ ---
+ 
+-## 2. Interpretation
++## 2. Uncertainty and length
++
++With only 15 short documents, differences between methods are often within noise. Values below are
++mean ROUGE-1/2/L F1 with a 95% bootstrap CI, the paired difference against Lead-3 (wins/ties/losses per
++document) and the average summary length (reference: 36.7 words).
++
++| Method | ROUGE-1 F1 [95% CI] | ROUGE-2 F1 [95% CI] | ROUGE-L F1 [95% CI] | Δ R1 vs Lead-3 (W/T/L) | Avg words |
++|---|---|---|---|---|---|
++| lead_3 | 0.418 [0.373, 0.473] | 0.164 [0.117, 0.217] | 0.299 [0.246, 0.367] | baseline | 53.7 |
++| yake_extractive | 0.409 [0.363, 0.466] | 0.157 [0.111, 0.211] | 0.291 [0.238, 0.361] | -0.009 (1/12/2) | 53.5 |
++| llm_unconditioned | 0.246 [0.189, 0.314] | 0.086 [0.050, 0.130] | 0.190 [0.142, 0.246] | -0.172 * (1/0/14) | 19.3 |
++| yake_llm_guided | 0.216 [0.173, 0.266] | 0.069 [0.041, 0.103] | 0.170 [0.132, 0.213] | -0.202 * (0/0/15) | 34.3 |
++| oracle_llm_guided | 0.335 [0.298, 0.375] | 0.126 [0.099, 0.154] | 0.227 [0.185, 0.272] | -0.083 * (3/0/12) | 31.3 |
++
++`*` = paired 95% CI excludes zero.
++
++Reference provenance: 5 × `project_created`, 10 × `unverified`
++
++---
++
++## 3. Interpretation
+ 
+ - **Backend scope:** This is a deterministic pipeline smoke test. Mock outputs must not be used as evidence of abstractive summary quality or keyword-conditioning gains.
+ - **Extractive comparison:** Lead-3 and YAKE Extractive are directly comparable without an LLM service.
+diff --git a/pyproject.toml b/pyproject.toml
+index 56428c9..b0b6a7d 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -18,6 +18,7 @@ dependencies = [
+     "rouge-score>=0.1.2",
+     "requests>=2.28.0",
+     "pyyaml>=6.0",
++    "nltk>=3.8",
+ ]
+ 
+ [project.optional-dependencies]
+diff --git a/src/yake_sum/__init__.py b/src/yake_sum/__init__.py
+index d79731e..1ccd90c 100644
+--- a/src/yake_sum/__init__.py
++++ b/src/yake_sum/__init__.py
+@@ -5,14 +5,19 @@ keyword-guided abstractive summarization, and long-document hybrid pipelines.
+ """
+ 
+ from .abstractive.summarizer import AbstractiveSummarizer
+-from .backends.base import BaseLLMClient, BackendError, BackendConnectionError
+-from .evaluation.rouge import compute_rouge_metrics
++from .backends.base import (
++    BackendConnectionError,
++    BackendError,
++    BackendTimeoutError,
++    BaseLLMClient,
++)
++from .evaluation import compute_rouge_metrics, keyword_coverage, keyword_prf
+ from .extractive.summarizer import ExtractiveSummarizer
+ from .hybrid.summarizer import HybridSummarizer
+ from .models import AbstractiveResult, ExtractiveResult, HybridResult, Keyword, SummaryResult
+ from .summarizer import Summarizer
+ 
+-__version__ = "0.1.0"
++__version__ = "0.2.0"
+ 
+ __all__ = [
+     "Summarizer",
+@@ -22,7 +27,10 @@ __all__ = [
+     "BaseLLMClient",
+     "BackendError",
+     "BackendConnectionError",
++    "BackendTimeoutError",
+     "compute_rouge_metrics",
++    "keyword_coverage",
++    "keyword_prf",
+     "Keyword",
+     "SummaryResult",
+     "ExtractiveResult",
+diff --git a/src/yake_sum/abstractive/prompt.py b/src/yake_sum/abstractive/prompt.py
+index 6356c06..bfeccad 100644
+--- a/src/yake_sum/abstractive/prompt.py
++++ b/src/yake_sum/abstractive/prompt.py
+@@ -4,18 +4,30 @@ from __future__ import annotations
+ 
+ from typing import Iterable
+ 
++DEFAULT_SYSTEM = "You are a concise scientific and technical summarizer."
++_FAITHFUL = (
++    "Use only information stated in the document; do not add facts, numbers or claims "
++    "that are not in it. Output only the summary text, with no preamble."
++)
++
++
++def _length_clause(max_sentences: int | None) -> str:
++    return f" Write at most {max_sentences} sentences." if max_sentences else ""
++
+ 
+ def build_keyword_prompt(
+     keywords: Iterable[str],
+     text: str,
+-    system_instruction: str = "You are a concise scientific and technical summarizer.",
++    system_instruction: str = DEFAULT_SYSTEM,
++    max_sentences: int | None = 3,
+ ) -> str:
+-    """Build a prompt conditioning the LLM to cover key concepts extracted by YAKE."""
++    """Prompt conditioning the LLM to cover the key concepts extracted by YAKE."""
+     kw_str = ", ".join(keywords)
+     return (
+         f"{system_instruction}\n\n"
+-        "Given the following keywords extracted from the document, write a concise and faithful summary "
+-        "that explains the central claims and concepts.\n\n"
++        "Given the following keywords extracted from the document, write a concise and faithful "
++        "summary that covers the central claims and concepts."
++        f"{_length_clause(max_sentences)} {_FAITHFUL}\n\n"
+         f"Keywords: [{kw_str}]\n\n"
+         f"Document:\n{text.strip()}"
+     )
+@@ -23,11 +35,13 @@ def build_keyword_prompt(
+ 
+ def build_unconditioned_prompt(
+     text: str,
+-    system_instruction: str = "You are a concise scientific and technical summarizer.",
++    system_instruction: str = DEFAULT_SYSTEM,
++    max_sentences: int | None = 3,
+ ) -> str:
+-    """Build a standard summarization prompt without keywords (for baselines and ablation)."""
++    """Baseline prompt without keywords (ablation); same length/faithfulness rules."""
+     return (
+         f"{system_instruction}\n\n"
+-        "Write a concise and faithful summary of the following document.\n\n"
++        "Write a concise and faithful summary of the following document."
++        f"{_length_clause(max_sentences)} {_FAITHFUL}\n\n"
+         f"Document:\n{text.strip()}"
+     )
+diff --git a/src/yake_sum/abstractive/summarizer.py b/src/yake_sum/abstractive/summarizer.py
+index 3604c57..b426720 100644
+--- a/src/yake_sum/abstractive/summarizer.py
++++ b/src/yake_sum/abstractive/summarizer.py
+@@ -2,16 +2,21 @@
+ 
+ from __future__ import annotations
+ 
+-import yake
+-
+-from ..backends.base import BaseLLMClient
++from ..backends.base import BackendError, BaseLLMClient
+ from ..backends.mock import MockLLMClient
++from ..keywords import KeywordExtractor
+ from ..models import AbstractiveResult, Keyword
++from ..validation import require_float, require_int
+ from .prompt import build_keyword_prompt, build_unconditioned_prompt
+ 
+ 
+ class AbstractiveSummarizer:
+-    """Guided abstractive summarizer that conditions LLM output on YAKE keywords."""
++    """Keyword-guided abstractive summarizer.
++
++    Falls back to the unconditioned prompt when YAKE yields no keywords, and
++    raises ``BackendError`` if the model returns an empty summary (never silently
++    returns an empty string as if it were a valid result).
++    """
+ 
+     def __init__(
+         self,
+@@ -22,21 +27,13 @@ class AbstractiveSummarizer:
+         deduplication_threshold: float = 0.9,
+         temperature: float = 0.2,
+         max_tokens: int = 512,
++        max_sentences: int | None = 3,
+     ) -> None:
+         self.llm_client = llm_client or MockLLMClient()
+-        self.language = language
+-        self.max_ngram_size = max_ngram_size
+-        self.top_k = top_k
+-        self.deduplication_threshold = deduplication_threshold
+-        self.temperature = temperature
+-        self.max_tokens = max_tokens
+-
+-        self._extractor = yake.KeywordExtractor(
+-            lan=self.language,
+-            n=self.max_ngram_size,
+-            dedupLim=self.deduplication_threshold,
+-            top=self.top_k,
+-        )
++        self.temperature = require_float("temperature", temperature, 0.0, 2.0)
++        self.max_tokens = require_int("max_tokens", max_tokens)
++        self.max_sentences = None if max_sentences is None else require_int("max_sentences", max_sentences)
++        self._extractor = KeywordExtractor(language, max_ngram_size, top_k, deduplication_threshold)
+ 
+     def summarize(
+         self,
+@@ -44,38 +41,33 @@ class AbstractiveSummarizer:
+         external_keywords: list[str] | None = None,
+         use_keywords: bool = True,
+     ) -> AbstractiveResult:
+-        clean_text = text.strip()
+-        if not clean_text:
+-            return AbstractiveResult(
+-                summary="",
+-                keywords=[],
+-                prompt_used="",
+-            )
++        clean = text.strip()
++        if not clean:
++            return AbstractiveResult(summary="", keywords=[], prompt_used="")
+ 
+-        if external_keywords is not None:
+-            keywords = [Keyword(keyword=k, score=0.0) for k in external_keywords]
+-            kw_strings = external_keywords
++        if external_keywords:
++            keywords = [Keyword(keyword=k, score=0.0) for k in external_keywords if k.strip()]
+         elif use_keywords:
+-            kw_tuples = self._extractor.extract_keywords(clean_text)
+-            keywords = [Keyword(keyword=k, score=round(s, 6)) for k, s in kw_tuples]
+-            kw_strings = [k.keyword for k in keywords]
++            keywords = [Keyword(k, round(s, 6)) for k, s in self._extractor.extract(clean)]
+         else:
+             keywords = []
+-            kw_strings = []
++        kw_strings = [k.keyword for k in keywords]
+ 
+-        if use_keywords and kw_strings:
+-            prompt = build_keyword_prompt(keywords=kw_strings, text=clean_text)
++        conditioned = use_keywords and bool(kw_strings)
++        if conditioned:
++            prompt = build_keyword_prompt(kw_strings, clean, max_sentences=self.max_sentences)
+         else:
+-            prompt = build_unconditioned_prompt(text=clean_text)
++            prompt = build_unconditioned_prompt(clean, max_sentences=self.max_sentences)
+ 
+         summary = self.llm_client.generate(
+-            prompt=prompt,
+-            temperature=self.temperature,
+-            max_tokens=self.max_tokens,
+-        )
++            prompt=prompt, temperature=self.temperature, max_tokens=self.max_tokens
++        ).strip()
++        if not summary:
++            raise BackendError("The LLM backend returned an empty summary.")
+ 
+         return AbstractiveResult(
+             summary=summary,
+             keywords=keywords,
+             prompt_used=prompt,
++            metadata={"keyword_conditioned": conditioned},
+         )
+diff --git a/src/yake_sum/backends/__init__.py b/src/yake_sum/backends/__init__.py
+index 9a13451..5493e84 100644
+--- a/src/yake_sum/backends/__init__.py
++++ b/src/yake_sum/backends/__init__.py
+@@ -4,7 +4,7 @@ from __future__ import annotations
+ 
+ from typing import Any
+ 
+-from .base import BackendConnectionError, BackendError, BaseLLMClient
++from .base import BackendConnectionError, BackendError, BackendTimeoutError, BaseLLMClient
+ from .llama_cpp import LlamaCppClient
+ from .mock import MockLLMClient
+ from .ollama import OllamaClient
+@@ -14,6 +14,7 @@ __all__ = [
+     "BaseLLMClient",
+     "BackendError",
+     "BackendConnectionError",
++    "BackendTimeoutError",
+     "MockLLMClient",
+     "OllamaClient",
+     "LlamaCppClient",
+@@ -32,11 +33,16 @@ def get_llm_client(backend: str = "mock", **kwargs: Any) -> BaseLLMClient:
+             model=kwargs.get("model", "mistral"),
+             host=kwargs.get("host", "http://localhost:11434"),
+             timeout=kwargs.get("timeout", 120),
++            max_retries=kwargs.get("max_retries", 2),
+         )
+     if name in ("llama_cpp", "llamacpp"):
+         model_path = kwargs.get("model_path")
++        if not model_path and str(kwargs.get("model", "")).endswith(".gguf"):
++            model_path = kwargs["model"]
+         if not model_path:
+-            raise ValueError("'model_path' is required for llama_cpp backend.")
++            raise ValueError(
++                "llama_cpp backend needs 'model_path' (or a '.gguf' path passed as model)."
++            )
+         return LlamaCppClient(
+             model_path=model_path,
+             n_ctx=kwargs.get("n_ctx", 4096),
+@@ -47,6 +53,7 @@ def get_llm_client(backend: str = "mock", **kwargs: Any) -> BaseLLMClient:
+             model=kwargs.get("model", "default"),
+             api_key=kwargs.get("api_key", "none"),
+             timeout=kwargs.get("timeout", 120),
++            max_retries=kwargs.get("max_retries", 2),
+         )
+     raise ValueError(
+         f"Unsupported backend '{backend}'. Supported: 'mock', 'ollama', 'llama_cpp', 'openai_compatible'"
+diff --git a/src/yake_sum/backends/_http.py b/src/yake_sum/backends/_http.py
+new file mode 100644
+index 0000000..87ce333
+--- /dev/null
++++ b/src/yake_sum/backends/_http.py
+@@ -0,0 +1,72 @@
++"""HTTP helper with bounded retry/backoff shared by network backends."""
++
++from __future__ import annotations
++
++import time
++from typing import Any, Callable
++
++import requests
++
++from .base import BackendConnectionError, BackendError, BackendTimeoutError
++
++RETRYABLE_STATUS = frozenset({408, 429, 500, 502, 503, 504})
++
++
++def post_json_with_retry(
++    url: str,
++    payload: dict[str, Any],
++    *,
++    timeout: float,
++    headers: dict[str, str] | None = None,
++    max_retries: int = 2,
++    backoff: float = 1.0,
++    post: Callable[..., Any] | None = None,
++    sleep: Callable[[float], None] = time.sleep,
++    service: str = "LLM backend",
++    troubleshooting: str = "",
++) -> dict[str, Any]:
++    """POST JSON and return the decoded body.
++
++    Retries only connection errors, timeouts and transient HTTP statuses
++    (``RETRYABLE_STATUS``) with exponential backoff, at most ``max_retries`` times.
++    Everything else (e.g. 400/401/404) fails immediately. The raised exception
++    carries the service, URL and troubleshooting advice.
++    """
++    post = post or requests.post
++    attempts = max_retries + 1
++    last_exc: Exception | None = None
++    kind = "connection"
++
++    for attempt in range(attempts):
++        try:
++            resp = post(url, json=payload, headers=headers, timeout=timeout)
++        except requests.Timeout as exc:
++            last_exc, kind = exc, "timeout"
++        except requests.ConnectionError as exc:
++            last_exc, kind = exc, "connection"
++        except requests.RequestException as exc:
++            raise BackendError(f"{service} request failed: {exc}") from exc
++        else:
++            status = getattr(resp, "status_code", 200)
++            if status in RETRYABLE_STATUS:
++                last_exc, kind = BackendError(f"HTTP {status}"), "http"
++            elif status >= 400:
++                detail = (getattr(resp, "text", "") or "")[:300]
++                raise BackendError(
++                    f"{service} returned HTTP {status} for {url}. {detail}".strip()
++                    + (f" {troubleshooting}" if troubleshooting else "")
++                )
++            else:
++                try:
++                    return resp.json()
++                except ValueError as exc:
++                    raise BackendError(f"{service} returned invalid JSON from {url}.") from exc
++        if attempt < attempts - 1:
++            sleep(backoff * (2**attempt))
++
++    msg = f"{service} at {url} failed after {attempts} attempt(s): {last_exc}."
++    if troubleshooting:
++        msg += f" {troubleshooting}"
++    if kind == "timeout":
++        raise BackendTimeoutError(msg) from last_exc
++    raise BackendConnectionError(msg) from last_exc
+diff --git a/src/yake_sum/backends/base.py b/src/yake_sum/backends/base.py
+index 36a4f02..4c2fd91 100644
+--- a/src/yake_sum/backends/base.py
++++ b/src/yake_sum/backends/base.py
+@@ -10,7 +10,11 @@ class BackendError(RuntimeError):
+ 
+ 
+ class BackendConnectionError(BackendError):
+-    """Raised when an LLM service is unreachable."""
++    """Raised when an LLM service is unreachable (after bounded retries)."""
++
++
++class BackendTimeoutError(BackendError):
++    """Raised when an LLM service does not answer within the configured timeout."""
+ 
+ 
+ @runtime_checkable
+diff --git a/src/yake_sum/backends/ollama.py b/src/yake_sum/backends/ollama.py
+index fba6078..83d582b 100644
+--- a/src/yake_sum/backends/ollama.py
++++ b/src/yake_sum/backends/ollama.py
+@@ -4,65 +4,83 @@ from __future__ import annotations
+ 
+ import os
+ import sys
++import time
++from typing import Any, Callable
++
+ import requests
+ 
+-from .base import BackendConnectionError, BackendError
++from ..validation import require_int
++from ._http import post_json_with_retry
++from .base import BackendError
+ 
+ 
+ class OllamaClient:
+-    """Client for local Ollama server."""
++    """Client for a local Ollama server with bounded retry and actionable errors."""
+ 
+     def __init__(
+         self,
+         model: str = "mistral",
+         host: str = "http://localhost:11434",
+         timeout: int = 120,
++        max_retries: int = 2,
++        backoff: float = 1.0,
++        post: Callable[..., Any] | None = None,
++        sleep: Callable[[float], None] = time.sleep,
+     ) -> None:
+-        # Check environment variable override (useful on WSL)
+-        env_host = os.environ.get("OLLAMA_HOST")
+-        self.host = (env_host or host).rstrip("/")
++        env_host = os.environ.get("OLLAMA_HOST")  # useful on WSL / remote hosts
++        host = env_host or host
++        if not host.startswith(("http://", "https://")):
++            host = f"http://{host}"
++        self.host = host.rstrip("/")
+         self.model = model
+-        self.timeout = timeout
++        self.timeout = require_int("timeout", timeout)
++        self.max_retries = require_int("max_retries", max_retries, minimum=0)
++        self.backoff = backoff
++        self._post = post
++        self._sleep = sleep
+ 
+-    def generate(
+-        self,
+-        prompt: str,
+-        temperature: float = 0.2,
+-        max_tokens: int = 512,
+-    ) -> str:
+-        url = f"{self.host}/api/generate"
++    def _hint(self) -> str:
++        hint = (
++            f"Troubleshooting: (1) start the server with 'ollama serve'; "
++            f"(2) check the host ({self.host}) or set OLLAMA_HOST; "
++            f"(3) make sure the model exists: 'ollama pull {self.model}'."
++        )
++        if sys.platform.startswith("linux") and "localhost" in self.host:
++            hint += " In WSL, OLLAMA_HOST must point to the Windows host IP."
++        return hint
++
++    def generate(self, prompt: str, temperature: float = 0.2, max_tokens: int = 512) -> str:
+         payload = {
+             "model": self.model,
+             "prompt": prompt,
+             "stream": False,
+-            "options": {
+-                "temperature": temperature,
+-                "num_predict": max_tokens,
+-            },
++            "options": {"temperature": temperature, "num_predict": max_tokens},
+         }
+-        try:
+-            response = requests.post(url, json=payload, timeout=self.timeout)
+-            response.raise_for_status()
+-        except requests.ConnectionError as exc:
+-            raise BackendConnectionError(
+-                f"Cannot connect to Ollama at {self.host}. Is 'ollama serve' running? [{exc}]"
+-            ) from exc
+-        except requests.RequestException as exc:
+-            raise BackendError(f"Ollama generation failed: {exc}") from exc
+-
+-        data = response.json()
+-        return data.get("response", "").strip()
++        data = post_json_with_retry(
++            f"{self.host}/api/generate",
++            payload,
++            timeout=self.timeout,
++            max_retries=self.max_retries,
++            backoff=self.backoff,
++            post=self._post,
++            sleep=self._sleep,
++            service=f"Ollama (model '{self.model}')",
++            troubleshooting=self._hint(),
++        )
++        text = str(data.get("response", "")).strip()
++        if not text:
++            raise BackendError(
++                f"Ollama model '{self.model}' returned an empty response. {self._hint()}"
++            )
++        return text
+ 
+     def is_available(self) -> tuple[bool, str]:
+         try:
+             res = requests.get(f"{self.host}/api/tags", timeout=3)
+             res.raise_for_status()
+         except requests.RequestException as exc:
+-            hint = ""
+-            if sys.platform.startswith("linux") and "localhost" in self.host:
+-                hint = " In WSL, set OLLAMA_HOST to the Windows host IP."
+-            return (
+-                False,
+-                f"Ollama unreachable at {self.host} — start server (ollama serve).{hint} [{exc}]",
+-            )
++            return False, f"Ollama unreachable at {self.host} [{exc}]. {self._hint()}"
++        names = {m.get("name", "").split(":")[0] for m in res.json().get("models", [])}
++        if names and self.model.split(":")[0] not in names:
++            return False, f"Ollama is up but model '{self.model}' is not pulled. {self._hint()}"
+         return True, f"Ollama ({self.model}) ready at {self.host}."
+diff --git a/src/yake_sum/backends/openai_compatible.py b/src/yake_sum/backends/openai_compatible.py
+index 3528e41..336f99b 100644
+--- a/src/yake_sum/backends/openai_compatible.py
++++ b/src/yake_sum/backends/openai_compatible.py
+@@ -2,8 +2,14 @@
+ 
+ from __future__ import annotations
+ 
++import time
++from typing import Any, Callable
++
+ import requests
+-from .base import BackendConnectionError, BackendError
++
++from ..validation import require_int
++from ._http import post_json_with_retry
++from .base import BackendError
+ 
+ 
+ class OpenAICompatibleClient:
+@@ -15,11 +21,19 @@ class OpenAICompatibleClient:
+         model: str = "default",
+         api_key: str = "none",
+         timeout: int = 120,
++        max_retries: int = 2,
++        backoff: float = 1.0,
++        post: Callable[..., Any] | None = None,
++        sleep: Callable[[float], None] = time.sleep,
+     ) -> None:
+         self.base_url = base_url.rstrip("/")
+         self.model = model
+         self.api_key = api_key
+-        self.timeout = timeout
++        self.timeout = require_int("timeout", timeout)
++        self.max_retries = require_int("max_retries", max_retries, minimum=0)
++        self.backoff = backoff
++        self._post = post
++        self._sleep = sleep
+ 
+     def generate(
+         self,
+@@ -40,18 +54,25 @@ class OpenAICompatibleClient:
+             "temperature": temperature,
+             "max_tokens": max_tokens,
+         }
++        data = post_json_with_retry(
++            url,
++            payload,
++            headers=headers,
++            timeout=self.timeout,
++            max_retries=self.max_retries,
++            backoff=self.backoff,
++            post=self._post,
++            sleep=self._sleep,
++            service=f"OpenAI-compatible endpoint (model '{self.model}')",
++            troubleshooting=f"Check that the server at {self.base_url} is running and the model name is valid.",
++        )
+         try:
+-            response = requests.post(url, json=payload, headers=headers, timeout=self.timeout)
+-            response.raise_for_status()
+-        except requests.ConnectionError as exc:
+-            raise BackendConnectionError(
+-                f"Failed to connect to OpenAI endpoint at {self.base_url}: {exc}"
+-            ) from exc
+-        except requests.RequestException as exc:
+-            raise BackendError(f"API request failed: {exc}") from exc
+-
+-        data = response.json()
+-        return data["choices"][0]["message"]["content"].strip()
++            text = str(data["choices"][0]["message"]["content"]).strip()
++        except (KeyError, IndexError, TypeError) as exc:
++            raise BackendError(f"Unexpected response schema from {url}: {str(data)[:200]}") from exc
++        if not text:
++            raise BackendError(f"Endpoint {url} returned an empty completion.")
++        return text
+ 
+     def is_available(self) -> tuple[bool, str]:
+         try:
+diff --git a/src/yake_sum/cli.py b/src/yake_sum/cli.py
+index 0d6311f..6cb3a13 100644
+--- a/src/yake_sum/cli.py
++++ b/src/yake_sum/cli.py
+@@ -7,6 +7,7 @@ import json
+ import sys
+ from pathlib import Path
+ 
++from .backends.base import BackendConnectionError, BackendError, BackendTimeoutError
+ from .summarizer import Summarizer
+ 
+ 
+@@ -18,7 +19,7 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
+     parser.add_argument(
+         "-i", "--input",
+         required=True,
+-        help="Path to input text file.",
++        help="Path to input text file, or '-' to read from stdin.",
+     )
+     parser.add_argument(
+         "-m", "--mode",
+@@ -49,6 +50,16 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
+         default=12,
+         help="Number of top keywords to extract with YAKE (default: 12).",
+     )
++    parser.add_argument(
++        "--host",
++        help="Ollama host or OpenAI-compatible base URL (e.g. http://localhost:11434).",
++    )
++    parser.add_argument(
++        "--max-context-chars",
++        type=int,
++        default=3000,
++        help="Context budget for hybrid mode (default: 3000).",
++    )
+     parser.add_argument(
+         "-r", "--reference",
+         help="Path to reference summary file for automated ROUGE evaluation.",
+@@ -65,31 +76,54 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
+     return parser.parse_args(args)
+ 
+ 
++def _fail(message: str, code: int) -> int:
++    print(f"Error: {message}", file=sys.stderr)
++    return code
++
++
+ def main(args: list[str] | None = None) -> int:
+     parsed = parse_args(args)
+ 
+-    input_path = Path(parsed.input)
+-    if not input_path.exists():
+-        print(f"Error: Input file '{parsed.input}' not found.", file=sys.stderr)
+-        return 1
+-
+-    text = input_path.read_text(encoding="utf-8")
++    if parsed.input == "-":
++        text = sys.stdin.read()
++    else:
++        input_path = Path(parsed.input)
++        if not input_path.is_file():
++            return _fail(f"input file '{parsed.input}' not found.", 1)
++        text = input_path.read_text(encoding="utf-8")
+ 
+     ref_text = None
+     if parsed.reference:
+         ref_path = Path(parsed.reference)
+-        if ref_path.exists():
+-            ref_text = ref_path.read_text(encoding="utf-8")
+-
+-    summarizer = Summarizer(
+-        mode=parsed.mode,
+-        backend=parsed.backend,
+-        model=parsed.model,
+-        num_sentences=parsed.sentences,
+-        top_k=parsed.top_k,
+-    )
+-
+-    result = summarizer.summarize(text=text, reference_summary=ref_text)
++        if not ref_path.is_file():
++            return _fail(
++                f"reference file '{parsed.reference}' not found. "
++                "Check the path or drop --reference to skip ROUGE evaluation.",
++                2,
++            )
++        ref_text = ref_path.read_text(encoding="utf-8")
++
++    extra: dict[str, str] = {}
++    if parsed.host:
++        extra["base_url" if parsed.backend in ("openai_compatible", "openai") else "host"] = parsed.host
++
++    try:
++        summarizer = Summarizer(
++            mode=parsed.mode,
++            backend=parsed.backend,
++            model=parsed.model,
++            num_sentences=parsed.sentences,
++            top_k=parsed.top_k,
++            max_context_chars=parsed.max_context_chars,
++            **extra,
++        )
++        result = summarizer.summarize(text=text, reference_summary=ref_text)
++    except ValueError as exc:
++        return _fail(str(exc), 2)
++    except (BackendConnectionError, BackendTimeoutError) as exc:
++        return _fail(f"LLM backend unreachable. {exc}", 3)
++    except BackendError as exc:
++        return _fail(f"LLM backend failed. {exc}", 3)
+ 
+     if parsed.json:
+         payload = {
+diff --git a/src/yake_sum/evaluation/__init__.py b/src/yake_sum/evaluation/__init__.py
+index 8622ffe..8d4d116 100644
+--- a/src/yake_sum/evaluation/__init__.py
++++ b/src/yake_sum/evaluation/__init__.py
+@@ -1,3 +1,4 @@
++from .alignment import keyword_coverage, keyword_prf
+ from .rouge import compute_rouge_metrics
+ 
+-__all__ = ["compute_rouge_metrics"]
++__all__ = ["compute_rouge_metrics", "keyword_coverage", "keyword_prf"]
+diff --git a/src/yake_sum/evaluation/alignment.py b/src/yake_sum/evaluation/alignment.py
+new file mode 100644
+index 0000000..feb6ae1
+--- /dev/null
++++ b/src/yake_sum/evaluation/alignment.py
+@@ -0,0 +1,36 @@
++"""Keyword/summary alignment metrics (reference-free coverage and gold-keyword P/R/F)."""
++
++from __future__ import annotations
++
++from typing import Iterable
++
++from ..text import stem_tokens
++
++
++def _contains(seq: tuple[str, ...], sub: tuple[str, ...]) -> bool:
++    n, m = len(seq), len(sub)
++    return 0 < m <= n and any(seq[i : i + m] == sub for i in range(n - m + 1))
++
++
++def keyword_coverage(summary: str, keywords: Iterable[str]) -> float:
++    """Fraction of distinct keywords (stem-aware phrase match) present in ``summary``.
++
++    Returns 0.0 for an empty summary or no keywords (never divides by zero).
++    """
++    stems = {s for s in (stem_tokens(k) for k in keywords) if s}
++    if not stems or not summary.strip():
++        return 0.0
++    seq = stem_tokens(summary)
++    return round(sum(_contains(seq, s) for s in stems) / len(stems), 4)
++
++
++def keyword_prf(predicted: Iterable[str], gold: Iterable[str]) -> dict[str, float]:
++    """Precision/recall/F1 of predicted vs. gold keywords using stemmed exact match."""
++    pred = {s for s in (stem_tokens(k) for k in predicted) if s}
++    ref = {s for s in (stem_tokens(k) for k in gold) if s}
++    if not pred or not ref:
++        return {"precision": 0.0, "recall": 0.0, "f1": 0.0}
++    hit = len(pred & ref)
++    p, r = hit / len(pred), hit / len(ref)
++    f = 2 * p * r / (p + r) if p + r else 0.0
++    return {"precision": round(p, 4), "recall": round(r, 4), "f1": round(f, 4)}
+diff --git a/src/yake_sum/extractive/scorer.py b/src/yake_sum/extractive/scorer.py
+index c662380..5d507d2 100644
+--- a/src/yake_sum/extractive/scorer.py
++++ b/src/yake_sum/extractive/scorer.py
+@@ -1,63 +1,145 @@
+-"""Sentence scoring based on YAKE keyword significance inversion."""
++"""Sentence scoring and selection based on inverted YAKE keyword scores.
++
++YAKE scores are "lower is better", so each keyword gets weight
++``W = 1 / (score + 1e-6)`` (normalised by the maximum weight for a stable scale).
++Matching is done on Porter-stemmed token sequences, so "recommender systems"
++matches "recommender system". Keywords nested inside a longer matched keyword in
++the same sentence are not double counted, and selection is greedy with a
++redundancy penalty so a summary does not repeat the same concepts.
++"""
+ 
+ from __future__ import annotations
+ 
+ import math
+-import re
++from dataclasses import dataclass
++
++from ..text import stem_tokens
++from ..validation import require_float
++
++_EPS = 1e-6
++
+ 
++def _contains(seq: tuple[str, ...], sub: tuple[str, ...]) -> bool:
++    n, m = len(seq), len(sub)
++    if m == 0 or m > n:
++        return False
++    return any(seq[i : i + m] == sub for i in range(n - m + 1))
+ 
+-def _normalize(text: str) -> str:
+-    text = text.lower()
+-    text = re.sub(r"[^\w\s]", " ", text)
+-    return re.sub(r"\s+", " ", text).strip()
++
++@dataclass(frozen=True)
++class _Kw:
++    stems: tuple[str, ...]
++    weight: float
+ 
+ 
+ class YakeSentenceScorer:
+-    """Scores sentences using YAKE keyword weights."""
++    """Scores and selects sentences (or passages) using YAKE keyword weights."""
+ 
+     def __init__(
+         self,
+         keywords_scored: list[tuple[str, float]],
+         length_penalty_alpha: float = 0.8,
+         use_position_bonus: bool = True,
++        redundancy_decay: float = 0.0,
++        weight_power: float = 1.0,
+     ) -> None:
+-        self.length_penalty_alpha = length_penalty_alpha
++        self.length_penalty_alpha = require_float(
++            "length_penalty_alpha", length_penalty_alpha, 0.0, 2.0
++        )
+         self.use_position_bonus = use_position_bonus
+-        # In YAKE, smaller score = more important.
+-        # Invert score to get weight: W = 1 / (score + 1e-6)
++        self.redundancy_decay = require_float("redundancy_decay", redundancy_decay, 0.0, 1.0)
++        self.weight_power = require_float("weight_power", weight_power, 0.1, 2.0)
++
++        # Raw inverted weights (kept for introspection / backward compatibility).
+         self.keyword_weights: list[tuple[str, float]] = []
++        best: dict[tuple[str, ...], float] = {}
+         for kw, score in keywords_scored:
+-            norm_kw = _normalize(kw)
+-            if norm_kw:
+-                weight = 1.0 / (score + 1e-6)
+-                self.keyword_weights.append((norm_kw, weight))
++            stems = stem_tokens(kw)
++            if not stems:
++                continue
++            weight = 1.0 / (max(float(score), 0.0) + _EPS)
++            self.keyword_weights.append((" ".join(stems), weight))
++            best[stems] = max(best.get(stems, 0.0), weight)  # duplicate keywords: keep best
+ 
+-    def score_sentence(self, sentence: str, index: int) -> float:
+-        norm_sent = _normalize(sentence)
+-        if not norm_sent:
+-            return 0.0
++        top = max(best.values(), default=0.0)
++        self._keywords: list[_Kw] = [
++            _Kw(stems, (w / top) ** self.weight_power) for stems, w in best.items()
++        ] if top > 0 else []
+ 
+-        words = norm_sent.split()
+-        word_count = len(words)
+-        if word_count == 0:
+-            return 0.0
++    @property
++    def has_keywords(self) -> bool:
++        return bool(self._keywords)
+ 
+-        raw_score = 0.0
+-        for norm_kw, weight in self.keyword_weights:
+-            # Word-boundary aware or substring matching for multi-word phrases
+-            if f" {norm_kw} " in f" {norm_sent} ":
+-                raw_score += weight
++    # ------------------------------------------------------------------ matching
++    def matched_keywords(self, sentence: str) -> list[_Kw]:
++        """Distinct keywords found in ``sentence``; nested shorter ones are dropped."""
++        stems = stem_tokens(sentence)
++        hits = [k for k in self._keywords if _contains(stems, k.stems)]
++        return [
++            k for k in hits
++            if not any(o is not k and len(o.stems) > len(k.stems) and _contains(o.stems, k.stems)
++                       for o in hits)
++        ]
+ 
+-        # Length normalization
+-        norm_score = raw_score / math.pow(word_count + 1, self.length_penalty_alpha)
++    def _position_bonus(self, index: int) -> float:
++        return 1.0 + 1.0 / math.sqrt(index + 1) if self.use_position_bonus else 1.0
+ 
+-        # Position bonus: lead effect
+-        if self.use_position_bonus:
+-            pos_bonus = 1.0 + (1.0 / math.sqrt(index + 1))
+-        else:
+-            pos_bonus = 1.0
++    def _length_norm(self, sentence: str) -> float:
++        n = len(stem_tokens(sentence))
++        return math.pow(n + 1, self.length_penalty_alpha) if n else float("inf")
+ 
+-        return norm_score * pos_bonus
++    def score_sentence(self, sentence: str, index: int) -> float:
++        raw = sum(k.weight for k in self.matched_keywords(sentence))
++        if raw == 0.0:
++            return 0.0
++        return raw / self._length_norm(sentence) * self._position_bonus(index)
+ 
+     def score_sentences(self, sentences: list[str]) -> list[float]:
+         return [self.score_sentence(s, i) for i, s in enumerate(sentences)]
++
++    # ----------------------------------------------------------------- selection
++    def select(
++        self,
++        units: list[str],
++        max_units: int | None = None,
++        max_chars: int | None = None,
++        separator_chars: int = 1,
++    ) -> list[int]:
++        """Greedy selection returning chronologically sorted indices.
++
++        Each round picks the unit with the highest *marginal* gain: keywords that
++        are already covered by the selection count only ``redundancy_decay`` of their
++        weight. Ties (and the no-keyword case) fall back to document order, i.e. Lead-k.
++        Stops at ``max_units`` and/or when nothing else fits within ``max_chars``.
++        """
++        if not units:
++            return []
++        matches = [self.matched_keywords(u) for u in units]
++        norms = [self._length_norm(u) for u in units]
++        bonus = [self._position_bonus(i) for i in range(len(units))]
++        covered: set[tuple[str, ...]] = set()
++        chosen: list[int] = []
++        used = 0
++        limit = max_units if max_units is not None else len(units)
++
++        while len(chosen) < limit:
++            best_i, best_gain = -1, -1.0
++            for i, u in enumerate(units):
++                if i in chosen:
++                    continue
++                cost = len(u) + (separator_chars if chosen else 0)
++                if max_chars is not None and used + cost > max_chars:
++                    continue
++                raw = sum(
++                    k.weight * (self.redundancy_decay if k.stems in covered else 1.0)
++                    for k in matches[i]
++                )
++                gain = raw / norms[i] * bonus[i] + 1e-9 * bonus[i]  # tie-break: earlier first
++                if gain > best_gain:
++                    best_i, best_gain = i, gain
++            if best_i < 0:
++                break
++            chosen.append(best_i)
++            used += len(units[best_i]) + (separator_chars if len(chosen) > 1 else 0)
++            covered.update(k.stems for k in matches[best_i])
++        return sorted(chosen)
+diff --git a/src/yake_sum/extractive/summarizer.py b/src/yake_sum/extractive/summarizer.py
+index 0e5411a..591bb8b 100644
+--- a/src/yake_sum/extractive/summarizer.py
++++ b/src/yake_sum/extractive/summarizer.py
+@@ -1,28 +1,18 @@
+-"""Extractive summarizer driven by YAKE keyword extraction."""
++"""Extractive summarizer driven by YAKE keyword extraction (zero LLM, CPU only)."""
+ 
+ from __future__ import annotations
+ 
+-import re
+-from typing import Any
+-
+-import yake
+-
++from ..keywords import KeywordExtractor
+ from ..models import ExtractiveResult, Keyword
++from ..text import split_into_sentences
++from ..validation import require_int
+ from .scorer import YakeSentenceScorer
+ 
+-
+-def split_into_sentences(text: str) -> list[str]:
+-    """Split text into sentences cleanly."""
+-    raw = text.strip()
+-    if not raw:
+-        return []
+-    # Split on sentence end punctuation followed by whitespace
+-    chunks = re.split(r"(?<=[.!?])\s+", raw)
+-    return [c.strip() for c in chunks if c.strip()]
++__all__ = ["ExtractiveSummarizer", "split_into_sentences"]
+ 
+ 
+ class ExtractiveSummarizer:
+-    """Zero-LLM extractive summarizer based on YAKE keyword scoring."""
++    """Selects the ``num_sentences`` most keyword-dense, non-redundant sentences."""
+ 
+     def __init__(
+         self,
+@@ -31,73 +21,54 @@ class ExtractiveSummarizer:
+         max_ngram_size: int = 3,
+         top_k: int = 15,
+         deduplication_threshold: float = 0.9,
++        redundancy_decay: float = 0.0,
++        weight_power: float = 1.0,
+     ) -> None:
+-        self.num_sentences = num_sentences
++        self.num_sentences = require_int("num_sentences", num_sentences)
+         self.language = language
+         self.max_ngram_size = max_ngram_size
+         self.top_k = top_k
+         self.deduplication_threshold = deduplication_threshold
+-
+-        self._extractor = yake.KeywordExtractor(
+-            lan=self.language,
+-            n=self.max_ngram_size,
+-            dedupLim=self.deduplication_threshold,
+-            top=self.top_k,
++        self.redundancy_decay = redundancy_decay
++        self.weight_power = weight_power
++        self._extractor = KeywordExtractor(
++            language=language,
++            max_ngram_size=max_ngram_size,
++            top_k=top_k,
++            deduplication_threshold=deduplication_threshold,
+         )
+ 
+     def summarize(self, text: str) -> ExtractiveResult:
+         sentences = split_into_sentences(text)
+         if not sentences:
+-            return ExtractiveResult(
+-                summary="",
+-                selected_sentences=[],
+-                keywords=[],
+-                sentence_scores=[],
+-                compression_ratio=0.0,
+-            )
++            return ExtractiveResult("", [], [], [], 0.0)
+ 
+-        if len(sentences) <= self.num_sentences:
+-            kw_tuples = self._extractor.extract_keywords(text) if len(text.strip()) > 3 else []
+-            keywords = [Keyword(keyword=k, score=s) for k, s in kw_tuples]
+-            return ExtractiveResult(
+-                summary=" ".join(sentences),
+-                selected_sentences=sentences,
+-                keywords=keywords,
+-                sentence_scores=[1.0] * len(sentences),
+-                compression_ratio=0.0,
+-            )
+-
+-        # Extract keywords
+-        kw_tuples = self._extractor.extract_keywords(text)
++        kw_tuples = self._extractor.extract(text)
+         keywords = [Keyword(keyword=k, score=round(s, 6)) for k, s in kw_tuples]
+-
+-        # Score sentences
+-        scorer = YakeSentenceScorer(keywords_scored=kw_tuples)
++        scorer = YakeSentenceScorer(
++            kw_tuples,
++            redundancy_decay=self.redundancy_decay,
++            weight_power=self.weight_power,
++        )
+         scores = scorer.score_sentences(sentences)
+ 
+-        # Pair each sentence with its original index and score
+-        indexed_scores = list(enumerate(scores))
+-        # Sort descending by score
+-        indexed_scores.sort(key=lambda x: x[1], reverse=True)
+-
+-        # Select top num_sentences
+-        top_picks = indexed_scores[: self.num_sentences]
+-        # Re-sort chronologically by original index
+-        top_picks.sort(key=lambda x: x[0])
+-
+-        selected_sentences = [sentences[idx] for idx, _ in top_picks]
+-        summary = " ".join(selected_sentences)
++        if len(sentences) <= self.num_sentences:
++            picks = list(range(len(sentences)))
++        else:
++            picks = scorer.select(sentences, max_units=self.num_sentences)
+ 
++        selected = [sentences[i] for i in picks]
++        summary = " ".join(selected)
+         source_words = len(text.split())
+-        summary_words = len(summary.split())
+-        compression_ratio = (
+-            round(1.0 - (summary_words / source_words), 4) if source_words > 0 else 0.0
+-        )
+-
++        ratio = round(1.0 - len(summary.split()) / source_words, 4) if source_words else 0.0
+         return ExtractiveResult(
+             summary=summary,
+-            selected_sentences=selected_sentences,
++            selected_sentences=selected,
+             keywords=keywords,
+             sentence_scores=scores,
+-            compression_ratio=compression_ratio,
++            compression_ratio=max(ratio, 0.0),
++            metadata={
++                "fallback": "lead" if not scorer.has_keywords else None,
++                "selected_indices": picks,
++            },
+         )
+diff --git a/src/yake_sum/hybrid/summarizer.py b/src/yake_sum/hybrid/summarizer.py
+index 4dbe9f0..9151b54 100644
+--- a/src/yake_sum/hybrid/summarizer.py
++++ b/src/yake_sum/hybrid/summarizer.py
+@@ -1,29 +1,38 @@
+-"""Hybrid summarizer for long documents using extractive filtering before LLM synthesis."""
++"""Hybrid summarizer: YAKE-guided passage filtering, then LLM synthesis."""
+ 
+ from __future__ import annotations
+ 
+-import re
+-import yake
+-
+-from ..abstractive.prompt import build_keyword_prompt
+-from ..backends.base import BaseLLMClient
++from ..abstractive.prompt import build_keyword_prompt, build_unconditioned_prompt
++from ..backends.base import BackendError, BaseLLMClient
+ from ..backends.mock import MockLLMClient
+ from ..extractive.scorer import YakeSentenceScorer
++from ..keywords import KeywordExtractor
+ from ..models import HybridResult, Keyword
++from ..text import split_into_passages, split_into_sentences
++from ..validation import require_float, require_int
++
++__all__ = ["HybridSummarizer", "split_into_passages"]
+ 
++_PARA_SEP = "\n\n"
+ 
+-def split_into_passages(text: str) -> list[str]:
+-    """Split text by double newlines or paragraph blocks."""
+-    raw_passages = re.split(r"\n\s*\n", text.strip())
+-    passages = [p.strip() for p in raw_passages if p.strip()]
+-    if not passages:
+-        # Fallback to single lines if no double newlines
+-        passages = [line.strip() for line in text.splitlines() if line.strip()]
+-    return passages
++
++def _units(passages: list[str], budget: int) -> list[tuple[str, int]]:
++    """Return (text, paragraph_id) units; oversized paragraphs are split into sentences."""
++    units: list[tuple[str, int]] = []
++    for pid, p in enumerate(passages):
++        if len(p) <= budget:
++            units.append((p, pid))
++            continue
++        for s in split_into_sentences(p):
++            # A single sentence longer than the budget is hard-truncated at a word boundary.
++            if len(s) > budget:
++                s = s[:budget].rsplit(" ", 1)[0] or s[:budget]
++            units.append((s, pid))
++    return units
+ 
+ 
+ class HybridSummarizer:
+-    """Long-document summarizer that extracts key passages with YAKE before LLM synthesis."""
++    """Long-document summarizer: keeps the most keyword-relevant passages in original order."""
+ 
+     def __init__(
+         self,
+@@ -35,91 +44,71 @@ class HybridSummarizer:
+         deduplication_threshold: float = 0.9,
+         temperature: float = 0.2,
+         max_tokens: int = 512,
++        max_sentences: int | None = 3,
+     ) -> None:
+         self.llm_client = llm_client or MockLLMClient()
+-        self.max_context_chars = max_context_chars
+-        self.language = language
+-        self.max_ngram_size = max_ngram_size
+-        self.top_k = top_k
+-        self.deduplication_threshold = deduplication_threshold
+-        self.temperature = temperature
+-        self.max_tokens = max_tokens
+-
+-        self._extractor = yake.KeywordExtractor(
+-            lan=self.language,
+-            n=self.max_ngram_size,
+-            dedupLim=self.deduplication_threshold,
+-            top=self.top_k,
+-        )
++        self.max_context_chars = require_int("max_context_chars", max_context_chars, minimum=50)
++        self.temperature = require_float("temperature", temperature, 0.0, 2.0)
++        self.max_tokens = require_int("max_tokens", max_tokens)
++        self.max_sentences = None if max_sentences is None else require_int("max_sentences", max_sentences)
++        self._extractor = KeywordExtractor(language, max_ngram_size, top_k, deduplication_threshold)
++
++    def _select(self, clean: str, kw_tuples: list[tuple[str, float]]) -> list[str]:
++        passages = split_into_passages(clean)
++        if len(clean) <= self.max_context_chars:
++            return passages
++
++        units = _units(passages, self.max_context_chars)
++        texts = [u[0] for u in units]
++        scorer = YakeSentenceScorer(kw_tuples)
++        # Separators cost 2 chars between paragraphs and 1 inside one; budget with 2 (safe).
++        idx = scorer.select(texts, max_chars=self.max_context_chars, separator_chars=2)
++        if not idx:  # nothing fits (cannot happen after truncation, kept as a safeguard)
++            idx = [0]
++
++        retained: list[str] = []
++        last_pid = None
++        for i in idx:  # ``idx`` is sorted => original chronological order preserved
++            text, pid = units[i]
++            if retained and pid == last_pid:
++                retained[-1] = f"{retained[-1]} {text}"
++            else:
++                retained.append(text)
++            last_pid = pid
++        return retained
+ 
+     def summarize(self, text: str) -> HybridResult:
+-        clean_text = text.strip()
+-        if not clean_text:
+-            return HybridResult(
+-                summary="",
+-                keywords=[],
+-                retained_passages=[],
+-                context_char_count=0,
+-                prompt_used="",
+-            )
+-
+-        # 1. Global keyword extraction over the full document
+-        kw_tuples = self._extractor.extract_keywords(clean_text)
+-        keywords = [Keyword(keyword=k, score=round(s, 6)) for k, s in kw_tuples]
++        clean = text.strip()
++        if not clean:
++            return HybridResult("", [], [], 0, "")
++
++        kw_tuples = self._extractor.extract(clean)  # global keywords over the FULL document
++        keywords = [Keyword(k, round(s, 6)) for k, s in kw_tuples]
+         kw_strings = [k.keyword for k in keywords]
+ 
+-        # 2. Segment into passages
+-        passages = split_into_passages(clean_text)
++        retained = self._select(clean, kw_tuples)
++        condensed = _PARA_SEP.join(retained)
+ 
+-        # If document already fits within context budget, retain all
+-        if len(clean_text) <= self.max_context_chars:
+-            retained_passages = passages
+-        elif len(passages) <= 1:
+-            retained_passages = [passages[0][: self.max_context_chars]]
++        if kw_strings:
++            prompt = build_keyword_prompt(kw_strings, condensed, max_sentences=self.max_sentences)
+         else:
+-            # Score each passage using YakeSentenceScorer
+-            scorer = YakeSentenceScorer(keywords_scored=kw_tuples)
+-            scores = scorer.score_sentences(passages)
+-
+-            # Sort descending by score
+-            ranked_indices = sorted(
+-                range(len(passages)), key=lambda i: scores[i], reverse=True
+-            )
+-
+-            # Accumulate top passages up to max_context_chars
+-            selected_indices: list[int] = []
+-            char_count = 0
+-            for idx in ranked_indices:
+-                passage_len = len(passages[idx])
+-                if char_count + passage_len <= self.max_context_chars:
+-                    selected_indices.append(idx)
+-                    char_count += passage_len
+-                if char_count >= self.max_context_chars:
+-                    break
+-
+-            if not selected_indices:
+-                best_idx = ranked_indices[0]
+-                passages[best_idx] = passages[best_idx][: self.max_context_chars]
+-                selected_indices.append(best_idx)
+-
+-            # Re-sort chronologically by original position in document
+-            selected_indices.sort()
+-            retained_passages = [passages[i] for i in selected_indices]
+-
+-        condensed_text = "\n\n".join(retained_passages)
+-
+-        # 3. Build prompt and generate summary via LLM
+-        prompt = build_keyword_prompt(keywords=kw_strings, text=condensed_text)
++            prompt = build_unconditioned_prompt(condensed, max_sentences=self.max_sentences)
++
+         summary = self.llm_client.generate(
+-            prompt=prompt,
+-            temperature=self.temperature,
+-            max_tokens=self.max_tokens,
+-        )
++            prompt=prompt, temperature=self.temperature, max_tokens=self.max_tokens
++        ).strip()
++        if not summary:
++            raise BackendError("The LLM backend returned an empty summary.")
+ 
+         return HybridResult(
+             summary=summary,
+             keywords=keywords,
+-            retained_passages=retained_passages,
+-            context_char_count=len(condensed_text),
++            retained_passages=retained,
++            context_char_count=len(condensed),
+             prompt_used=prompt,
++            metadata={
++                "source_chars": len(clean),
++                "reduced": len(condensed) < len(clean),
++                "keyword_conditioned": bool(kw_strings),
++            },
+         )
+diff --git a/src/yake_sum/keywords.py b/src/yake_sum/keywords.py
+new file mode 100644
+index 0000000..8dfa908
+--- /dev/null
++++ b/src/yake_sum/keywords.py
+@@ -0,0 +1,45 @@
++"""Safe YAKE wrapper shared by all engines."""
++
++from __future__ import annotations
++
++import yake
++
++from .validation import require_float, require_int
++
++
++class KeywordExtractor:
++    """Thin, failure-tolerant wrapper around ``yake.KeywordExtractor``.
++
++    Returns ``[]`` (instead of raising) for empty, stopword-only or too-short text,
++    so callers can fall back to unconditioned behaviour.
++    """
++
++    def __init__(
++        self,
++        language: str = "en",
++        max_ngram_size: int = 3,
++        top_k: int = 15,
++        deduplication_threshold: float = 0.9,
++    ) -> None:
++        self.language = language
++        self.max_ngram_size = require_int("max_ngram_size", max_ngram_size)
++        self.top_k = require_int("top_k", top_k)
++        self.deduplication_threshold = require_float(
++            "deduplication_threshold", deduplication_threshold, 0.0, 1.0
++        )
++        self._extractor = yake.KeywordExtractor(
++            lan=language,
++            n=self.max_ngram_size,
++            dedupLim=self.deduplication_threshold,
++            top=self.top_k,
++        )
++
++    def extract(self, text: str) -> list[tuple[str, float]]:
++        clean = text.strip()
++        if len(clean.split()) < 2:
++            return []
++        try:
++            pairs = self._extractor.extract_keywords(clean)
++        except Exception:  # YAKE can fail on degenerate input; treat as "no keywords"
++            return []
++        return [(k, float(s)) for k, s in pairs if k and k.strip()]
+diff --git a/src/yake_sum/summarizer.py b/src/yake_sum/summarizer.py
+index db7bbb8..5379cb7 100644
+--- a/src/yake_sum/summarizer.py
++++ b/src/yake_sum/summarizer.py
+@@ -6,6 +6,7 @@ from typing import Any
+ 
+ from .abstractive.summarizer import AbstractiveSummarizer
+ from .backends import BaseLLMClient, get_llm_client
++from .evaluation.alignment import keyword_coverage
+ from .evaluation.rouge import compute_rouge_metrics
+ from .extractive.summarizer import ExtractiveSummarizer
+ from .hybrid.summarizer import HybridSummarizer
+@@ -31,6 +32,10 @@ class Summarizer:
+         **kwargs: Any,
+     ) -> None:
+         self.mode = mode.lower().strip()
++        if self.mode not in ("extractive", "abstractive", "hybrid"):
++            raise ValueError(
++                f"Unknown mode '{mode}'. Choose from 'extractive', 'abstractive', 'hybrid'."
++            )
+         self.language = language
+         self.top_k = top_k
+         self.max_ngram_size = max_ngram_size
+@@ -111,6 +116,12 @@ class Summarizer:
+                 "prompt_used": result.prompt_used,
+             }
+ 
++        # Reference-free sanity metric: how many of the document keywords the summary covers.
++        if keywords and summary_text:
++            metrics["keyword_coverage"] = keyword_coverage(
++                summary_text, [k.keyword for k in keywords]
++            )
++
+         # Calculate ROUGE if reference summary is provided
+         if reference_summary and summary_text:
+             metrics["rouge"] = compute_rouge_metrics(
+diff --git a/src/yake_sum/text.py b/src/yake_sum/text.py
+new file mode 100644
+index 0000000..77e95d1
+--- /dev/null
++++ b/src/yake_sum/text.py
+@@ -0,0 +1,77 @@
++"""Shared text utilities: robust sentence/passage splitting and stemmed tokenization."""
++
++from __future__ import annotations
++
++import re
++from functools import lru_cache
++
++from nltk.stem.porter import PorterStemmer
++
++# Abbreviations after which a period does NOT end a sentence.
++_ABBREVIATIONS = frozenset(
++    {
++        "e.g", "i.e", "fig", "figs", "eq", "eqs", "dr", "mr", "mrs", "ms", "prof",
++        "vs", "cf", "approx", "no", "sec", "ref", "refs", "vol", "st", "inc",
++        "ltd", "ca", "resp", "et al", "al",
++    }
++)
++# 'al' only merges when the next chunk starts in lowercase (see below), so
++# "Smith et al. The method..." still splits correctly.
++_MERGE_ONLY_IF_LOWER = frozenset({"al", "etc"})
++
++_BOUNDARY = re.compile(r"(?<=[.!?])[\"')\]]*\s+")
++_TOKEN = re.compile(r"[^\W_]+(?:[-'][^\W_]+)*", re.UNICODE)
++_stemmer = PorterStemmer()
++
++
++def _last_word(chunk: str) -> str:
++    m = re.search(r"([A-Za-z.]+)[.!?][\"')\]]*$", chunk)
++    return m.group(1).lower() if m else ""
++
++
++def split_into_sentences(text: str) -> list[str]:
++    """Split text into sentences, protecting abbreviations, initials and decimals.
++
++    Blank lines are always treated as hard boundaries.
++    """
++    sentences: list[str] = []
++    for block in re.split(r"\n\s*\n", text.strip()):
++        block = re.sub(r"\s+", " ", block).strip()
++        if not block:
++            continue
++        pieces = [p for p in _BOUNDARY.split(block) if p]
++        merged: list[str] = []
++        for piece in pieces:
++            if merged:
++                prev = merged[-1]
++                last = _last_word(prev)
++                starts_lower = piece[:1].islower()
++                is_initial = re.search(r"(?:^|\s)[A-Z]\.$", prev) is not None
++                if last in _MERGE_ONLY_IF_LOWER:
++                    join = starts_lower
++                else:
++                    join = last in _ABBREVIATIONS or is_initial or starts_lower
++                if join:
++                    merged[-1] = f"{prev} {piece}"
++                    continue
++            merged.append(piece)
++        sentences.extend(s.strip() for s in merged if s.strip())
++    return sentences
++
++
++def split_into_passages(text: str) -> list[str]:
++    """Split text into paragraphs (blank-line separated), falling back to lines."""
++    passages = [p.strip() for p in re.split(r"\n\s*\n", text.strip()) if p.strip()]
++    if not passages:
++        passages = [ln.strip() for ln in text.splitlines() if ln.strip()]
++    return passages
++
++
++@lru_cache(maxsize=50_000)
++def _stem(word: str) -> str:
++    return _stemmer.stem(word)
++
++
++def stem_tokens(text: str) -> tuple[str, ...]:
++    """Lowercase, tokenize and Porter-stem ``text`` (deterministic)."""
++    return tuple(_stem(t.lower()) for t in _TOKEN.findall(text))
+diff --git a/src/yake_sum/validation.py b/src/yake_sum/validation.py
+new file mode 100644
+index 0000000..07fb7da
+--- /dev/null
++++ b/src/yake_sum/validation.py
+@@ -0,0 +1,19 @@
++"""Construction-time validation helpers with clear error messages."""
++
++from __future__ import annotations
++
++
++def require_int(name: str, value: int, minimum: int = 1) -> int:
++    if isinstance(value, bool) or not isinstance(value, int):
++        raise ValueError(f"'{name}' must be an integer, got {value!r}.")
++    if value < minimum:
++        raise ValueError(f"'{name}' must be >= {minimum}, got {value}.")
++    return value
++
++
++def require_float(name: str, value: float, low: float, high: float) -> float:
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++        raise ValueError(f"'{name}' must be a number, got {value!r}.")
++    if not (low <= value <= high):
++        raise ValueError(f"'{name}' must be between {low} and {high}, got {value}.")
++    return float(value)
+diff --git a/tests/test_abstractive_hybrid.py b/tests/test_abstractive_hybrid.py
+index 41a5330..f25edfe 100644
+--- a/tests/test_abstractive_hybrid.py
++++ b/tests/test_abstractive_hybrid.py
+@@ -51,4 +51,4 @@ def test_hybrid_context_budget_is_strict_for_oversized_passage():
+ 
+     assert result.context_char_count <= 80
+     assert len(result.retained_passages) == 1
+-    assert len(result.retained_passages[0]) == 80
++    assert 0 < len(result.retained_passages[0]) <= 80
+diff --git a/tests/test_robustness.py b/tests/test_robustness.py
+new file mode 100644
+index 0000000..b5f6f60
+--- /dev/null
++++ b/tests/test_robustness.py
+@@ -0,0 +1,218 @@
++"""Robustness tests mapped to the plan's 'Review Focus' items. No network, no GPU."""
++
++import json
++
++import pytest
++import requests
++
++from yake_sum import Summarizer
++from yake_sum.backends import (
++    BackendConnectionError,
++    BackendError,
++    BackendTimeoutError,
++    MockLLMClient,
++    OllamaClient,
++    get_llm_client,
++)
++from yake_sum.evaluation import compute_rouge_metrics, keyword_coverage, keyword_prf
++from yake_sum.extractive.summarizer import ExtractiveSummarizer
++from yake_sum.hybrid.summarizer import HybridSummarizer
++from yake_sum.abstractive.summarizer import AbstractiveSummarizer
++from yake_sum.text import split_into_sentences
++
++
++# ---- 1. empty / whitespace / fewer sentences than requested ------------------------
++@pytest.mark.parametrize("text", ["", "   \n\t  ", "\n\n"])
++def test_all_engines_handle_blank_input(text):
++    assert ExtractiveSummarizer().summarize(text).summary == ""
++    assert AbstractiveSummarizer(MockLLMClient()).summarize(text).summary == ""
++    assert HybridSummarizer(MockLLMClient()).summarize(text).summary == ""
++
++
++def test_fewer_sentences_than_requested_returns_all():
++    res = ExtractiveSummarizer(num_sentences=5).summarize("One idea here. Another idea there.")
++    assert res.selected_sentences == ["One idea here.", "Another idea there."]
++
++
++# ---- 2. YAKE returns no keywords -> safe fallback ------------------------------------
++def test_stopword_only_text_falls_back_to_lead():
++    text = "It is what it is. It was and it is. To be or not to be. It is so."
++    res = ExtractiveSummarizer(num_sentences=2).summarize(text)
++    assert len(res.selected_sentences) == 2  # no exception, lead-2 behaviour
++
++
++def test_abstractive_without_keywords_uses_unconditioned_prompt():
++    res = AbstractiveSummarizer(MockLLMClient()).summarize("Ok.")
++    assert res.keywords == []
++    assert "Keywords:" not in res.prompt_used
++    assert res.summary
++
++
++# ---- 3. no n-gram overlap -> ROUGE 0.0, no ZeroDivisionError -----------------------
++def test_rouge_zero_overlap():
++    m = compute_rouge_metrics("alpha beta gamma", "delta epsilon zeta")
++    assert m["rouge1_f"] == 0.0 and m["rouge2_f"] == 0.0 and m["rougeL_f"] == 0.0
++
++
++def test_keyword_metrics_edge_cases():
++    assert keyword_coverage("", ["a"]) == 0.0
++    assert keyword_coverage("text", []) == 0.0
++    assert keyword_coverage("Recommender systems rock", ["recommender system"]) == 1.0  # stemmed
++    assert keyword_prf([], ["a"])["f1"] == 0.0
++    assert keyword_prf(["Graph databases", "graph databases"], ["graph database"])["precision"] == 1.0
++
++
++# ---- 4. hybrid: budget respected, chronological order preserved -----------------------
++def test_hybrid_budget_and_order():
++    paras = [
++        f"Paragraph {i} discusses neural networks and quantum computing topic {i}. "
++        f"Filler words about weather number {i}." for i in range(30)
++    ]
++    text = "\n\n".join(paras)
++    res = HybridSummarizer(MockLLMClient(), max_context_chars=500).summarize(text)
++    assert 0 < res.context_char_count <= 500
++    positions = [text.index(p) for p in res.retained_passages]
++    assert positions == sorted(positions)
++
++
++def test_hybrid_single_giant_paragraph_selects_sentences_not_just_the_head():
++    sentences = [f"Sentence {i} is filler about nothing in particular." for i in range(40)]
++    sentences[35] = "Federated learning preserves privacy while federated learning trains models."
++    sentences[36] = "Federated learning and privacy preserving aggregation matter."
++    text = " ".join(sentences)
++    res = HybridSummarizer(MockLLMClient(), max_context_chars=400).summarize(text)
++    assert res.context_char_count <= 400
++    assert "Federated learning" in " ".join(res.retained_passages)
++
++
++# ---- 5. Ollama unreachable -> specific error, bounded retries -------------------------
++class _Resp:
++    def __init__(self, status=200, body=None, text=""):
++        self.status_code, self._body, self.text = status, body or {}, text
++
++    def json(self):
++        return self._body
++
++
++def _client(post, retries=2):
++    sleeps = []
++    c = OllamaClient(model="m", host="http://x:1", max_retries=retries, post=post, sleep=sleeps.append)
++    return c, sleeps
++
++
++def test_ollama_unreachable_raises_backend_connection_error_with_advice():
++    calls = []
++
++    def post(*a, **k):
++        calls.append(1)
++        raise requests.ConnectionError("refused")
++
++    c, sleeps = _client(post)
++    with pytest.raises(BackendConnectionError) as ei:
++        c.generate("hi")
++    assert len(calls) == 3 and sleeps == [1.0, 2.0]  # 1 try + 2 retries, exp. backoff
++    msg = str(ei.value)
++    assert "ollama serve" in msg and "http://x:1" in msg and "'m'" in msg
++
++
++def test_ollama_success_after_transient_failure():
++    seq = [_Resp(503), requests.ConnectionError("x"), _Resp(200, {"response": " ok "})]
++
++    def post(*a, **k):
++        r = seq.pop(0)
++        if isinstance(r, Exception):
++            raise r
++        return r
++
++    c, _ = _client(post, retries=3)
++    assert c.generate("hi") == "ok"
++
++
++def test_ollama_timeout_and_non_retryable():
++    def slow(*a, **k):
++        raise requests.Timeout("slow")
++
++    c, _ = _client(slow, retries=1)
++    with pytest.raises(BackendTimeoutError):
++        c.generate("hi")
++
++    calls = []
++
++    def not_found(*a, **k):
++        calls.append(1)
++        return _Resp(404, text="model not found")
++
++    c, _ = _client(not_found)
++    with pytest.raises(BackendError, match="404"):
++        c.generate("hi")
++    assert len(calls) == 1  # never retried
++
++
++def test_empty_llm_response_is_an_error_not_a_summary():
++    class Empty:
++        def generate(self, *a, **k):
++            return "  "
++
++        def is_available(self):
++            return True, ""
++
++    with pytest.raises(BackendError):
++        AbstractiveSummarizer(Empty()).summarize("A document about transformers and attention.")
++
++
++# ---- validation ------------------------------------------------------------------------
++@pytest.mark.parametrize(
++    "factory",
++    [
++        lambda: ExtractiveSummarizer(num_sentences=0),
++        lambda: ExtractiveSummarizer(top_k=0),
++        lambda: HybridSummarizer(max_context_chars=5),
++        lambda: AbstractiveSummarizer(temperature=-1),
++        lambda: Summarizer(mode="nope"),
++    ],
++)
++def test_invalid_settings_raise_value_error(factory):
++    with pytest.raises(ValueError):
++        factory()
++
++
++def test_llama_cpp_requires_gguf_path():
++    with pytest.raises(ValueError, match="gguf"):
++        get_llm_client("llama_cpp", model="mistral")
++
++
++# ---- sentence splitting + extractive quality --------------------------------------------
++def test_sentence_splitter_protects_abbreviations():
++    s = split_into_sentences(
++        "Smith et al. showed gains (Fig. 2). Dr. Lee agrees. J. Doe found 3.5% more. Done."
++    )
++    assert s == [
++        "Smith et al. showed gains (Fig. 2).",
++        "Dr. Lee agrees.",
++        "J. Doe found 3.5% more.",
++        "Done.",
++    ]
++
++
++def test_extractive_avoids_redundant_sentences():
++    text = (
++        "Federated learning trains machine learning models across many devices without sharing raw data. "
++        "Federated learning trains machine learning models across many devices while preserving privacy. "
++        "Differential privacy adds calibrated noise to protect individual federated learning contributions. "
++        "The weather was pleasant today in the valley. Lunch was served at noon in the cafeteria."
++    )
++    penalized = ExtractiveSummarizer(num_sentences=2, redundancy_decay=0.0).summarize(text)
++    unpenalized = ExtractiveSummarizer(num_sentences=2, redundancy_decay=1.0).summarize(text)
++    # Without a redundancy penalty, the two near-duplicate opening sentences both win.
++    assert unpenalized.selected_sentences[0].startswith("Federated learning trains")
++    assert unpenalized.selected_sentences[1].startswith("Federated learning trains")
++    # With the penalty, the near-duplicate is swapped for the sentence adding new coverage.
++    assert any("Differential privacy" in s for s in penalized.selected_sentences)
++    assert penalized.selected_sentences != unpenalized.selected_sentences
++
++
++def test_extractive_is_deterministic():
++    t = "Alpha systems scale well. Beta systems fail often. Alpha systems need tuning. Gamma is unrelated."
++    a = ExtractiveSummarizer(num_sentences=2).summarize(t)
++    b = ExtractiveSummarizer(num_sentences=2).summarize(t)
++    assert a.summary == b.summary
