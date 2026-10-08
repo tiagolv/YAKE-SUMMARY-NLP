@@ -11,7 +11,7 @@ from ..models import HybridResult, Keyword
 from ..text import split_into_passages, split_into_sentences
 from ..validation import require_float, require_int
 
-__all__ = ["HybridSummarizer", "split_into_passages"]
+__all__ = ["HybridSummarizer", "select_context", "split_into_passages"]
 
 _PARA_SEP = "\n\n"
 
@@ -29,6 +29,41 @@ def _units(passages: list[str], budget: int) -> list[tuple[str, int]]:
                 s = s[:budget].rsplit(" ", 1)[0] or s[:budget]
             units.append((s, pid))
     return units
+
+
+def select_context(
+    text: str, kw_tuples: list[tuple[str, float]], max_chars: int
+) -> list[str]:
+    """Pick the most keyword-relevant passages that fit in ``max_chars`` (original order).
+
+    Texts already within budget are returned whole (split in paragraphs). Oversized
+    paragraphs are split into sentences so a single huge paragraph is still filtered
+    instead of just truncated. The joined result (``"\\n\\n".join``) never exceeds
+    ``max_chars``.
+    """
+    clean = text.strip()
+    passages = split_into_passages(clean)
+    if len(clean) <= max_chars:
+        return passages
+
+    units = _units(passages, max_chars)
+    texts = [u[0] for u in units]
+    scorer = YakeSentenceScorer(kw_tuples)
+    # Separators cost 2 chars between paragraphs and 1 inside one; budget with 2 (safe).
+    idx = scorer.select(texts, max_chars=max_chars, separator_chars=2)
+    if not idx:  # nothing fits (cannot happen after truncation, kept as a safeguard)
+        idx = [0]
+
+    retained: list[str] = []
+    last_pid = None
+    for i in idx:  # ``idx`` is sorted => original chronological order preserved
+        unit, pid = units[i]
+        if retained and pid == last_pid:
+            retained[-1] = f"{retained[-1]} {unit}"
+        else:
+            retained.append(unit)
+        last_pid = pid
+    return retained
 
 
 class HybridSummarizer:
@@ -54,28 +89,7 @@ class HybridSummarizer:
         self._extractor = KeywordExtractor(language, max_ngram_size, top_k, deduplication_threshold)
 
     def _select(self, clean: str, kw_tuples: list[tuple[str, float]]) -> list[str]:
-        passages = split_into_passages(clean)
-        if len(clean) <= self.max_context_chars:
-            return passages
-
-        units = _units(passages, self.max_context_chars)
-        texts = [u[0] for u in units]
-        scorer = YakeSentenceScorer(kw_tuples)
-        # Separators cost 2 chars between paragraphs and 1 inside one; budget with 2 (safe).
-        idx = scorer.select(texts, max_chars=self.max_context_chars, separator_chars=2)
-        if not idx:  # nothing fits (cannot happen after truncation, kept as a safeguard)
-            idx = [0]
-
-        retained: list[str] = []
-        last_pid = None
-        for i in idx:  # ``idx`` is sorted => original chronological order preserved
-            text, pid = units[i]
-            if retained and pid == last_pid:
-                retained[-1] = f"{retained[-1]} {text}"
-            else:
-                retained.append(text)
-            last_pid = pid
-        return retained
+        return select_context(clean, kw_tuples, self.max_context_chars)
 
     def summarize(self, text: str) -> HybridResult:
         clean = text.strip()

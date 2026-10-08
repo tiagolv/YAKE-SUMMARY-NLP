@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, HTTPException
 
 from src.evaluation import evaluate_metrics
 from src.keyword_extractor import YakeKeywordExtractor
 from src.llm_interface import LLMError, create_llm_client
-from src.preprocessor import normalize_text, truncate_text
+from src.preprocessor import fit_context, normalize_text
 
 from ..schemas import (
     AlignmentMetrics,
@@ -26,6 +28,7 @@ from .deps import (
     get_yake_config,
 )
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["summarize"])
 
 
@@ -33,6 +36,8 @@ router = APIRouter(prefix="/api", tags=["summarize"])
 def summarize(req: SummarizeRequest) -> SummarizeResponse:
     """Run the full YAKE + LLM pipeline for a single document."""
     clean_text = normalize_text(req.text)
+    if not clean_text:
+        raise HTTPException(status_code=422, detail="O texto está vazio após normalização.")
 
     # ── Keyword extraction (always offline) ──────────────────────────────────
     yake_config = get_yake_config(req.top_k, req.max_ngram_size)
@@ -48,10 +53,14 @@ def summarize(req: SummarizeRequest) -> SummarizeResponse:
         keyword_source = "YAKE! (local)"
 
     prompt_config = get_prompt_config()
-    truncated_text = truncate_text(clean_text, prompt_config.max_text_chars)
-    prompt = build_prompt_for_mode(
-        req.ablation_mode, req.prompt_template, keywords, truncated_text, prompt_config
+    truncated_text = fit_context(
+        clean_text, prompt_config.max_text_chars, keywords_scored, prompt_config.context_strategy
     )
+    # Without keywords a "Keywords: []" prompt is worse than a plain summary prompt.
+    mode = req.ablation_mode
+    if not keywords and mode in ("full", ""):
+        mode = "no_keywords"
+    prompt = build_prompt_for_mode(mode, req.prompt_template, keywords, truncated_text, prompt_config)
 
     kw_result = KeywordsResult(
         source=keyword_source,
@@ -69,7 +78,9 @@ def summarize(req: SummarizeRequest) -> SummarizeResponse:
     try:
         llm = create_llm_client(llm_config)
         summary = llm.generate(prompt)
-    except (LLMError, Exception) as exc:
+    except Exception as exc:  # noqa: BLE001 - UI must degrade gracefully, but never silently
+        if not isinstance(exc, LLMError):
+            logger.exception("Unexpected error while generating the summary")
         return SummarizeResponse(
             summary=(
                 f"⚠️ Backend LLM inacessível: {exc}\n\n"

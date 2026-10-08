@@ -11,7 +11,7 @@ import yaml
 from .evaluation import evaluate_metrics
 from .keyword_extractor import YakeConfig, YakeKeywordExtractor
 from .llm_interface import LLMConfig, create_llm_client
-from .preprocessor import normalize_text, truncate_text
+from .preprocessor import fit_context, normalize_text
 from .prompt_builder import (
     PromptConfig,
     build_prompt,
@@ -69,6 +69,8 @@ def run_pipeline(
 
     raw_text = load_text(input_path)
     clean_text = normalize_text(raw_text)
+    if not clean_text:
+        raise ValueError(f"Input file '{input_path}' is empty.")
 
     yake_config = YakeConfig(**config["yake"])
     extractor = YakeKeywordExtractor(yake_config)
@@ -84,7 +86,13 @@ def run_pipeline(
         keyword_source = "yake"
 
     prompt_config = PromptConfig(**config["prompt"])
-    truncated_text = truncate_text(clean_text, prompt_config.max_text_chars)
+    truncated_text = fit_context(
+        clean_text, prompt_config.max_text_chars, keywords_scored, prompt_config.context_strategy
+    )
+
+    # No keywords (e.g. stopword-only text): an empty "Keywords: []" prompt is worse than none.
+    if not keywords and ablation_mode in (None, "full"):
+        ablation_mode = "no_keywords"
 
     # Build prompt based on mode
     if prompt_override:
@@ -114,6 +122,7 @@ def run_pipeline(
         extractor=extractor,
         gold_keywords=gold_keywords,
         reference_summary=reference_summary,
+        source_text=clean_text,
     )
 
     result = {

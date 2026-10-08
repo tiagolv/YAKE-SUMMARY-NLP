@@ -1,7 +1,13 @@
+"""Legacy evaluation helpers, now backed by ``yake_sum`` (stem-aware, zero-safe)."""
+
 from __future__ import annotations
 
 import re
 from typing import Iterable
+
+from yake_sum.evaluation.alignment import _contains
+from yake_sum.evaluation.rouge import compute_rouge_metrics
+from yake_sum.text import stem_tokens
 
 
 def _normalize(text: str) -> str:
@@ -12,44 +18,37 @@ def _normalize(text: str) -> str:
 
 
 def keyword_coverage(summary: str, keywords: Iterable[str]) -> dict:
-    summary_norm = _normalize(summary)
+    """Which keywords appear in ``summary``.
+
+    Matching is done on stemmed token sequences (so "neural networks" matches
+    "neural network") and respects word boundaries (so "graph" no longer matches
+    "paragraph", which the old substring check did).
+    """
+    summary_stems = stem_tokens(summary)
     keywords_list = list(keywords)
-    found = []
-    missing = []
+    found, missing = [], []
     for kw in keywords_list:
-        kw_norm = _normalize(kw)
-        if kw_norm and kw_norm in summary_norm:
-            found.append(kw)
-        else:
-            missing.append(kw)
+        stems = stem_tokens(kw)
+        (found if stems and _contains(summary_stems, stems) else missing).append(kw)
     coverage = (len(found) / len(keywords_list)) if keywords_list else 0.0
     return {"coverage": coverage, "found": found, "missing": missing}
 
 
 def keyword_precision_recall(predicted_keywords: Iterable[str], gold_keywords: Iterable[str]) -> dict:
-    predicted_norm = {_normalize(k) for k in predicted_keywords if _normalize(k)}
-    gold_norm = {_normalize(k) for k in gold_keywords if _normalize(k)}
-    true_positive = predicted_norm & gold_norm
-
-    precision = len(true_positive) / len(predicted_norm) if predicted_norm else 0.0
-    recall = len(true_positive) / len(gold_norm) if gold_norm else 0.0
-
+    """Stem-aware set precision/recall between two keyword lists."""
+    predicted = {" ".join(stem_tokens(k)): _normalize(k) for k in predicted_keywords if stem_tokens(k)}
+    gold = {" ".join(stem_tokens(k)) for k in gold_keywords if stem_tokens(k)}
+    hits = predicted.keys() & gold
+    precision = len(hits) / len(predicted) if predicted else 0.0
+    recall = len(hits) / len(gold) if gold else 0.0
     return {
         "precision": precision,
         "recall": recall,
-        "true_positive": sorted(true_positive),
+        "true_positive": sorted(predicted[h] for h in hits),
     }
 
 
 def compute_rouge(summary: str, reference: str) -> dict:
-    try:
-        from rouge_score import rouge_scorer
-    except ImportError as exc:
-        raise ImportError("Missing dependency 'rouge-score'. Install it with: pip install rouge-score") from exc
-
-    scorer = rouge_scorer.RougeScorer(["rouge1", "rougeL"], use_stemmer=True)
-    scores = scorer.score(reference, summary)
-    return {
-        "rouge1_f": scores["rouge1"].fmeasure,
-        "rougeL_f": scores["rougeL"].fmeasure,
-    }
+    """ROUGE F1 (stemmed). Keeps the legacy keys and adds ``rouge2_f``."""
+    m = compute_rouge_metrics(summary=summary, reference=reference)
+    return {"rouge1_f": m["rouge1_f"], "rouge2_f": m["rouge2_f"], "rougeL_f": m["rougeL_f"]}

@@ -1,6 +1,6 @@
 # 📊 Empirical ROUGE Benchmark Study Report
 
-**Generated on:** 2026-10-01T13:52:53.264862Z  
+**Generated on:** 2026-10-08T18:19:20.176941Z  
 **Evaluated Samples:** 15 documents from `data/eval/benchmark_with_summaries.json`  
 **Backend:** `mock`  
 **Interpretation:** This is a deterministic pipeline smoke test. Mock outputs must not be used as evidence of abstractive summary quality or keyword-conditioning gains.

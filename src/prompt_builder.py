@@ -9,6 +9,7 @@ class PromptConfig:
     system: str
     instruction: str
     max_text_chars: int
+    context_strategy: str = "keyword_select"  # or "truncate" (legacy behaviour)
 
 
 def build_prompt(keywords: Iterable[str], text: str, config: PromptConfig) -> str:

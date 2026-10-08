@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 
+from .backends import get_llm_client
 from .backends.base import BackendConnectionError, BackendError, BackendTimeoutError
 from .summarizer import Summarizer
 
@@ -18,7 +19,7 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "-i", "--input",
-        required=True,
+        default=None,
         help="Path to input text file, or '-' to read from stdin.",
     )
     parser.add_argument(
@@ -69,6 +70,11 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
         help="Output file path (default: prints to stdout).",
     )
     parser.add_argument(
+        "--check-backend",
+        action="store_true",
+        help="Only check that the selected backend/model is reachable, then exit (0 = ready).",
+    )
+    parser.add_argument(
         "--json",
         action="store_true",
         help="Format output as JSON including keywords and metrics.",
@@ -83,6 +89,19 @@ def _fail(message: str, code: int) -> int:
 
 def main(args: list[str] | None = None) -> int:
     parsed = parse_args(args)
+
+    if parsed.check_backend:
+        extra_check: dict[str, str] = {}
+        if parsed.host:
+            extra_check["base_url" if parsed.backend in ("openai_compatible", "openai") else "host"] = parsed.host
+        try:
+            ok, msg = get_llm_client(parsed.backend, model=parsed.model, **extra_check).is_available()
+        except (ValueError, BackendError) as exc:
+            ok, msg = False, str(exc)
+        print(("OK: " if ok else "NOT READY: ") + msg, file=sys.stdout if ok else sys.stderr)
+        return 0 if ok else 3
+    if not parsed.input:
+        return _fail("the following arguments are required: -i/--input", 2)
 
     if parsed.input == "-":
         text = sys.stdin.read()
@@ -124,6 +143,9 @@ def main(args: list[str] | None = None) -> int:
         return _fail(f"LLM backend unreachable. {exc}", 3)
     except BackendError as exc:
         return _fail(f"LLM backend failed. {exc}", 3)
+
+    for warning in result.metrics.get("warnings", []):
+        print(f"Warning: {warning}", file=sys.stderr)
 
     if parsed.json:
         payload = {

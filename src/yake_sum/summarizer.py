@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import Any
 
 from .abstractive.summarizer import AbstractiveSummarizer
-from .backends import BaseLLMClient, get_llm_client
-from .evaluation.alignment import keyword_coverage
+from .backends import BaseLLMClient, MockLLMClient, get_llm_client
+from .evaluation.alignment import keyword_coverage, source_support
 from .evaluation.rouge import compute_rouge_metrics
 from .extractive.summarizer import ExtractiveSummarizer
 from .hybrid.summarizer import HybridSummarizer
@@ -115,6 +115,31 @@ class Summarizer:
                 "context_char_count": result.context_char_count,
                 "prompt_used": result.prompt_used,
             }
+
+        warnings: list[str] = []
+        if self.mode in ("abstractive", "hybrid") and isinstance(self.llm_client, MockLLMClient):
+            warnings.append(
+                "Mock backend in use: the output is a deterministic placeholder, NOT a real "
+                "summary. Use backend='ollama' (or another real backend) for actual results."
+            )
+        if self.mode == "abstractive" and len(text.strip()) > self.max_context_chars:
+            warnings.append(
+                f"Input has {len(text.strip())} chars (> max_context_chars={self.max_context_chars}); "
+                "the whole text was sent to the LLM and may exceed its context window. "
+                "Use mode='hybrid' for long documents."
+            )
+        if self.mode in ("abstractive", "hybrid") and summary_text:
+            support = source_support(summary_text, text)
+            metrics["faithfulness"] = support
+            if support["unsupported_numbers"]:
+                warnings.append(
+                    "Summary contains numbers not present in the source: "
+                    + ", ".join(support["unsupported_numbers"])
+                )
+        if not keywords and text.strip():
+            warnings.append("No keywords could be extracted; summary is not keyword-conditioned.")
+        if warnings:
+            metrics["warnings"] = warnings
 
         # Reference-free sanity metric: how many of the document keywords the summary covers.
         if keywords and summary_text:

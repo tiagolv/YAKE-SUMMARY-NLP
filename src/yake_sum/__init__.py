@@ -11,7 +11,7 @@ from .backends.base import (
     BackendTimeoutError,
     BaseLLMClient,
 )
-from .evaluation import compute_rouge_metrics, keyword_coverage, keyword_prf
+from .evaluation import compute_rouge_metrics, keyword_coverage, keyword_prf, source_support
 from .extractive.summarizer import ExtractiveSummarizer
 from .hybrid.summarizer import HybridSummarizer
 from .models import AbstractiveResult, ExtractiveResult, HybridResult, Keyword, SummaryResult
@@ -31,6 +31,7 @@ __all__ = [
     "compute_rouge_metrics",
     "keyword_coverage",
     "keyword_prf",
+    "source_support",
     "Keyword",
     "SummaryResult",
     "ExtractiveResult",

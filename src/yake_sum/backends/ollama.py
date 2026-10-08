@@ -20,15 +20,15 @@ class OllamaClient:
     def __init__(
         self,
         model: str = "mistral",
-        host: str = "http://localhost:11434",
+        host: str | None = None,
         timeout: int = 120,
         max_retries: int = 2,
         backoff: float = 1.0,
         post: Callable[..., Any] | None = None,
         sleep: Callable[[float], None] = time.sleep,
     ) -> None:
-        env_host = os.environ.get("OLLAMA_HOST")  # useful on WSL / remote hosts
-        host = env_host or host
+        # Precedence: explicit argument > OLLAMA_HOST env var (useful on WSL) > default.
+        host = host or os.environ.get("OLLAMA_HOST") or "http://localhost:11434"
         if not host.startswith(("http://", "https://")):
             host = f"http://{host}"
         self.host = host.rstrip("/")

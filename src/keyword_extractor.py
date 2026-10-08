@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-try:
-    import yake
-except ImportError as exc:
-    raise ImportError("Missing dependency 'yake'. Install it with: pip install yake") from exc
+from yake_sum.keywords import KeywordExtractor
 
 
 @dataclass
@@ -17,13 +14,19 @@ class YakeConfig:
 
 
 class YakeKeywordExtractor:
+    """Legacy facade over :class:`yake_sum.keywords.KeywordExtractor`.
+
+    Same interface as before, but empty / degenerate text now yields ``[]`` instead
+    of raising.
+    """
+
     def __init__(self, config: YakeConfig) -> None:
-        self._extractor = yake.KeywordExtractor(
-            lan=config.language,
-            n=config.max_ngram_size,
-            dedupLim=config.deduplication_threshold,
-            top=config.top_k,
+        self._extractor = KeywordExtractor(
+            language=config.language,
+            max_ngram_size=config.max_ngram_size,
+            top_k=config.top_k,
+            deduplication_threshold=config.deduplication_threshold,
         )
 
     def extract(self, text: str) -> list[tuple[str, float]]:
-        return self._extractor.extract_keywords(text)
+        return self._extractor.extract(text)

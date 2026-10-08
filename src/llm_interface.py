@@ -21,6 +21,13 @@ class LLMConfig:
     n_ctx: int = 4096
 
 
+def _ollama_host(config: LLMConfig) -> str:
+    """OLLAMA_HOST (e.g. WSL -> Windows host) overrides config.yaml, as the API already did."""
+    import os
+
+    return os.environ.get("OLLAMA_HOST") or config.ollama_host
+
+
 class LLMClient(Protocol):
     def generate(self, prompt: str) -> str: ...
 
@@ -49,31 +56,24 @@ class LlamaCppClient:
 
 
 class OllamaClient:
+    """Legacy facade over :class:`yake_sum.backends.OllamaClient` (retry + clear errors)."""
+
     def __init__(self, config: LLMConfig) -> None:
-        self._host = config.ollama_host.rstrip("/")
-        self._model = config.ollama_model
+        from yake_sum.backends.ollama import OllamaClient as _Client
+
+        self._client = _Client(model=config.ollama_model, host=_ollama_host(config))
         self._max_tokens = config.max_tokens
         self._temperature = config.temperature
 
     def generate(self, prompt: str) -> str:
-        url = f"{self._host}/api/generate"
-        payload = {
-            "model": self._model,
-            "prompt": prompt,
-            "stream": False,
-            "options": {
-                "temperature": self._temperature,
-                "num_predict": self._max_tokens,
-            },
-        }
-        try:
-            response = requests.post(url, json=payload, timeout=120)
-            response.raise_for_status()
-        except requests.RequestException as exc:
-            raise LLMError(f"Ollama request failed: {exc}") from exc
+        from yake_sum.backends.base import BackendError
 
-        data = response.json()
-        return data.get("response", "").strip()
+        try:
+            return self._client.generate(
+                prompt, temperature=self._temperature, max_tokens=self._max_tokens
+            )
+        except BackendError as exc:
+            raise LLMError(str(exc)) from exc
 
 
 def create_llm_client(config: LLMConfig) -> LLMClient:
@@ -82,6 +82,14 @@ def create_llm_client(config: LLMConfig) -> LLMClient:
         return LlamaCppClient(config)
     if backend == "ollama":
         return OllamaClient(config)
+    if backend == "mock":  # deterministic, for demos and CI (never for quality claims)
+        from yake_sum.backends.mock import MockLLMClient
+
+        class _Mock:
+            def generate(self, prompt: str) -> str:
+                return MockLLMClient().generate(prompt)
+
+        return _Mock()
     raise LLMError(f"Unsupported backend: {config.backend}")
 
 
@@ -91,26 +99,15 @@ def check_backend(config: LLMConfig) -> tuple[bool, str]:
     Returns (available, message) and never raises, so callers (e.g. the UI)
     can render a status indicator without crashing.
     """
-    import sys
-
     backend = config.backend.lower()
 
     if backend == "ollama":
-        host = config.ollama_host.rstrip("/")
-        try:
-            response = requests.get(f"{host}/api/tags", timeout=3)
-            response.raise_for_status()
-        except requests.RequestException as exc:
-            hint = ""
-            # On Linux/WSL the host may be running Ollama on Windows, where
-            # "localhost" does not always resolve to the Windows host.
-            if sys.platform.startswith("linux") and "localhost" in host:
-                hint = (
-                    " Em WSL, 'localhost' pode não alcançar o Ollama no Windows: "
-                    "defina OLLAMA_HOST para o IP do host Windows."
-                )
-            return False, f"Ollama inacessível em {host} — inicie o servidor (ollama serve).{hint} [{exc}]"
-        return True, f"Ollama ({config.ollama_model}) acessível em {host}."
+        from yake_sum.backends.ollama import OllamaClient as _Client
+
+        return _Client(model=config.ollama_model, host=_ollama_host(config)).is_available()
+
+    if backend == "mock":
+        return True, "Mock backend (deterministic; testing only)."
 
     if backend == "llama_cpp":
         if not config.model_path:
