@@ -60,3 +60,15 @@ def test_ollama_host_precedence(monkeypatch):
     monkeypatch.delenv("OLLAMA_HOST")
     assert OllamaClient().host == "http://localhost:11434"
     assert OllamaClient(host="envless:3").host == "http://envless:3"
+
+
+def test_max_words_reaches_the_prompt_and_header_shows_model(tmp_path):
+    from benchmarks.run_rouge_study import format_markdown_report, run_rouge_benchmark
+    from pathlib import Path
+
+    res = Summarizer(mode="abstractive", backend="mock", max_words=40).summarize("Graph databases store edges.")
+    assert "at most 40 words" in res.metrics["prompt_used"]
+    results = run_rouge_benchmark(Path("data/eval/benchmark_with_summaries.json"), max_samples=2, max_words=40)
+    results["model"] = "mistral"
+    report = format_markdown_report(results)
+    assert "(model `mistral`)" in report and "40 words" in report

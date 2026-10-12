@@ -11,8 +11,11 @@ _FAITHFUL = (
 )
 
 
-def _length_clause(max_sentences: int | None) -> str:
-    return f" Write at most {max_sentences} sentences." if max_sentences else ""
+def _length_clause(max_sentences: int | None, max_words: int | None = None) -> str:
+    clause = f" Write at most {max_sentences} sentences." if max_sentences else ""
+    if max_words:
+        clause += f" Use at most {max_words} words in total."
+    return clause
 
 
 def build_keyword_prompt(
@@ -20,6 +23,7 @@ def build_keyword_prompt(
     text: str,
     system_instruction: str = DEFAULT_SYSTEM,
     max_sentences: int | None = 3,
+    max_words: int | None = None,
 ) -> str:
     """Prompt conditioning the LLM to cover the key concepts extracted by YAKE."""
     kw_str = ", ".join(keywords)
@@ -27,7 +31,7 @@ def build_keyword_prompt(
         f"{system_instruction}\n\n"
         "Given the following keywords extracted from the document, write a concise and faithful "
         "summary that covers the central claims and concepts."
-        f"{_length_clause(max_sentences)} {_FAITHFUL}\n\n"
+        f"{_length_clause(max_sentences, max_words)} {_FAITHFUL}\n\n"
         f"Keywords: [{kw_str}]\n\n"
         f"Document:\n{text.strip()}"
     )
@@ -37,11 +41,12 @@ def build_unconditioned_prompt(
     text: str,
     system_instruction: str = DEFAULT_SYSTEM,
     max_sentences: int | None = 3,
+    max_words: int | None = None,
 ) -> str:
     """Baseline prompt without keywords (ablation); same length/faithfulness rules."""
     return (
         f"{system_instruction}\n\n"
         "Write a concise and faithful summary of the following document."
-        f"{_length_clause(max_sentences)} {_FAITHFUL}\n\n"
+        f"{_length_clause(max_sentences, max_words)} {_FAITHFUL}\n\n"
         f"Document:\n{text.strip()}"
     )

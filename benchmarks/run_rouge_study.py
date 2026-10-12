@@ -92,6 +92,7 @@ def run_rouge_benchmark(
     model: str = "mistral",
     max_samples: int | None = None,
     llm_client: BaseLLMClient | None = None,
+    max_words: int | None = None,
 ) -> dict[str, Any]:
     data = json.loads(benchmark_file.read_text(encoding="utf-8"))
     # Full-dataset validation is enforced; ``max_samples`` only subsamples afterwards (smoke runs).
@@ -101,7 +102,7 @@ def run_rouge_benchmark(
 
     client = llm_client or get_llm_client(backend=backend, model=model)
     extractive = ExtractiveSummarizer(num_sentences=3)
-    abstractive = AbstractiveSummarizer(llm_client=client)
+    abstractive = AbstractiveSummarizer(llm_client=client, max_words=max_words)
 
     methods = [
         "lead_3",
@@ -200,6 +201,7 @@ def run_rouge_benchmark(
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "backend": backend,
         "model": model if backend != "mock" else None,
+        "max_words": max_words,
         "sample_ids": sample_ids,
         "reference_sources": {d["id"]: d["reference_source"] for d in documents},
         "methods": averaged_methods,
@@ -248,12 +250,14 @@ def format_markdown_report(results: dict[str, Any]) -> str:
         else "Interpret results together with backend and model details; scores depend on the selected model."
     )
 
+    length_part = f"{results['max_words']} words (prompted)" if results.get("max_words") else "none (sentence limit only)"
     model_part = f" (model `{results['model']}`)" if results.get("model") else ""
     report = f"""# 📊 Empirical ROUGE Benchmark Study Report
 
 **Generated on:** {ts}  
 **Evaluated Samples:** {n_docs} documents from `data/eval/benchmark_with_summaries.json`  
-**Backend:** `{backend}`  
+**Backend:** `{backend}`{model_part}  
+**LLM length limit:** {length_part}  
 **Interpretation:** {interpretation}
 
 ---
@@ -307,6 +311,12 @@ def main() -> None:
     parser.add_argument("--model", default="mistral")
     parser.add_argument("--max-samples", type=int, default=None)
     parser.add_argument(
+        "--max-words",
+        type=int,
+        default=None,
+        help="Ask the LLM for at most N words (length-controlled comparison; try ~ reference length).",
+    )
+    parser.add_argument(
         "--output",
         default="outputs/rouge_benchmark_report.md",
         help="Path to write report.",
@@ -318,6 +328,7 @@ def main() -> None:
         benchmark_file=benchmark_path,
         backend=args.backend,
         model=args.model,
+        max_words=args.max_words,
         max_samples=args.max_samples,
     )
 

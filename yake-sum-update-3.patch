@@ -1,0 +1,224 @@
+diff --git a/benchmarks/run_rouge_study.py b/benchmarks/run_rouge_study.py
+index 875246f..68ad306 100644
+--- a/benchmarks/run_rouge_study.py
++++ b/benchmarks/run_rouge_study.py
+@@ -92,6 +92,7 @@ def run_rouge_benchmark(
+     model: str = "mistral",
+     max_samples: int | None = None,
+     llm_client: BaseLLMClient | None = None,
++    max_words: int | None = None,
+ ) -> dict[str, Any]:
+     data = json.loads(benchmark_file.read_text(encoding="utf-8"))
+     # Full-dataset validation is enforced; ``max_samples`` only subsamples afterwards (smoke runs).
+@@ -101,7 +102,7 @@ def run_rouge_benchmark(
+ 
+     client = llm_client or get_llm_client(backend=backend, model=model)
+     extractive = ExtractiveSummarizer(num_sentences=3)
+-    abstractive = AbstractiveSummarizer(llm_client=client)
++    abstractive = AbstractiveSummarizer(llm_client=client, max_words=max_words)
+ 
+     methods = [
+         "lead_3",
+@@ -200,6 +201,7 @@ def run_rouge_benchmark(
+         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+         "backend": backend,
+         "model": model if backend != "mock" else None,
++        "max_words": max_words,
+         "sample_ids": sample_ids,
+         "reference_sources": {d["id"]: d["reference_source"] for d in documents},
+         "methods": averaged_methods,
+@@ -248,12 +250,14 @@ def format_markdown_report(results: dict[str, Any]) -> str:
+         else "Interpret results together with backend and model details; scores depend on the selected model."
+     )
+ 
++    length_part = f"{results['max_words']} words (prompted)" if results.get("max_words") else "none (sentence limit only)"
+     model_part = f" (model `{results['model']}`)" if results.get("model") else ""
+     report = f"""# 📊 Empirical ROUGE Benchmark Study Report
+ 
+ **Generated on:** {ts}  
+ **Evaluated Samples:** {n_docs} documents from `data/eval/benchmark_with_summaries.json`  
+-**Backend:** `{backend}`  
++**Backend:** `{backend}`{model_part}  
++**LLM length limit:** {length_part}  
+ **Interpretation:** {interpretation}
+ 
+ ---
+@@ -306,6 +310,12 @@ def main() -> None:
+     )
+     parser.add_argument("--model", default="mistral")
+     parser.add_argument("--max-samples", type=int, default=None)
++    parser.add_argument(
++        "--max-words",
++        type=int,
++        default=None,
++        help="Ask the LLM for at most N words (length-controlled comparison; try ~ reference length).",
++    )
+     parser.add_argument(
+         "--output",
+         default="outputs/rouge_benchmark_report.md",
+@@ -318,6 +328,7 @@ def main() -> None:
+         benchmark_file=benchmark_path,
+         backend=args.backend,
+         model=args.model,
++        max_words=args.max_words,
+         max_samples=args.max_samples,
+     )
+ 
+diff --git a/src/yake_sum/abstractive/prompt.py b/src/yake_sum/abstractive/prompt.py
+index bfeccad..c0660e5 100644
+--- a/src/yake_sum/abstractive/prompt.py
++++ b/src/yake_sum/abstractive/prompt.py
+@@ -11,8 +11,11 @@ _FAITHFUL = (
+ )
+ 
+ 
+-def _length_clause(max_sentences: int | None) -> str:
+-    return f" Write at most {max_sentences} sentences." if max_sentences else ""
++def _length_clause(max_sentences: int | None, max_words: int | None = None) -> str:
++    clause = f" Write at most {max_sentences} sentences." if max_sentences else ""
++    if max_words:
++        clause += f" Use at most {max_words} words in total."
++    return clause
+ 
+ 
+ def build_keyword_prompt(
+@@ -20,6 +23,7 @@ def build_keyword_prompt(
+     text: str,
+     system_instruction: str = DEFAULT_SYSTEM,
+     max_sentences: int | None = 3,
++    max_words: int | None = None,
+ ) -> str:
+     """Prompt conditioning the LLM to cover the key concepts extracted by YAKE."""
+     kw_str = ", ".join(keywords)
+@@ -27,7 +31,7 @@ def build_keyword_prompt(
+         f"{system_instruction}\n\n"
+         "Given the following keywords extracted from the document, write a concise and faithful "
+         "summary that covers the central claims and concepts."
+-        f"{_length_clause(max_sentences)} {_FAITHFUL}\n\n"
++        f"{_length_clause(max_sentences, max_words)} {_FAITHFUL}\n\n"
+         f"Keywords: [{kw_str}]\n\n"
+         f"Document:\n{text.strip()}"
+     )
+@@ -37,11 +41,12 @@ def build_unconditioned_prompt(
+     text: str,
+     system_instruction: str = DEFAULT_SYSTEM,
+     max_sentences: int | None = 3,
++    max_words: int | None = None,
+ ) -> str:
+     """Baseline prompt without keywords (ablation); same length/faithfulness rules."""
+     return (
+         f"{system_instruction}\n\n"
+         "Write a concise and faithful summary of the following document."
+-        f"{_length_clause(max_sentences)} {_FAITHFUL}\n\n"
++        f"{_length_clause(max_sentences, max_words)} {_FAITHFUL}\n\n"
+         f"Document:\n{text.strip()}"
+     )
+diff --git a/src/yake_sum/abstractive/summarizer.py b/src/yake_sum/abstractive/summarizer.py
+index b426720..5bd35f0 100644
+--- a/src/yake_sum/abstractive/summarizer.py
++++ b/src/yake_sum/abstractive/summarizer.py
+@@ -28,11 +28,13 @@ class AbstractiveSummarizer:
+         temperature: float = 0.2,
+         max_tokens: int = 512,
+         max_sentences: int | None = 3,
++        max_words: int | None = None,
+     ) -> None:
+         self.llm_client = llm_client or MockLLMClient()
+         self.temperature = require_float("temperature", temperature, 0.0, 2.0)
+         self.max_tokens = require_int("max_tokens", max_tokens)
+         self.max_sentences = None if max_sentences is None else require_int("max_sentences", max_sentences)
++        self.max_words = None if max_words is None else require_int("max_words", max_words, minimum=5)
+         self._extractor = KeywordExtractor(language, max_ngram_size, top_k, deduplication_threshold)
+ 
+     def summarize(
+@@ -55,9 +57,9 @@ class AbstractiveSummarizer:
+ 
+         conditioned = use_keywords and bool(kw_strings)
+         if conditioned:
+-            prompt = build_keyword_prompt(kw_strings, clean, max_sentences=self.max_sentences)
++            prompt = build_keyword_prompt(kw_strings, clean, max_sentences=self.max_sentences, max_words=self.max_words)
+         else:
+-            prompt = build_unconditioned_prompt(clean, max_sentences=self.max_sentences)
++            prompt = build_unconditioned_prompt(clean, max_sentences=self.max_sentences, max_words=self.max_words)
+ 
+         summary = self.llm_client.generate(
+             prompt=prompt, temperature=self.temperature, max_tokens=self.max_tokens
+diff --git a/src/yake_sum/hybrid/summarizer.py b/src/yake_sum/hybrid/summarizer.py
+index e480478..c96bb54 100644
+--- a/src/yake_sum/hybrid/summarizer.py
++++ b/src/yake_sum/hybrid/summarizer.py
+@@ -80,12 +80,14 @@ class HybridSummarizer:
+         temperature: float = 0.2,
+         max_tokens: int = 512,
+         max_sentences: int | None = 3,
++        max_words: int | None = None,
+     ) -> None:
+         self.llm_client = llm_client or MockLLMClient()
+         self.max_context_chars = require_int("max_context_chars", max_context_chars, minimum=50)
+         self.temperature = require_float("temperature", temperature, 0.0, 2.0)
+         self.max_tokens = require_int("max_tokens", max_tokens)
+         self.max_sentences = None if max_sentences is None else require_int("max_sentences", max_sentences)
++        self.max_words = None if max_words is None else require_int("max_words", max_words, minimum=5)
+         self._extractor = KeywordExtractor(language, max_ngram_size, top_k, deduplication_threshold)
+ 
+     def _select(self, clean: str, kw_tuples: list[tuple[str, float]]) -> list[str]:
+@@ -104,9 +106,9 @@ class HybridSummarizer:
+         condensed = _PARA_SEP.join(retained)
+ 
+         if kw_strings:
+-            prompt = build_keyword_prompt(kw_strings, condensed, max_sentences=self.max_sentences)
++            prompt = build_keyword_prompt(kw_strings, condensed, max_sentences=self.max_sentences, max_words=self.max_words)
+         else:
+-            prompt = build_unconditioned_prompt(condensed, max_sentences=self.max_sentences)
++            prompt = build_unconditioned_prompt(condensed, max_sentences=self.max_sentences, max_words=self.max_words)
+ 
+         summary = self.llm_client.generate(
+             prompt=prompt, temperature=self.temperature, max_tokens=self.max_tokens
+diff --git a/src/yake_sum/summarizer.py b/src/yake_sum/summarizer.py
+index 07accc1..2fe7020 100644
+--- a/src/yake_sum/summarizer.py
++++ b/src/yake_sum/summarizer.py
+@@ -28,6 +28,7 @@ class Summarizer:
+         temperature: float = 0.2,
+         max_tokens: int = 512,
+         max_context_chars: int = 3000,
++        max_words: int | None = None,
+         llm_client: BaseLLMClient | None = None,
+         **kwargs: Any,
+     ) -> None:
+@@ -69,6 +70,7 @@ class Summarizer:
+                 top_k=top_k,
+                 temperature=temperature,
+                 max_tokens=max_tokens,
++                max_words=max_words,
+             )
+         elif self.mode == "hybrid":
+             self._engine = HybridSummarizer(
+@@ -79,6 +81,7 @@ class Summarizer:
+                 top_k=top_k,
+                 temperature=temperature,
+                 max_tokens=max_tokens,
++                max_words=max_words,
+             )
+         else:
+             raise ValueError(
+diff --git a/tests/test_trust_signals.py b/tests/test_trust_signals.py
+index 2db62a5..9694080 100644
+--- a/tests/test_trust_signals.py
++++ b/tests/test_trust_signals.py
+@@ -60,3 +60,15 @@ def test_ollama_host_precedence(monkeypatch):
+     monkeypatch.delenv("OLLAMA_HOST")
+     assert OllamaClient().host == "http://localhost:11434"
+     assert OllamaClient(host="envless:3").host == "http://envless:3"
++
++
++def test_max_words_reaches_the_prompt_and_header_shows_model(tmp_path):
++    from benchmarks.run_rouge_study import format_markdown_report, run_rouge_benchmark
++    from pathlib import Path
++
++    res = Summarizer(mode="abstractive", backend="mock", max_words=40).summarize("Graph databases store edges.")
++    assert "at most 40 words" in res.metrics["prompt_used"]
++    results = run_rouge_benchmark(Path("data/eval/benchmark_with_summaries.json"), max_samples=2, max_words=40)
++    results["model"] = "mistral"
++    report = format_markdown_report(results)
++    assert "(model `mistral`)" in report and "40 words" in report

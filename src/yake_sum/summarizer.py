@@ -28,6 +28,7 @@ class Summarizer:
         temperature: float = 0.2,
         max_tokens: int = 512,
         max_context_chars: int = 3000,
+        max_words: int | None = None,
         llm_client: BaseLLMClient | None = None,
         **kwargs: Any,
     ) -> None:
@@ -69,6 +70,7 @@ class Summarizer:
                 top_k=top_k,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                max_words=max_words,
             )
         elif self.mode == "hybrid":
             self._engine = HybridSummarizer(
@@ -79,6 +81,7 @@ class Summarizer:
                 top_k=top_k,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                max_words=max_words,
             )
         else:
             raise ValueError(

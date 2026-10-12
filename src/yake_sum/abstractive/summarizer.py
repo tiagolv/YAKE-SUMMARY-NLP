@@ -28,11 +28,13 @@ class AbstractiveSummarizer:
         temperature: float = 0.2,
         max_tokens: int = 512,
         max_sentences: int | None = 3,
+        max_words: int | None = None,
     ) -> None:
         self.llm_client = llm_client or MockLLMClient()
         self.temperature = require_float("temperature", temperature, 0.0, 2.0)
         self.max_tokens = require_int("max_tokens", max_tokens)
         self.max_sentences = None if max_sentences is None else require_int("max_sentences", max_sentences)
+        self.max_words = None if max_words is None else require_int("max_words", max_words, minimum=5)
         self._extractor = KeywordExtractor(language, max_ngram_size, top_k, deduplication_threshold)
 
     def summarize(
@@ -55,9 +57,9 @@ class AbstractiveSummarizer:
 
         conditioned = use_keywords and bool(kw_strings)
         if conditioned:
-            prompt = build_keyword_prompt(kw_strings, clean, max_sentences=self.max_sentences)
+            prompt = build_keyword_prompt(kw_strings, clean, max_sentences=self.max_sentences, max_words=self.max_words)
         else:
-            prompt = build_unconditioned_prompt(clean, max_sentences=self.max_sentences)
+            prompt = build_unconditioned_prompt(clean, max_sentences=self.max_sentences, max_words=self.max_words)
 
         summary = self.llm_client.generate(
             prompt=prompt, temperature=self.temperature, max_tokens=self.max_tokens
